@@ -8,8 +8,8 @@
         "persistent": false
     },
     "content_scripts":[{
-        "matches": ["<all_urls>"],
-        "js": ["textReader.js"]
+        "js": ["jquery-3.4.1.min.js", "textReader.js"],
+        "matches": ["http://*/*", "https://*/*"]
     }],
     "page_action": {
         "default_popup": "popup.html"
