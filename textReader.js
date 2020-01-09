@@ -1,28 +1,41 @@
-var canvas = document.createElement('canvas');
+$(document).ready(function () {
+    //finds last word of line (line break detection)
+    var breakWord
+    var p = $('p');
 
-canvas.style.width = '100%';
-canvas.style.height = '100%';
+    p.each(function () {
+        var current = $(this);
+        var text = current.text();
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+        var words = text.split(' ');
 
-canvas.style.position = 'absolute';
-canvas.style.left = 0;
-canvas.style.top = 0;
-canvas.style.zIndex = 100000;
-canvas.style.opacity = 0.3;
-canvas.style.pointerEvents = 'none'; 
-document.body.appendChild(canvas);
-var context = canvas.getContext('2d');
+        current.text(words[0]);
+        var height = current.height();
 
-window.addEventListener('mousemove', function (e) {
+        for (var i = 1; i < words.length; i++) {
+            current.text(current.text() + ' ' + words[i]);
 
-    var y = e.pageY;
-    var x = window.screenX;
-    var width = window.innerWidth;
-    var height = 20;
-    context.rect(x, y, width, height);
-    context.fillStyle = 'yellow';
-    context.fill();
-        
+            if (current.height() > height) {
+                height = current.height();
+                breakWord = words[i - 1];
+                return breakWord;
+            }
+        }
+        return current;
+    });
+    
+    //highlights last word of line on hover
+    $(function () {
+        $('breakWord').hover(
+            function () {
+                var $this = $(this);
+                $this.data('bgcolor',
+                    $this.css('background-color')).css('background-color', 'yellow');
+            },
+            function () {
+                var $this = $(this);
+                $this.css('background-color', $this.data('bgcolor'));
+            }
+        );
+    })
 });
