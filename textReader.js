@@ -1,6 +1,4 @@
 $(document).ready(function () {
-    //finds last word of line (line break detection)
-    var breakWord
     var p = $('p');
 
     p.each(function () {
@@ -9,33 +7,60 @@ $(document).ready(function () {
 
         var words = text.split(' ');
 
-        current.text(words[0]);
-        var height = current.height();
-
-        for (var i = 1; i < words.length; i++) {
-            current.text(current.text() + ' ' + words[i]);
-
-            if (current.height() > height) {
-                height = current.height();
-                breakWord = words[i - 1];
-                return breakWord;
-            }
+        for (var i = 0; i < words.length; i++) {
+            current.append(' <span>' + words[i] + '</span> ');
         }
-        return current;
-    });
-    
-    //highlights last word of line on hover
-    $(function () {
-        $('breakWord').hover(
-            function () {
-                var $this = $(this);
-                $this.data('bgcolor',
-                    $this.css('background-color')).css('background-color', 'yellow');
-            },
-            function () {
-                var $this = $(this);
-                $this.css('background-color', $this.data('bgcolor'));
+        var wordsInSpan = current.find('span');
+
+        var offsetHeights = [];
+        //for each word, compare it's offsetTop to the next words offsetTop, and push offset into offsetHeights
+        words.forEach(function () {
+            for (var i = 0; i < words.length - 1; i++) {
+                if (wordsInSpan[i].offsetTop == wordsInSpan[i + 1].offsetTop) {
+                    offsetHeights.push(wordsInSpan[i].offsetTop);
+                }
             }
-        );
-    })
+            return offsetHeights;
+        });
+
+        //removes duplicate offsets from offsetHeights and makes a filtered array (filteredOffsets)
+        //i have no idea how this code (below) works, but it does
+        var filteredOffsets = offsetHeights.filter(function (elem, index, self) {
+            return index === self.indexOf(elem);
+        });
+
+        var index = 0;
+
+        //changes indexes (line selected) with arrow keys
+        document.addEventListener("keyup", function (e) {
+            if (e.keyCode == 38) {
+                index--;
+                console.log(index);
+            }
+            if (e.keyCode == 40) {
+                index++;
+                console.log(index);
+            }
+        })
+
+        //code to highlight each line (not working)
+        filteredOffsets.forEach(function () {
+            for (var i = 0; i < filteredOffsets.length; i++) {
+                if (filteredOffsets[i] == filteredOffsets[index]) {
+                    console.log("selected index: " + filteredOffsets[index]);
+                }
+            }
+        });
+
+
+        //var words = ["test", "word"]
+        //foreach words if(offsetHeights[i] does not contains 340)
+        //add 340 to my list
+        //var offsetHeights = [340, 356, 372]
+        //var offsetHeights[3]
+
+        //foreach (word)
+        // if(words[i].offsetHeight = offsetHeights[3])
+        // hilight
+    });
 });
