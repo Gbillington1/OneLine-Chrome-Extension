@@ -47,6 +47,7 @@ $(document).ready(function () {
         filteredOffsets.forEach(function () {
             for (var i = 0; i < filteredOffsets.length; i++) {
                 if (filteredOffsets[i] == filteredOffsets[index]) {
+                    //highlight line here
                     console.log("selected index: " + filteredOffsets[index]);
                 }
             }
