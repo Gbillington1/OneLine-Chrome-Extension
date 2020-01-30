@@ -1,21 +1,7 @@
 $(document).ready(function () {
-
-    //changes indexes (line selected) with arrow keys
-    document.addEventListener("keyup", function (e) {
-        if (e.keyCode == 38 && index >= 1) {
-            index--;
-            console.log(index);
-        }
-        if (e.keyCode == 40) {
-            index++;
-            console.log(index);
-        }
-    });
-
     var index = 0;
-
     var p = $('p');
-
+    var offsetHeights = [];
     p.each(function () {
         var current = $(this);
 
@@ -23,46 +9,62 @@ $(document).ready(function () {
 
         var words = text.split(' ');
 
+        current.empty();
+
         for (var i = 0; i < words.length; i++) {
-
-            current.append(' <span>' + words[i] + '</span> ');
-
+            current.append(' <span>' + words[i] + '</span>');
         }
-        
-        var wordsInSpan = current.find('span');
-        console.log(wordsInSpan);
-        var offsetHeights = [];
-        //for each word, compare it's offsetTop to the next words offsetTop, and push offset into offsetHeights
-        words.forEach(function () {
-            offsetHeights.push(this.offsetTop); 
-            // for (var i = 0; i < words.length - 1; i++) {
-            //     if (words[i].offsetTop == words[i + 1].offsetTop) {
-            //         offsetHeights.push(words[i].offsetTop);
-            //     }
-            // }
-            // return offsetHeights;
-        });
+    });
 
-        //removes duplicate offsets from offsetHeights and makes a filtered array (filteredOffsets)
-        //i have no idea how this code (below) works, but it does
-        var filteredOffsets = offsetHeights.filter(function (elem, index, self) {
-            return index === self.indexOf(elem);
-        });
+    var wordsInSpan = $('p span');
 
-        //code to highlight each line (not working)
-        words.forEach(function () {
-            if (this.offsetTop == filteredOffsets[index]) {
+    //for each word, compare it's offsetTop to the next words offsetTop, and push offset into offsetHeights
+    wordsInSpan.each(function () {
+        offsetHeights.push(this.offsetTop);
+    });
+
+    //removes duplicate offsets from offsetHeights and makes a filtered array(filteredOffsets)
+    var filteredOffsets = offsetHeights.filter(function (elem, index, self) {
+        return index === self.indexOf(elem);
+    });
+
+    //code to highlight each line
+    function highlight() {
+        wordsInSpan.each(function () {
+            if (this.offsetTop === filteredOffsets[index]) {
+                //figure out what to replace (index) with because it isnt right
+                //it should be the index that selects all spans with same offset value as filteredOffsets[index]
+                wordsInSpan.eq(index).addClass("highlighted");
+                var highlighted = document.getElementsByClassName("highlighted");
+                for (var i = 0; i < highlighted.length; i++) {
+                    highlighted[i].style.backgroundColor = "yellow";
+                }
+                console.log('hilighting line at offset ' + this.offsetTop);
             }
         });
+    };
 
-        //var words = ["test", "word"]
-        //foreach words if(offsetHeights[i] does not contains 340)
-        //add 340 to my list
-        //var offsetHeights = [340, 356, 372]
-        //var offsetHeights[3]
+    highlight();
 
-        //foreach (word)
-        // if(words[i].offsetHeight = offsetHeights[3])
-        // hilight
+    //changes indexes (line selected) with arrow keys
+    document.addEventListener("keyup", function (e) {
+        if (e.keyCode == 38 && index >= 1) {
+            index--;
+            highlight();
+            console.log(index);
+        }
+        if (e.keyCode == 40) {
+            index++;
+            highlight();
+            console.log(index);
+        }
     });
+
+    window.addEventListener("keydown", function(e) {
+        // space and arrow keys
+        if([38, 40].indexOf(e.keyCode) > -1) {
+            e.preventDefault();
+        }
+    }, false);
+
 });
