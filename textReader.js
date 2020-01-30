@@ -18,12 +18,12 @@ $(document).ready(function () {
 
     var wordsInSpan = $('p span');
 
-    //for each word, compare it's offsetTop to the next words offsetTop, and push offset into offsetHeights
+    //for span tag within a p, push its offsetTop into offsetHeights
     wordsInSpan.each(function () {
         offsetHeights.push(this.offsetTop);
     });
 
-    //removes duplicate offsets from offsetHeights and makes a filtered array(filteredOffsets)
+    //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
     var filteredOffsets = offsetHeights.filter(function (elem, index, self) {
         return index === self.indexOf(elem);
     });
