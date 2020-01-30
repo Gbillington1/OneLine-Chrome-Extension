@@ -18,7 +18,7 @@ $(document).ready(function () {
 
     var wordsInSpan = $('p span');
 
-    //for span tag within a p, push its offsetTop into offsetHeights
+    //for each span tag within a p, push its offsetTop into offsetHeights
     wordsInSpan.each(function () {
         offsetHeights.push(this.offsetTop);
     });
