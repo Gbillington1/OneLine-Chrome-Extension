@@ -1,70 +1,70 @@
 $(document).ready(function () {
+    //globals
     var index = 0;
-    var p = $('p');
+    var wordsInSpan;
+    var filteredOffsets;
     var offsetHeights = [];
-    p.each(function () {
-        var current = $(this);
 
-        var text = current.text();
-
-        var words = text.split(' ');
-
-        current.empty();
-
-        for (var i = 0; i < words.length; i++) {
-            current.append(' <span>' + words[i] + '</span>');
+    function wrapInSpans() {
+        var paras = $('p');
+        for (var i = 0; i < paras.length; i++) {
+            var results = Splitting({ target: paras[i], by: "words" });
         }
-    });
 
-    var wordsInSpan = $('p span');
+        //puts all span elements with the class "word" into an array
+        wordsInSpan = $("p span.word, p span.whitespace");
 
-    //for each span tag within a p, push its offsetTop into offsetHeights
-    wordsInSpan.each(function () {
-        offsetHeights.push(this.offsetTop);
-    });
+        //pushing offsetTop of each span.word into an array of offsetHeights
+        for (var i = 0; i < wordsInSpan.length; i++) {
+            offsetHeights.push(wordsInSpan[i].offsetTop);   
+        }
 
-    //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
-    var filteredOffsets = offsetHeights.filter(function (elem, index, self) {
-        return index === self.indexOf(elem);
-    });
-
-    //code to highlight each line
-    function highlight() {
-        wordsInSpan.each(function () {
-            if (this.offsetTop === filteredOffsets[index]) {
-                //figure out what to replace (index) with because it isnt right
-                //it should be the index that selects all spans with same offset value as filteredOffsets[index]
-                wordsInSpan.eq(index).addClass("highlighted");
-                var highlighted = document.getElementsByClassName("highlighted");
-                for (var i = 0; i < highlighted.length; i++) {
-                    highlighted[i].style.backgroundColor = "yellow";
-                }
-                console.log('hilighting line at offset ' + this.offsetTop);
-            }
+        //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
+        filteredOffsets = offsetHeights.filter(function (elem, index, self) {
+            return index === self.indexOf(elem);
         });
     };
 
-    highlight();
+    //attempting to select offsets that have the same offset (if that makes sense)
+    function highlight() {
+        for (var i = 0; i < wordsInSpan.length; i++) {
 
-    //changes indexes (line selected) with arrow keys
-    document.addEventListener("keyup", function (e) {
-        if (e.keyCode == 38 && index >= 1) {
+            if (wordsInSpan[i].offsetTop === filteredOffsets[index]) {
+                $(wordsInSpan[i]).addClass("highlighted");
+            } else {
+                $(wordsInSpan[i]).removeClass("highlighted");
+            }
+        }
+    }
+
+    function setup() {
+        wrapInSpans();
+        highlight();
+    }
+
+    setup();
+
+    //changes line selected with arrow keys
+    $(document).keyup(function (e) {
+        console.log(e.which);
+        if (e.which == 38 && index > 0) {
             index--;
             highlight();
-            console.log(index);
-        }
-        if (e.keyCode == 40) {
+        } else if (e.which == 40 && index <= filteredOffsets.length) {
             index++;
             highlight();
-            console.log(index);
         }
     });
 
-    window.addEventListener("keydown", function(e) {
-        // space and arrow keys
-        if([38, 40].indexOf(e.keyCode) > -1) {
-            e.preventDefault();
-        }
-    }, false);
+    //prevents arrowkeys from scrolling
+    $(window).keydown(function (e) {
+        e.preventDefault();
+    });
+    
+    //resets program on window resize
+    $(window).resize(function() {
+        //function to remove spans here
+        setup();
+    });
 
 });
