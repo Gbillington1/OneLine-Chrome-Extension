@@ -8,6 +8,7 @@
         "persistent": false
     },
     "content_scripts":[{
+        "css": ["style.css"],
         "js": ["jquery-3.4.1.min.js", "textReader.js"],
         "matches": ["http://*/*", "https://*/*"]
     }],
