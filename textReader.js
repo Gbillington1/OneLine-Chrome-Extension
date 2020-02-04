@@ -46,7 +46,6 @@ $(document).ready(function () {
 
     //changes line selected with arrow keys
     $(document).keyup(function (e) {
-        console.log(e.which);
         if (e.which == 38 && index > 0) {
             index--;
             highlight();
@@ -58,7 +57,9 @@ $(document).ready(function () {
 
     //prevents arrowkeys from scrolling
     $(window).keydown(function (e) {
-        e.preventDefault();
+        if (keyCode == 38 || keyCode == 40){
+            e.preventDefault();
+        }
     });
     
     //resets program on window resize
