@@ -4,6 +4,8 @@ $(document).ready(function () {
     var wordsInSpan;
     var filteredOffsets;
     var offsetHeights = [];
+    var bottomOfScreen = window.pageYOffset + window.innerHeight;
+    var topOfScreen = window.pageYOffset;
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
@@ -11,7 +13,6 @@ $(document).ready(function () {
         for (var i = 0; i < paras.length; i++) {
             Splitting({ target: paras[i], by: "words" });
         }
-
         //puts all span elements with the class "word" into an array
         wordsInSpan = $("p span.word, p span.whitespace");
     };
@@ -34,6 +35,8 @@ $(document).ready(function () {
         var line = $(".highlighted");
         for (var i = 0; i < line.length; i++) {
             line[i].scrollIntoView({ block: "center" });
+            bottomOfScreen = window.pageYOffset + window.innerHeight;
+            topOfScreen = window.pageYOffset;
         }
     };
 
@@ -43,13 +46,20 @@ $(document).ready(function () {
 
             if (wordsInSpan[i].offsetTop === filteredOffsets[index]) {
                 $(wordsInSpan[i]).addClass("highlighted");
-                keepLineInWindow();
-
+                if (wordsInSpan[i].offsetTop > bottomOfScreen) {
+                    keepLineInWindow();
+                //why doesnt this work correctly??
+                } else if (wordsInSpan[i].offsetTop < topOfScreen) {
+                    keepLineInWindow();
+                }
+                console.log("top: " + topOfScreen);
+                console.log("word: " + wordsInSpan[i].offsetTop);
             } else {
                 $(wordsInSpan[i]).removeClass("highlighted");
             }
         }
     }
+
 
     //whole program in one function 
     function setup() {
@@ -77,6 +87,12 @@ $(document).ready(function () {
             e.preventDefault();
         }
     });
+
+    $(window).scroll(function() {
+        topOfScreen = window.pageYOffset;
+        bottomOfScreen = window.pageYOffset + window.innerHeight;
+        console.log("top: " + topOfScreen);
+    })
 
     //gets new offset to calculate line on window resize
     $(window).resize(function () {
