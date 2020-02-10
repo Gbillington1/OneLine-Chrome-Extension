@@ -4,8 +4,14 @@ $(document).ready(function () {
     var wordsInSpan;
     var filteredOffsets;
     var offsetHeights = [];
-    var bottomOfScreen = window.pageYOffset + window.innerHeight;
-    var topOfScreen = window.pageYOffset;
+    var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
+    var topOfScreen = $(window).scrollTop();
+
+    //redefines these variables when the user scrolls
+    $(document).scroll(function() {
+        bottomOfScreen = $(window).scrollTop() + window.innerHeight;
+        topOfScreen = $(window).scrollTop();
+    });
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
@@ -21,7 +27,7 @@ $(document).ready(function () {
     function getOffsets() {
         //pushing offsetTop of each span.word into an array of offsetHeights
         for (var i = 0; i < wordsInSpan.length; i++) {
-            offsetHeights.push(wordsInSpan[i].offsetTop);
+            offsetHeights.push($(wordsInSpan[i]).offset().top);
         }
 
         //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
@@ -35,31 +41,24 @@ $(document).ready(function () {
         var line = $(".highlighted");
         for (var i = 0; i < line.length; i++) {
             line[i].scrollIntoView({ block: "center" });
-            bottomOfScreen = window.pageYOffset + window.innerHeight;
-            topOfScreen = window.pageYOffset;
         }
     };
 
     //attempting to select offsets that have the same offset (if that makes sense)
     function highlight() {
         for (var i = 0; i < wordsInSpan.length; i++) {
-
-            if (wordsInSpan[i].offsetTop === filteredOffsets[index]) {
+            if ($(wordsInSpan[i]).offset().top === filteredOffsets[index]) {
                 $(wordsInSpan[i]).addClass("highlighted");
-                if (wordsInSpan[i].offsetTop > bottomOfScreen) {
+                if ($(wordsInSpan[i]).offset().top > bottomOfScreen) {
                     keepLineInWindow();
-                //why doesnt this work correctly??
-                } else if (wordsInSpan[i].offsetTop < topOfScreen) {
+                } else if ($(wordsInSpan[i]).offset().top < topOfScreen) {
                     keepLineInWindow();
                 }
-                console.log("top: " + topOfScreen);
-                console.log("word: " + wordsInSpan[i].offsetTop);
             } else {
                 $(wordsInSpan[i]).removeClass("highlighted");
             }
         }
     }
-
 
     //whole program in one function 
     function setup() {
@@ -68,6 +67,7 @@ $(document).ready(function () {
         highlight();
     }
 
+    //actually run the program
     setup();
 
     //changes line selected with arrow keys
@@ -87,12 +87,6 @@ $(document).ready(function () {
             e.preventDefault();
         }
     });
-
-    $(window).scroll(function() {
-        topOfScreen = window.pageYOffset;
-        bottomOfScreen = window.pageYOffset + window.innerHeight;
-        console.log("top: " + topOfScreen);
-    })
 
     //gets new offset to calculate line on window resize
     $(window).resize(function () {
