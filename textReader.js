@@ -4,6 +4,7 @@ $(document).ready(function () {
     var wordsInSpan;
     var filteredOffsets;
     var offsetHeights = [];
+    var paras;
     var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
     var topOfScreen = $(window).scrollTop();
 
@@ -15,9 +16,11 @@ $(document).ready(function () {
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-        var paras = $('p');
+        paras = $('p');
         for (var i = 0; i < paras.length; i++) {
-            Splitting({ target: paras[i], by: "words" });
+            if ($(paras[i]).text().length > 70) {
+                Splitting({ target: paras[i], by: "words" });
+            }
         }
         //puts all span elements with the class "word" into an array
         wordsInSpan = $("p span.word, p span.whitespace");
@@ -59,14 +62,14 @@ $(document).ready(function () {
             }
         }
     }
-
+    
     //whole program in one function 
     function setup() {
         wrapInSpans();
         getOffsets();
         highlight();
     }
-
+    
     //actually run the program
     setup();
 
