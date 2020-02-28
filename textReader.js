@@ -84,6 +84,7 @@ window.onload = function () {
             paraIndex++;
             Splitting({ target: paras[paraIndex], by: "words" });
             wordsInSpan = $("p span.word, p span.whitespace");
+            getOffsets();
         }
         console.log($(wordsInSpan[spanIndex]).offset().top, $(line[0]).offset().top);   
     }
