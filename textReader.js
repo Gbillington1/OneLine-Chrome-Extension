@@ -3,12 +3,12 @@ window.onload = function () {
     var index = 0;
     var paraIndex = 0;
     var wordsInSpan;
-    var filteredOffsets;
+    var filteredOffsets = [];
     var offsetHeights = [];
+    var line = [];
     var paras;
     var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
     var topOfScreen = $(window).scrollTop();
-    var line;
 
     //redefines these variables when the user scrolls
     $(document).scroll(function () {
@@ -19,38 +19,38 @@ window.onload = function () {
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
         paras = $('p:visible').not("header p, footer p");
-        // for (var i = 0; i < 1; i++) {
-            Splitting({ target: paras[paraIndex], by: "words" });
-        // }
+        for (var i = 0; i < paras.length; i++) {
+            Splitting({ target: paras[i], by: "words" });
+        }
         //puts all span elements with the class "word" into an array
         wordsInSpan = $("p span.word, p span.whitespace");
     };
+    console.log(words);
     //get the offsetTops of each span tag and filters them into an array
     function getOffsets() {
         //pushing offsetTop of each span.word into an array of offsetHeights
         for (var i = 0; i < wordsInSpan.length; i++) {
-            offsetHeights.push($(wordsInSpan[i]).offset().top);
+            //workaround for wacky space issue
+            if (!$(wordsInSpan[i]).hasClass("whitespace")) {
+                offsetHeights.push($(wordsInSpan[i]).offset().top);
+            }
         }
 
         //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
         filteredOffsets = offsetHeights.filter(function (elem, index, self) {
             return index === self.indexOf(elem);
         });
-        filteredOffsets.sort(function(a, b){return a-b});
-        // console.log(filteredOffsets);
+        filteredOffsets.sort(function (a, b) { return a - b });
     }
 
     //keep the highlighted line in the center block of the screen
     function keepLineInWindow() {
-        
-        for (var i = 0; i < line.length; i++) {
-            line[i].scrollIntoView({ block: "center" });
-        }
+        line = $("span.word.highlighted");
+        line[0].scrollIntoView({ block: "center" });
     };
 
     //attempting to select offsets that have the same offset (if that makes sense)
     function highlight() {
-        line = $(".highlighted");
         var previousLine;
         if (index > 0) {
             previousLine = index - 1;
@@ -61,8 +61,8 @@ window.onload = function () {
         for (var i = 0; i < wordsInSpan.length; i++) {
             if ($(wordsInSpan[i]).offset().top === filteredOffsets[index]) {
                 $(wordsInSpan[i]).addClass("highlighted");
-                // console.log(wordsInSpan[i].innerHTML + " " + $(wordsInSpan[i]).offset().left + ", " + $(wordsInSpan[i]).offset().top);
-                if ($(wordsInSpan[i]).offset().top + (lineHeight) > bottomOfScreen) {
+                console.log("highlighted " + $(wordsInSpan[i]).text())
+                if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
                     keepLineInWindow();
                 } else if ($(wordsInSpan[i]).offset().top < topOfScreen) {
                     keepLineInWindow();
@@ -71,14 +71,15 @@ window.onload = function () {
                 $(wordsInSpan[i]).removeClass("highlighted");
             }
         }
-        splitNextPara();
+        // splitNextPara();
     }
 
-    // Optimization
-    // When user gets to last word in current paragraph => increase paraIndex by 1 => split by paras[paraIndex]
+    //Optimization
+    //When user gets to last word in current paragraph => increase paraIndex by 1 => split by paras[paraIndex]the end of the wordsInSpan array
     function splitNextPara() {
         var spanIndex = wordsInSpan.length - 1;
         line = $(".highlighted");
+        //need to figure out a way to decrease the paraIndex when line moves into previous paragraph - do I need to do this?
         if ($(line[0]).offset().top == $(wordsInSpan[spanIndex]).offset().top) {
             console.log("here");
             paraIndex++;
@@ -86,21 +87,22 @@ window.onload = function () {
             wordsInSpan = $("p span.word, p span.whitespace");
             getOffsets();
         }
-        console.log($(wordsInSpan[spanIndex]).offset().top, $(line[0]).offset().top);   
+        console.log($(wordsInSpan[spanIndex]).offset().top, $(line[0]).offset().top);
     }
 
-    
+
     //whole program in one function 
     function setup() {
         wrapInSpans();
+        console.log("wrapped spans");
         getOffsets();
+        console.log("offsets got")
         highlight();
+        console.log("highlited");
     }
-    
+
     //actually run the program
-    setup();
-
-
+    
     //changes line selected with arrow keys
     $(document).keyup(function (e) {
         if (e.keyCode == 38 && index > 0) {
@@ -108,7 +110,16 @@ window.onload = function () {
             highlight();
         } else if (e.keyCode == 40 && index <= filteredOffsets.length) {
             index++;
+            // console.log("indexed");
             highlight();
+            // console.log("highlighted");
+        }
+        else if(e.keyCode == 120) {
+            setup();
+            //     offsetHeights = [];
+            //     filteredOffsets = [];
+        //     getOffsets();
+        //     highlight();
         }
     });
 
