@@ -12,9 +12,15 @@ window.onload = function () {
 
     //redefines these variables when the user scrolls
     $(document).scroll(function () {
+        console.log("scrolled");
         bottomOfScreen = $(window).scrollTop() + window.innerHeight;
         topOfScreen = $(window).scrollTop();
     });
+
+    //decimal rounding function (thanks google)
+    function round(value, decimals) {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
@@ -25,7 +31,7 @@ window.onload = function () {
         //puts all span elements with the class "word" into an array
         wordsInSpan = $("p span.word, p span.whitespace");
     };
-    console.log(words);
+
     //get the offsetTops of each span tag and filters them into an array
     function getOffsets() {
         //pushing offsetTop of each span.word into an array of offsetHeights
@@ -35,6 +41,11 @@ window.onload = function () {
                 offsetHeights.push($(wordsInSpan[i]).offset().top);
             }
         }
+        //round offsets to hundreths place
+        for (var i = 0; i < offsetHeights.length; i++) {
+            offsetHeights[i] = round(offsetHeights[i], 2);
+        }
+        console.log(offsetHeights)
 
         //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
         filteredOffsets = offsetHeights.filter(function (elem, index, self) {
@@ -59,7 +70,8 @@ window.onload = function () {
         }
         var lineHeight = filteredOffsets[index] - filteredOffsets[previousLine];
         for (var i = 0; i < wordsInSpan.length; i++) {
-            if ($(wordsInSpan[i]).offset().top === filteredOffsets[index]) {
+            //workaround for the changing offsets issue
+            if (round($(wordsInSpan[i]).offset().top, 2) === filteredOffsets[index]) {
                 $(wordsInSpan[i]).addClass("highlighted");
                 console.log("highlighted " + $(wordsInSpan[i]).text())
                 if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
@@ -102,6 +114,7 @@ window.onload = function () {
     }
 
     //actually run the program
+    setup();
     
     //changes line selected with arrow keys
     $(document).keyup(function (e) {
@@ -112,15 +125,9 @@ window.onload = function () {
             index++;
             // console.log("indexed");
             highlight();
+            console.log($(wordsInSpan[5]).offset().top);
             // console.log("highlighted");
-        }
-        else if(e.keyCode == 120) {
-            setup();
-            //     offsetHeights = [];
-            //     filteredOffsets = [];
-        //     getOffsets();
-        //     highlight();
-        }
+        } 
     });
 
     //prevents arrowkeys from scrolling
