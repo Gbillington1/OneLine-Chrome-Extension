@@ -1,18 +1,44 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <style>
-            html, body {
-                width: 400px;
-            }
 
-            h1 {
-                color: red;
-                font-family: monospace;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>This is a test to see if my extension is working.</h1>
-    </body>
+<head>
+    <style>
+        html,
+        body {
+            width: 300px;
+            height: 400px;
+            background-color: #f6f4f7;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #26cf86;
+            text-align: center;
+            font-family: monospace;
+            font-size: 25px;
+            padding: 10px 0px;
+        }
+
+        #highlightHeader {
+            display: inline-block;
+            padding: 0 10px 0 0;
+            text-align: center;
+        }
+
+    </style>
+
+    <script src="jquery-3.4.1.min.js"></script>
+    <script src="popup.js"></script>
+
+</head>
+
+<body>
+    <h1>OneLine Reading Aid</h1>
+    <div id="toggleSwitch">
+        <h3 id="highlightHeader">Highlight:</h3>
+        <input id="highlightedCheckbox" type="checkbox">
+    </div>
+
+</body>
+
 </html>
