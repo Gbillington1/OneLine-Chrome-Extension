@@ -9,11 +9,17 @@
     },
     "content_scripts":[{
         "css": ["style.css"],
-        "js": ["jquery-3.4.1.min.js", "textReader.js"],
-        "matches": ["http://*/*", "https://*/*"]
+        "js": ["jquery-3.4.1.min.js", "splitting.min.js", "textReader.js"],
+        "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+        "exclude_globs": ["*://www.google.com/search?*"]
     }],
-    "page_action": {
-        "default_popup": "popup.html"
+    "icons": {
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_title": "One-Line Reading Aid"
     },
     "manifest_version": 2
 }

@@ -17,11 +17,6 @@ window.onload = function () {
         topOfScreen = $(window).scrollTop();
     });
 
-    //decimal rounding function (thanks google)
-    function round(value, decimals) {
-        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-    }
-
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
         paras = $('p:visible').not("header p, footer p");
@@ -41,9 +36,9 @@ window.onload = function () {
                 offsetHeights.push($(wordsInSpan[i]).offset().top);
             }
         }
-        //round offsets to hundreths place
+        //round offsets to hundreths place (workaround)
         for (var i = 0; i < offsetHeights.length; i++) {
-            offsetHeights[i] = round(offsetHeights[i], 2);
+            offsetHeights[i] = Math.round(offsetHeights[i]);
         }
         console.log(offsetHeights)
 
@@ -62,6 +57,7 @@ window.onload = function () {
 
     //attempting to select offsets that have the same offset (if that makes sense)
     function highlight() {
+        console.log("index offset: " + filteredOffsets[index]);
         var previousLine;
         if (index > 0) {
             previousLine = index - 1;
@@ -70,10 +66,9 @@ window.onload = function () {
         }
         var lineHeight = filteredOffsets[index] - filteredOffsets[previousLine];
         for (var i = 0; i < wordsInSpan.length; i++) {
-            //workaround for the changing offsets issue
-            if (round($(wordsInSpan[i]).offset().top, 2) === filteredOffsets[index]) {
+            //selects anything (superscripts, subscripts, blockquotes) that are within a 5 pixle range of the selected line
+            if (filteredOffsets[index] <= (Math.round($(wordsInSpan[i]).offset().top)) + 5 && filteredOffsets[index] >= (Math.round($(wordsInSpan[i]).offset().top)) - 5) {
                 $(wordsInSpan[i]).addClass("highlighted");
-                console.log("highlighted " + $(wordsInSpan[i]).text())
                 if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
                     keepLineInWindow();
                 } else if ($(wordsInSpan[i]).offset().top < topOfScreen) {
@@ -93,7 +88,6 @@ window.onload = function () {
         line = $(".highlighted");
         //need to figure out a way to decrease the paraIndex when line moves into previous paragraph - do I need to do this?
         if ($(line[0]).offset().top == $(wordsInSpan[spanIndex]).offset().top) {
-            console.log("here");
             paraIndex++;
             Splitting({ target: paras[paraIndex], by: "words" });
             wordsInSpan = $("p span.word, p span.whitespace");
@@ -123,11 +117,9 @@ window.onload = function () {
             highlight();
         } else if (e.keyCode == 40 && index <= filteredOffsets.length) {
             index++;
-            // console.log("indexed");
             highlight();
             console.log($(wordsInSpan[5]).offset().top);
-            // console.log("highlighted");
-        } 
+        }
     });
 
     //prevents arrowkeys from scrolling

@@ -36,4 +36,3 @@ $(document).ready(async function () {
         }
     })
 });
-
