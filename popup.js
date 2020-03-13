@@ -1,31 +1,39 @@
-// function storeUserPrefs() {
-//     chrome.storage.sync.set({isHighlighting: highlightedCheckBoxVal}, function() {
-//         console.log("saved " + isHighlighting + "as " + highlightedCheckBoxVal);
-//     })
-// }
-
-// function getUserPrefs() {
-//     chrome.storage.sync.get(['isHighlighting'], function(result) {
-//         $("#highlightedCheckbox").prop('checked', result.isHighlighting)
-//         console.log('Value currently is ' + result.isHighlighting);
-//       });
-//     }
-
-// getUserPrefs();
-var highlightedCheckBoxVal = $("#highlightedCheckbox").prop("checked");
-
-function getAsync(valueToGet) {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get(valueToGet, (value) => {
-            resolve(value);
+$(document).ready(async function () {
+    function loadVal() {
+        return new Promise((resolve) => {
+            chrome.storage.sync.get('highlightedCheckBox', function (result) {
+                resolve(result.highlightedCheckBox);
+            });
         })
-    })
-}
-
-//returns {object, object} - I want it to return true or false
-$(document).keyup(async function (e) {
-    if (e.keyCode == 120) {
-        var value = await getAsync("highlightedCheckBoxVal");
-        alert(value);
     }
-})
+    
+    function saveVal() {
+        chrome.storage.sync.set({ 'highlightedCheckBox': highlightedCheckBoxVal })
+        console.log("saving value to storage as " + highlightedCheckBoxVal)
+    }
+    
+    chrome.runtime.onInstalled.addListener(function() {
+        console.log("newly installed");
+        saveVal();
+    })
+    
+    var highlightedCheckBoxVal = $("#highlightedCheckbox").is(":checked");
+    
+    highlightedCheckBoxVal = await loadVal();
+    console.log("loading value as " + highlightedCheckBoxVal);
+    
+    
+    $("#highlightedCheckbox").change(function () {
+        console.log("changed");
+        highlightedCheckBoxVal = $("#highlightedCheckbox").is(":checked");
+        saveVal();
+    });
+    
+    $(document).keyup(function(e) {
+        if (e.keyCode == 120) {
+            chrome.storage.sync.clear();
+            console.log("storage cleared");
+        }
+    })
+});
+
