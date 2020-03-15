@@ -1,38 +1,59 @@
-$(document).ready(async function () {
-    function loadVal() {
-        return new Promise((resolve) => {
-            chrome.storage.sync.get('highlightedCheckBox', function (result) {
-                resolve(result.highlightedCheckBox);
-            });
-        })
-    }
-    
-    function saveVal() {
-        chrome.storage.sync.set({ 'highlightedCheckBox': highlightedCheckBoxVal })
-        console.log("saving value to storage as " + highlightedCheckBoxVal)
-    }
-    
-    chrome.runtime.onInstalled.addListener(function() {
-        console.log("newly installed");
-        saveVal();
+//get current bool state of switch
+var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
+
+//initiate connection with background page
+chrome.runtime.sendMessage({ msg: "initiate" });
+
+//function that saves state if switch to chrome storage
+function saveVal(valueToSave) {
+    chrome.storage.sync.set({ 'highlightedSwitch': valueToSave })
+}
+
+//function to load value from storage that was saved in saveVal()
+function loadVal() {
+    let value = new Promise((resolve) => {
+        chrome.storage.sync.get('highlightedSwitch', function (result) {
+            resolve(result.highlightedSwitch);
+        });
     })
-    
-    var highlightedCheckBoxVal = $("#highlightedCheckbox").is(":checked");
-    
-    highlightedCheckBoxVal = await loadVal();
-    console.log("loading value as " + highlightedCheckBoxVal);
-    
-    
-    $("#highlightedCheckbox").change(function () {
-        console.log("changed");
-        highlightedCheckBoxVal = $("#highlightedCheckbox").is(":checked");
-        saveVal();
+    return value;
+}
+
+//when first isntalled, set switch to true and save that value
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.msg == "Extension installed") {
+        let onInstallValue = $("#highlightedSwitch").prop("checked", true);
+        $("#highlightedSwitch").prop("checked", onInstallValue);
+    }
+})
+
+function sendMsgToCS(tabNumber, message) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[tabNumber].id, {msg: message})
+    })
+}
+
+$(document).ready(async function () {
+    //load value from storage
+    var loadedVal = await loadVal();
+    $("#highlightedSwitch").prop("checked", loadedVal);
+    var msg = JSON.stringify(loadedVal);
+    // sendMsgToCS(0, msg);
+
+    //save value when it is changed
+    $("#highlightedSwitch").change(function () {
+        highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
+        saveVal(highlightedSwitchVal);
+        msg = JSON.stringify(highlightedSwitchVal);
+        sendMsgToCS(0, msg)
     });
-    
-    $(document).keyup(function(e) {
+
+    //clear storage on f9 (for dev only)
+    $(document).keyup(function (e) {
         if (e.keyCode == 120) {
             chrome.storage.sync.clear();
             console.log("storage cleared");
         }
     })
 });
+
