@@ -38,22 +38,13 @@ $(document).ready(async function () {
     var loadedVal = await loadVal();
     $("#highlightedSwitch").prop("checked", loadedVal);
     var msg = JSON.stringify(loadedVal);
-    // sendMsgToCS(0, msg);
 
     //save value when it is changed
     $("#highlightedSwitch").change(function () {
         highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
         saveVal(highlightedSwitchVal);
-        msg = JSON.stringify(highlightedSwitchVal);
-        sendMsgToCS(0, msg)
+        msg = "changed to " + JSON.stringify(highlightedSwitchVal);
+        sendMsgToCS(0, msg);
     });
-
-    //clear storage on f9 (for dev only)
-    $(document).keyup(function (e) {
-        if (e.keyCode == 120) {
-            chrome.storage.sync.clear();
-            console.log("storage cleared");
-        }
-    })
 });
 
