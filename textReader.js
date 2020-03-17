@@ -1,3 +1,4 @@
+//gets boolean value of switch from chrome storage
 function getOnOffValue() {
     let value = new Promise((resolve) => {
         chrome.storage.sync.get('highlightedSwitch', function (result) {
@@ -6,7 +7,6 @@ function getOnOffValue() {
     })
     return value;
 }
-
 
 //globals
 var index = 0;
@@ -18,31 +18,50 @@ var line = [];
 var paras;
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
 var topOfScreen = $(window).scrollTop();
-var preventDefault;
+var hasRan = false;
 
 window.onload = async function () {
+    //get current state of switch
     var onOffVal = await getOnOffValue();
 
+    //logic to run program when switch is on/off/changed
     if (onOffVal) {
-        preventDefault = true;
         runProgram();
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            if (request.msg == "changed to true") {
+                runProgram();
+            } else if (request.msg == "changed to false") {
+                resetProgram();
+            }
+        })
     } else {
         chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-            console.log("message received");
-            if (request.msg == "true") {
-                preventDefault = true;
+            if (request.msg == "changed to true") {
                 runProgram();
-            } else {
-                preventDefault = false;
+            } else if (request.msg == "changed to false") {
                 resetProgram();
             }
         })
     }
 
+    //listens for tab change, then runs the program based on state of switch
+    chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
+        if (request.msg == "tab changed") {
+            onOffVal = await getOnOffValue();
+            if (onOffVal) {
+                runProgram();
+            } else {
+                resetProgram();
+            }
+        }
+    })
+
     function runProgram() {
+        // var whitespaces;
+        // var p;
+        hasRan = true;
         //redefines these variables when the user scrolls
         $(document).scroll(function () {
-            console.log("scrolled");
             bottomOfScreen = $(window).scrollTop() + window.innerHeight;
             topOfScreen = $(window).scrollTop();
         });
@@ -52,8 +71,13 @@ window.onload = async function () {
             paras = $('p:visible').not("header p, footer p");
             for (var i = 0; i < paras.length; i++) {
                 Splitting({ target: paras[i], by: "words" });
+                // p = $(paras[i]).text();
+                // whitespaces = p.split(/\b\w/);
+                // for (var i = 0; i < whitespaces.length; i++) {
+                //     $(whitespaces[i]).wrap("<span class='ws'></span>");
+                // } console.log(whitespaces)
             }
-            //puts all span elements with the class "word" into an array
+            //puts all span elements into an array
             wordsInSpan = $("p span.word, p span.whitespace");
         };
 
@@ -62,21 +86,26 @@ window.onload = async function () {
             //pushing offsetTop of each span.word into an array of offsetHeights
             for (var i = 0; i < wordsInSpan.length; i++) {
                 //workaround for wacky space issue
-                if (!$(wordsInSpan[i]).hasClass("whitespace")) {
+           
+                if (!$(wordsInSpan[i]).hasClass("whitespace") && 
+                        (i == 0 || 
+                         $(wordsInSpan[i]).offset().top - $(wordsInSpan[i - 1]).offset().top >= 5 ||
+                         $(wordsInSpan[i]).offset().top - $(wordsInSpan[i - 1]).offset().top <= -5))
+                {
                     offsetHeights.push($(wordsInSpan[i]).offset().top);
                 }
             }
-            //round offsets to hundreths place (workaround)
+            //round offsets
             for (var i = 0; i < offsetHeights.length; i++) {
                 offsetHeights[i] = Math.round(offsetHeights[i]);
             }
-            console.log(offsetHeights)
-
+            
             //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
             filteredOffsets = offsetHeights.filter(function (elem, index, self) {
                 return index === self.indexOf(elem);
             });
-            filteredOffsets.sort(function (a, b) { return a - b });
+            filteredOffsets.sort((a, b) => { return a - b });
+            console.log(filteredOffsets)
         }
 
         //keep the highlighted line in the center block of the screen
@@ -87,7 +116,6 @@ window.onload = async function () {
 
         //attempting to select offsets that have the same offset (if that makes sense)
         function highlight() {
-            console.log("index offset: " + filteredOffsets[index]);
             var previousLine;
             if (index > 0) {
                 previousLine = index - 1;
@@ -123,7 +151,6 @@ window.onload = async function () {
                 wordsInSpan = $("p span.word, p span.whitespace");
                 getOffsets();
             }
-            console.log($(wordsInSpan[spanIndex]).offset().top, $(line[0]).offset().top);
         }
 
 
@@ -137,26 +164,26 @@ window.onload = async function () {
         //actually run the program
         setup();
 
-        //changes line selected with arrow keys
-        $(document).keyup(function (e) {
+        //see below
+        function handleKeyPress(e) {
             if (e.keyCode == 38 && index > 0) {
                 index--;
                 highlight();
             } else if (e.keyCode == 40 && index <= filteredOffsets.length) {
                 index++;
                 highlight();
-                console.log($(wordsInSpan[5]).offset().top);
             }
-        });
+        }
+
+        //changes line selected with arrow keys
+        $(document).keyup(handleKeyPress);
 
         //prevents arrowkeys from scrolling
-        if (preventDefault) {
-            $(window).keydown(function (e) {
-                if (e.keyCode == 38 || e.keyCode == 40) {
-                    e.preventDefault();
-                }
-            });
-        }
+        $(document).keydown(function (e) {
+            if (e.keyCode == 38 || e.keyCode == 40) {
+                e.preventDefault();
+            }
+        });
 
         //gets new offset to calculate line on window resize
         $(window).resize(function () {
@@ -169,8 +196,14 @@ window.onload = async function () {
 
     //what do I put in here to stop the program from running??
     function resetProgram() {
-        for (var i = 0; i < wordsInSpan.length; i++) {
-            $(wordsInSpan[i]).removeClass("highlighted");
+        if (hasRan) {
+            for (var i = 0; i < wordsInSpan.length; i++) {
+                $(wordsInSpan[i]).removeClass("highlighted");
+            }
         }
+        $(document).off();
+        filteredOffsets = [];
+        offsetHeights = [];
+        line = [];
     }
 };
