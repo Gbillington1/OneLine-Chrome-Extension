@@ -19,6 +19,13 @@ var paras;
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
 var topOfScreen = $(window).scrollTop();
 var hasRan = false;
+var lineHeight;
+var currentWordOffset;
+var previousWordOffset;
+var differences = [];
+var lineOffsets = [];
+var lineOffsetsAndHeights = [];
+var middleOffsets = [];
 
 window.onload = async function () {
     //get current state of switch
@@ -49,7 +56,9 @@ window.onload = async function () {
         if (request.msg == "tab changed") {
             onOffVal = await getOnOffValue();
             if (onOffVal) {
-                runProgram();
+                if (hasRan == false) {
+                    runProgram();
+                }
             } else {
                 resetProgram();
             }
@@ -57,9 +66,6 @@ window.onload = async function () {
     })
 
     function runProgram() {
-        // var whitespaces;
-        // var p;
-        hasRan = true;
         //redefines these variables when the user scrolls
         $(document).scroll(function () {
             bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -71,41 +77,87 @@ window.onload = async function () {
             paras = $('p:visible').not("header p, footer p");
             for (var i = 0; i < paras.length; i++) {
                 Splitting({ target: paras[i], by: "words" });
-                // p = $(paras[i]).text();
-                // whitespaces = p.split(/\b\w/);
-                // for (var i = 0; i < whitespaces.length; i++) {
-                //     $(whitespaces[i]).wrap("<span class='ws'></span>");
-                // } console.log(whitespaces)
             }
             //puts all span elements into an array
             wordsInSpan = $("p span.word, p span.whitespace");
         };
 
-        //get the offsetTops of each span tag and filters them into an array
-        function getOffsets() {
-            //pushing offsetTop of each span.word into an array of offsetHeights
+        //creates two arrays: one is full of offsets from the top of element, second is offsets from the bottom of the element
+        function getLineOffsets() {
             for (var i = 0; i < wordsInSpan.length; i++) {
-                //workaround for wacky space issue
-           
-                if (!$(wordsInSpan[i]).hasClass("whitespace") && 
-                        (i == 0 || 
-                         $(wordsInSpan[i]).offset().top - $(wordsInSpan[i - 1]).offset().top >= 5 ||
-                         $(wordsInSpan[i]).offset().top - $(wordsInSpan[i - 1]).offset().top <= -5))
-                {
-                    offsetHeights.push($(wordsInSpan[i]).offset().top);
+                //gets previous and current word offsets
+                if (i > 0) {
+                    currentWordOffset = Math.round($(wordsInSpan[i]).offset().top);
+                    previousWordOffset = Math.round($(wordsInSpan[i - 1]).offset().top);
+                } else {
+                    currentWordOffset = Math.round($(wordsInSpan[i]).offset().top);
+                    previousWordOffset = Math.round($(wordsInSpan[0]).offset().top);
+                    
+                }
+                //pushes the difference between the last word, and the current one (can detect line breaks/special characters like sub/superscripts)
+                differences.push(Math.abs(currentWordOffset - previousWordOffset));
+            }
+            //wordsInSpan array and differences array are the same length ALWAYS
+            for (var i = 0; i < differences.length; i++) {
+                //get the line height of each word
+                lineHeight = wordsInSpan[i].offsetHeight;
+                //checks to see if there is a new line (if difference is > lineHeight, there is a new line)
+                if (i == 0 || differences[i] >= lineHeight) {
+                    //workaround for weird space issue
+                    if (!$(wordsInSpan[i]).hasClass("whitespace")) {
+                        //gets the offset from the TOP of the first word in the line
+                        lineOffsets.push(Math.round($(wordsInSpan[i]).offset().top))
+                        //gets the offset from the BOTTOM of the first word in the line
+                        lineOffsetsAndHeights.push(Math.round($(wordsInSpan[i]).offset().top) + lineHeight)
+                    }
                 }
             }
-            //round offsets
-            for (var i = 0; i < offsetHeights.length; i++) {
-                offsetHeights[i] = Math.round(offsetHeights[i]);
+            //chronologically sorts arrays
+            lineOffsets.sort((a, b) => { return a - b });
+            lineOffsetsAndHeights.sort((a, b) => { return a - b });
+        }
+        
+        //finds the number (in px) that is directly inbetween the bottom of each line, and the top of the next line
+        function getMiddleOffsets() {
+            for (var i = 0; i < lineOffsets.length; i++) {
+                //setting 1st offset to top of word - 10px => only because this algorithm will never find an offset for the first line
+                if (i == 0) {
+                    //is this acceptable?
+                    middleOffsets.push(lineOffsets[i] - 10);
+                } else {
+                    //finds the distance
+                    let distanceBetweenEls;
+                    distanceBetweenEls = lineOffsets[i] - lineOffsetsAndHeights[i - 1];
+                    //pushes half of distance into array (aka inbetween each line)
+                    middleOffsets.push(lineOffsetsAndHeights[i - 1] + (distanceBetweenEls / 2));
+                } 
             }
-            
-            //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
-            filteredOffsets = offsetHeights.filter(function (elem, index, self) {
-                return index === self.indexOf(elem);
-            });
-            filteredOffsets.sort((a, b) => { return a - b });
-            console.log(filteredOffsets)
+        }
+
+
+        //gets all of the necessary offset arrays
+        function getOffsets() {
+            getLineOffsets();
+            getMiddleOffsets();
+            //pushing offsetTop of each span.word into an array of offsetHeights
+            // for (var i = 0; i < wordsInSpan.length; i++) {
+            //     if (!$(wordsInSpan[i]).hasClass("whitespace") &&
+            //         (i == 0 ||
+            //             $(wordsInSpan[i]).offset().top - $(wordsInSpan[i - 1]).offset().top >= 5 ||
+            //             $(wordsInSpan[i]).offset().top - $(wordsInSpan[i - 1]).offset().top <= -5)) {
+            //         offsetHeights.push($(wordsInSpan[i]).offset().top);
+            //     }
+            // }
+            // //round offsets
+            // for (var i = 0; i < offsetHeights.length; i++) {
+            //     offsetHeights[i] = Math.round(offsetHeights[i]);
+            // }
+
+            // //removes duplicates offsets from offsetHeights and makes a filtered array(filteredOffsets)
+            // filteredOffsets = offsetHeights.filter(function (elem, index, self) {
+            //     return index === self.indexOf(elem);
+            // });
+            // filteredOffsets.sort((a, b) => { return a - b });
         }
 
         //keep the highlighted line in the center block of the screen
@@ -114,24 +166,23 @@ window.onload = async function () {
             line[0].scrollIntoView({ block: "center" });
         };
 
-        //attempting to select offsets that have the same offset (if that makes sense)
+        //highlights words that are inbetween middleOffsets[i] and lineOffsetsAndHeights[i]
         function highlight() {
-            var previousLine;
-            if (index > 0) {
-                previousLine = index - 1;
-            } else {
-                previousLine = 0;
-            }
-            var lineHeight = filteredOffsets[index] - filteredOffsets[previousLine];
             for (var i = 0; i < wordsInSpan.length; i++) {
-                //selects anything (superscripts, subscripts, blockquotes) that are within a 5 pixle range of the selected line
-                if (filteredOffsets[index] <= (Math.round($(wordsInSpan[i]).offset().top)) + 5 && filteredOffsets[index] >= (Math.round($(wordsInSpan[i]).offset().top)) - 5) {
+                lineHeight = Math.round(parseFloat($(wordsInSpan[i]).css("line-height")));
+                if ((Math.round($(wordsInSpan[i]).offset().top)) >= middleOffsets[index] && 
+                        (Math.round($(wordsInSpan[i]).offset().top)) <= lineOffsetsAndHeights[index]) {
+
                     $(wordsInSpan[i]).addClass("highlighted");
+
+                    //if line is outside of view, scroll to it
                     if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
                         keepLineInWindow();
                     } else if ($(wordsInSpan[i]).offset().top < topOfScreen) {
                         keepLineInWindow();
                     }
+
+                    //remove highlight if above statement isn't true
                 } else {
                     $(wordsInSpan[i]).removeClass("highlighted");
                 }
@@ -169,7 +220,7 @@ window.onload = async function () {
             if (e.keyCode == 38 && index > 0) {
                 index--;
                 highlight();
-            } else if (e.keyCode == 40 && index <= filteredOffsets.length) {
+            } else if (e.keyCode == 40 && index <= lineOffsets.length) {
                 index++;
                 highlight();
             }
@@ -187,11 +238,16 @@ window.onload = async function () {
 
         //gets new offset to calculate line on window resize
         $(window).resize(function () {
-            offsetHeights = [];
-            filteredOffsets = [];
+            console.log('resized')
+            // offsetHeights = [];
+            // filteredOffsets = [];
+            lineOffsets = [];
+            lineOffsetsAndHeights = [];
             getOffsets();
             highlight();
         });
+
+        hasRan = true;
     }
 
     //what do I put in here to stop the program from running??
@@ -202,8 +258,10 @@ window.onload = async function () {
             }
         }
         $(document).off();
-        filteredOffsets = [];
-        offsetHeights = [];
+        lineOffsets = [];
+        lineOffsetsAndHeights = [];
+        // offsetHeights = [];
         line = [];
+        hasRan = false;
     }
 };
