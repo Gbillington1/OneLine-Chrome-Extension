@@ -3,6 +3,7 @@ Chrome Extension that helps users read through a page easily by highlighting one
 
 
 # How To Install
-1. Navigate to chrome://extensions/
-2. Click "Load unpacked"
-3. Select the extension directory
+1. Download the full repository
+2. Navigate to chrome://extensions/
+3. Click "Load unpacked"
+4. Select the extension directory
