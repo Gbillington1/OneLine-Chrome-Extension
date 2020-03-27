@@ -74,11 +74,19 @@
         label:active:after {
             width: 20px;
         }
+        #colorPicker {
+            border-radius: 50%;
+        }
+
+        #colorPickerImg, #colorPicker {
+            position: absolute;
+            top: 150px;
+        }
+
     </style>
 
     <script src="jquery-3.4.1.min.js"></script>
-    <script src="popup.js"></script>
-
+    
 </head>
 
 <body>
@@ -88,8 +96,11 @@
         <h3 id="highlightHeader">Highlight:</h3>
         <input id="highlightedSwitch" class="switch" type="checkbox" value="1">
         <label for="highlightedSwitch">Toggle</label>
+        <img id="colorPickerImg" src="ColorWheel.png" height="150" width="150">
+        <canvas width="150" height="150" id="colorPicker"></canvas>
     </div>
-
+    
+    <script src="popup.js"></script>
 </body>
 
 </html>
