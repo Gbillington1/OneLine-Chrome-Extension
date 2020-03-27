@@ -4,6 +4,8 @@ Chrome Extension that helps users read through a page easily by highlighting one
 
 # How To Install
 1. Download the full repository
-2. Navigate to chrome://extensions/
-3. Click "Load unpacked"
-4. Select the extension directory
+2. Extract the .ZIP file
+3. Navigate to chrome://extensions/ in Google Chrome
+4. Click "Load unpacked"
+5. Select the extension directory
+6. Read!
