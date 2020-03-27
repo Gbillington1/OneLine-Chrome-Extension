@@ -24,6 +24,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.msg == "Extension installed") {
         let onInstallValue = $("#highlightedSwitch").prop("checked", true);
         $("#highlightedSwitch").prop("checked", onInstallValue);
+        saveVal(onInstallValue);
     }
 })
 
