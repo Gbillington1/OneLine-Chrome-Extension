@@ -8,6 +8,19 @@ function getOnOffValue() {
   return value;
 }
 
+function getRBGValue() {
+  let value = new Promise(resolve => {
+    chrome.storage.sync.get("highlightedRgbVal", function(result) {
+      resolve(result.highlightedRgbVal);
+    });
+  });
+  return value;
+}
+
+function updateBG(valueToSet) {
+  document.documentElement.style.setProperty("--background", valueToSet);
+}
+
 //globals
 var index = 0;
 var paraIndex = 0;
@@ -26,15 +39,18 @@ var differences = [];
 var lineOffsetsTop = [];
 var lineOffsetsBottom = [];
 var inbetweenOffsets = [];
+var onOffVal;
+var highlightedRgbVal;
 
 window.onload = async function() {
   //get current state of switch
-  var onOffVal = await getOnOffValue();
+  onOffVal = await getOnOffValue();
+  highlightedRgbVal = await getRBGValue();
 
   //logic to run program when switch is on/off/changed
   if (onOffVal) {
     runProgram();
-    chrome.runtime.onMessage.addListener(function(
+    chrome.runtime.onMessage.addListener(async function(
       request,
       sender,
       sendResponse
@@ -43,6 +59,12 @@ window.onload = async function() {
         runProgram();
       } else if (request.msg == "changed to false") {
         resetProgram();
+      } else if (request.msg == "RBG changed") {
+        onOffVal = await getOnOffValue();
+        if (onOffVal) {
+          highlightedRgbVal = await getRBGValue();
+          updateBG(highlightedRgbVal);
+        }
       }
     });
   } else {
@@ -50,10 +72,11 @@ window.onload = async function() {
       request,
       sender,
       sendResponse
-    ) {
-      if (request.msg == "changed to true") {
-        runProgram();
-      } else if (request.msg == "changed to false") {
+      ) {
+        if (request.msg == "changed to true") {
+          runProgram();
+          updateBG(highlightedRgbVal);
+        } else if (request.msg == "changed to false") {
         resetProgram();
       }
     });
@@ -67,9 +90,12 @@ window.onload = async function() {
   ) {
     if (request.msg == "tab changed") {
       onOffVal = await getOnOffValue();
+      highlightedRgbVal = await getRBGValue();
       if (onOffVal) {
         if (hasRan == false) {
           runProgram();
+          updateBG(highlightedRgbVal);
+          // $(".highlighted").css("background-color", highlightedRgbVal);
         }
       } else {
         resetProgram();
@@ -154,9 +180,6 @@ window.onload = async function() {
     function getOffsets() {
       getLineOffsets();
       getInbetweenOffsets();
-      console.log(inbetweenOffsets)
-      console.log(lineOffsetsTop)
-      console.log(lineOffsetsBottom)
       //pushing offsetTop of each span.word into an array of offsetHeights
       // for (var i = 0; i < wordsInSpan.length; i++) {
       //     if (!$(wordsInSpan[i]).hasClass("whitespace") &&
@@ -192,7 +215,10 @@ window.onload = async function() {
           $(wordsInSpan[i]).offset().top >= inbetweenOffsets[index] &&
           $(wordsInSpan[i]).offset().top <= lineOffsetsBottom[index]
         ) {
+
           $(wordsInSpan[i]).addClass("highlighted");
+          updateBG(highlightedRgbVal);
+          // $(".highlighted").css("background-color", highlightedRgbVal);
 
           //if line is outside of view, scroll to it
           if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
