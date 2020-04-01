@@ -1,4 +1,11 @@
-html, body {scroll-behavior: smooth;}
+html, body {
+    scroll-behavior: smooth;
+}
 
-.highlighted {background-color: yellow;}
+:root {
+    --background: yellow;
+}
 
+.highlighted {
+    background-color: var(--background);
+}
