@@ -7,7 +7,7 @@
         html,
         body {
             width: 300px;
-            height: 400px;
+            height: 450px;
             background-color: #f6f4f7;
             margin: 0 auto;
             font-family: 'Monterrat' sans-serif;
@@ -23,14 +23,58 @@
 
         .optionsWrap {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
-        #highlightHeader {
+        .switchGroup {
+            flex-direction: row;
+        }
+
+        .colorGroup {
+            flex-direction: column;
+        }
+
+        .btnWrapper {
+            text-align: center;
+        }
+
+        .colorBtn {
+            width: 60px;
+            height: 30px;
+            margin: 0 3px;
+            border: 1px solid #9e9e9e;
+            border-radius: 50px;
+        }
+
+        #orangeBtn {
+            background-color: #EDDD6E;
+        }
+
+        #peachBtn {
+            background-color: #EDD1B0;
+        }
+        
+        #yellowBtn {
+            background-color: #F8FD89;
+        }
+
+        #favorites {
+            padding-top: 160px;
+            text-align: center;
+        }
+        
+        #recommended {
+            padding-top: 5px;
+            text-align: center;
+        }
+        
+        .settingHeader {
             font-size: 16px;
             display: inline-block;
-      
+            margin: 0;
+            padding: 10px 0;
         }
 
         .switch {
@@ -45,7 +89,7 @@
             width: 40px;
             height: 20px;
             background: lightgray;
-            display: block;
+            display: inline-block;
             border-radius: 100px;
             position: relative;
         }
@@ -78,9 +122,9 @@
             border-radius: 50%;
         }
 
-        #colorPickerImg, #colorPicker {
+        #colorPicker {
             position: absolute;
-            top: 150px;
+            top: 225px;
         }
 
     </style>
@@ -93,11 +137,30 @@
     <h1>OneLine Reading Aid</h1>
     <hr width="88%">
     <div class="optionsWrap">
-        <h3 id="highlightHeader">Highlight:</h3>
-        <input id="highlightedSwitch" class="switch" type="checkbox" value="1">
-        <label for="highlightedSwitch">Toggle</label>
-        <img id="colorPickerImg" src="ColorWheel.png" height="150" width="150">
+        <div class="switchGroup">
+            <h3 class="settingHeader">On/Off</h3>
+            <input id="highlightedSwitch" class="switch" type="checkbox" value="1">
+            <label for="highlightedSwitch">Toggle</label>
+        </div>
+        <div class='colorGroup' id="recommended">
+            <h3 class="settingHeader">Recommended Colors</h3>
+            <div class="btnWrapper">
+                <button class='colorBtn' id="orangeBtn"></button>
+                <button class='colorBtn' id="peachBtn"></button>
+                <button class='colorBtn' id="yellowBtn"></button>
+            </div>
+        </div>
         <canvas width="150" height="150" id="colorPicker"></canvas>
+        <div class='colorGroup' id="favorites">
+            <h3 class="settingHeader">Favorites</h3>
+            <!-- <small>Right click to set.</small> -->
+            <div class="btnWrapper">
+                <button class='colorBtn' id="favBtn1"></button>
+                <button class='colorBtn' id="favBtn2"></button>
+                <button class='colorBtn' id="favBtn3"></button>
+                <button class='colorBtn' id="favBtn4"></button>
+            </div>
+        </div>
     </div>
     
     <script src="popup.js"></script>
