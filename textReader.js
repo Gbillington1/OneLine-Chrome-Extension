@@ -42,10 +42,18 @@ var inbetweenOffsets = [];
 var onOffVal;
 var highlightedRgbVal;
 
+chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+  if (request.msg == "Extension installed") {
+    onOffVal = await getOnOffValue();
+    highlightedRgbVal = await getRBGValue();
+    updateBG(highlightedRgbVal);
+  }
+});
+
 window.onload = async function() {
   //get current state of switch
   onOffVal = await getOnOffValue();
-  highlightedRgbVal = await getRBGValue();
+  // highlightedRgbVal = await getRBGValue();
 
   //logic to run program when switch is on/off/changed
   if (onOffVal) {
@@ -75,7 +83,7 @@ window.onload = async function() {
       ) {
         if (request.msg == "changed to true") {
           runProgram();
-          updateBG(highlightedRgbVal);
+          // updateBG(highlightedRgbVal);
         } else if (request.msg == "changed to false") {
         resetProgram();
       }
@@ -91,11 +99,10 @@ window.onload = async function() {
     if (request.msg == "tab changed") {
       onOffVal = await getOnOffValue();
       highlightedRgbVal = await getRBGValue();
+      updateBG(highlightedRgbVal);
       if (onOffVal) {
         if (hasRan == false) {
           runProgram();
-          updateBG(highlightedRgbVal);
-          // $(".highlighted").css("background-color", highlightedRgbVal);
         }
       } else {
         resetProgram();
@@ -103,7 +110,9 @@ window.onload = async function() {
     }
   });
 
-  function runProgram() {
+  async function runProgram() {
+    highlightedRgbVal = await getRBGValue();
+    updateBG(highlightedRgbVal);
     //redefines these variables when the user scrolls
     $(document).scroll(function() {
       bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -112,7 +121,7 @@ window.onload = async function() {
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-      paras = $("p:visible").not("header p, footer p, svg p");
+      paras = $("p:visible").not("header p, footer p, svg p, p:hidden, div.dockcard_text p");
       for (var i = 0; i < paras.length; i++) {
         Splitting({ target: paras[i], by: "words" });
       }
