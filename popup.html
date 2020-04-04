@@ -7,7 +7,7 @@
         html,
         body {
             width: 300px;
-            height: 450px;
+            height: 465px;
             background-color: #f6f4f7;
             margin: 0 auto;
             font-family: 'Monterrat' sans-serif;
@@ -38,14 +38,20 @@
 
         .btnWrapper {
             text-align: center;
+            padding: 10px 0 0 0;
         }
 
-        .colorBtn {
+        .colorBtn, .recommendedBtn {
             width: 60px;
             height: 30px;
             margin: 0 3px;
+
             border: 1px solid #9e9e9e;
             border-radius: 50px;
+        }
+
+        button:focus {
+            outline:0;
         }
 
         #orangeBtn {
@@ -61,12 +67,12 @@
         }
 
         #favorites {
-            padding-top: 160px;
+            padding-top: 165px;
             text-align: center;
         }
         
         #recommended {
-            padding-top: 5px;
+            padding-top: 10px;
             text-align: center;
         }
         
@@ -74,7 +80,7 @@
             font-size: 16px;
             display: inline-block;
             margin: 0;
-            padding: 10px 0;
+            padding: 10px 0 0 0;
         }
 
         .switch {
@@ -145,15 +151,17 @@
         <div class='colorGroup' id="recommended">
             <h3 class="settingHeader">Recommended Colors</h3>
             <div class="btnWrapper">
-                <button class='colorBtn' id="orangeBtn"></button>
-                <button class='colorBtn' id="peachBtn"></button>
-                <button class='colorBtn' id="yellowBtn"></button>
+                <button class='recommendedBtn' id="orangeBtn"></button>
+                <button class='recommendedBtn' id="peachBtn"></button>
+                <button class='recommendedBtn' id="yellowBtn"></button>
             </div>
         </div>
         <canvas width="150" height="150" id="colorPicker"></canvas>
         <div class='colorGroup' id="favorites">
             <h3 class="settingHeader">Favorites</h3>
-            <!-- <small>Right click to set.</small> -->
+            <div id="small">
+                <small>Right click to set.</small>
+            </div>
             <div class="btnWrapper">
                 <button class='colorBtn' id="favBtn1"></button>
                 <button class='colorBtn' id="favBtn2"></button>
