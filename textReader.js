@@ -187,7 +187,7 @@ window.onload = async function() {
 
     //gets all of the necessary offset arrays
     function getOffsets() {
-      getLineOffsets();
+      getLineOffsets()
       getInbetweenOffsets();
       //pushing offsetTop of each span.word into an array of offsetHeights
       // for (var i = 0; i < wordsInSpan.length; i++) {
