@@ -1,7 +1,7 @@
 //gets boolean value of switch from chrome storage
 function getOnOffValue() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("highlightedSwitch", function(result) {
+  let value = new Promise((resolve) => {
+    chrome.storage.sync.get("highlightedSwitch", function (result) {
       resolve(result.highlightedSwitch);
     });
   });
@@ -9,8 +9,8 @@ function getOnOffValue() {
 }
 
 function getRBGValue() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("highlightedRgbVal", function(result) {
+  let value = new Promise((resolve) => {
+    chrome.storage.sync.get("highlightedRgbVal", function (result) {
       resolve(result.highlightedRgbVal);
     });
   });
@@ -42,7 +42,11 @@ var lineMedians = [];
 var onOffVal;
 var highlightedRgbVal;
 
-chrome.runtime.onMessage.addListener(async function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(async function (
+  request,
+  sender,
+  sendResponse
+) {
   if (request.msg == "Extension installed") {
     onOffVal = await getOnOffValue();
     highlightedRgbVal = await getRBGValue();
@@ -50,7 +54,7 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
   }
 });
 
-window.onload = async function() {
+window.onload = async function () {
   //get current state of switch
   onOffVal = await getOnOffValue();
   // highlightedRgbVal = await getRBGValue();
@@ -58,7 +62,7 @@ window.onload = async function() {
   //logic to run program when switch is on/off/changed
   if (onOffVal) {
     runProgram();
-    chrome.runtime.onMessage.addListener(async function(
+    chrome.runtime.onMessage.addListener(async function (
       request,
       sender,
       sendResponse
@@ -76,22 +80,22 @@ window.onload = async function() {
       }
     });
   } else {
-    chrome.runtime.onMessage.addListener(function(
+    chrome.runtime.onMessage.addListener(function (
       request,
       sender,
       sendResponse
-      ) {
-        if (request.msg == "changed to true") {
-          runProgram();
-          // updateBG(highlightedRgbVal);
-        } else if (request.msg == "changed to false") {
+    ) {
+      if (request.msg == "changed to true") {
+        runProgram();
+        // updateBG(highlightedRgbVal);
+      } else if (request.msg == "changed to false") {
         resetProgram();
       }
     });
   }
 
   //listens for tab change, then runs the program based on state of switch
-  chrome.runtime.onMessage.addListener(async function(
+  chrome.runtime.onMessage.addListener(async function (
     request,
     sender,
     sendResponse
@@ -114,14 +118,16 @@ window.onload = async function() {
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
     //redefines these variables when the user scrolls
-    $(document).scroll(function() {
+    $(document).scroll(function () {
       bottomOfScreen = $(window).scrollTop() + window.innerHeight;
       topOfScreen = $(window).scrollTop();
     });
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-      paras = $("p:visible").not("header p, footer p, svg p, div.dockcard_text p");
+      paras = $("p:visible").not(
+        "header p, footer p, div.dockcard_text p"
+      );
       for (var i = 0; i < paras.length; i++) {
         Splitting({ target: paras[i], by: "words" });
       }
@@ -153,20 +159,17 @@ window.onload = async function() {
       for (var i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
 
-        middleOfWordOffsets.push((Math.round($(wordsInSpan[i]).offset().top)) + lineMedians[i]);
+        middleOfWordOffsets.push(
+          Math.round($(wordsInSpan[i]).offset().top) + lineMedians[i]
+        );
 
         if (i == 0 || differences[i] >= lineHeight) {
-
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
-
             lineOffsetsTop.push($(wordsInSpan[i]).offset().top);
 
             lineOffsetsBottom.push($(wordsInSpan[i]).offset().top + lineHeight);
-
           }
-
         }
-
       }
       // chronologically sorts arrays
       lineOffsetsTop.sort((a, b) => {
@@ -175,23 +178,6 @@ window.onload = async function() {
       lineOffsetsBottom.sort((a, b) => {
         return a - b;
       });
-    }
-
-    //finds the number (in px) that is directly inbetween the bottom of each line, and the top of the next line
-    function getInbetweenOffsets() {
-      for (var i = 0; i < lineOffsetsTop.length; i++) {
-        //setting 1st offset to top of word - 10px => only because this algorithm will never find an offset for the first line
-        if (i == 0) {
-          //is this acceptable?
-          inbetweenOffsets.push(lineOffsetsTop[i] - 10);
-        } else {
-          //finds the distance
-          let distanceBetweenEls;
-          distanceBetweenEls = lineOffsetsTop[i] - lineOffsetsBottom[i - 1];
-          //pushes half of distance into array (aka inbetween each line)
-          inbetweenOffsets.push(lineOffsetsBottom[i - 1] + distanceBetweenEls / 2);
-        }
-      }
     }
 
     //keep the highlighted line in the center block of the screen
@@ -203,12 +189,10 @@ window.onload = async function() {
     //highlights words that are inbetween inbetweenOffsets[i] and lineOffsetsBottom[i]
     function highlight() {
       for (var i = 0; i < wordsInSpan.length; i++) {
-
         if (
           middleOfWordOffsets[i] >= lineOffsetsTop[index] &&
           middleOfWordOffsets[i] <= lineOffsetsBottom[index]
         ) {
-
           wordsInSpan[i].setAttribute("line-number", lineNumberAttr);
           $(wordsInSpan[i]).addClass("highlighted");
           updateBG(highlightedRgbVal);
@@ -258,7 +242,11 @@ window.onload = async function() {
         index--;
         lineNumberAttr--;
         highlight();
-      } else if (e.keyCode == 40 && index <= lineOffsetsTop.length && lineNumberAttr <= lineOffsetsTop.length) {
+      } else if (
+        e.keyCode == 40 &&
+        index <= lineOffsetsTop.length &&
+        lineNumberAttr <= lineOffsetsTop.length
+      ) {
         index++;
         lineNumberAttr++;
         highlight();
@@ -269,14 +257,14 @@ window.onload = async function() {
     $(document).keyup(handleKeyPress);
 
     //prevents arrowkeys from scrolling
-    $(document).keydown(function(e) {
+    $(document).keydown(function (e) {
       if (e.keyCode == 38 || e.keyCode == 40) {
         e.preventDefault();
       }
     });
 
     //gets new offset to calculate line on window resize
-    $(window).resize(function() {
+    $(window).resize(function () {
       lineOffsetsTop = [];
       lineOffsetsBottom = [];
       middleOfWordOffsets = [];
