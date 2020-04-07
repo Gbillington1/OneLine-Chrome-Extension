@@ -17,5 +17,8 @@
         "default_popup": "popup.html",
         "default_title": "One-Line Reading Aid"
     },
+    "icons": {
+        "128": "icon128.png" 
+    },
     "manifest_version": 2
 }

@@ -24,7 +24,6 @@ function updateBG(valueToSet) {
 //globals
 var index = 0;
 var paraIndex = 0;
-var lineNumberAttr = 0;
 var wordsInSpan;
 var line = [];
 var paras;
@@ -41,6 +40,8 @@ var differences = [];
 var lineMedians = [];
 var onOffVal;
 var highlightedRgbVal;
+var inputs;
+var totalLengthOfInputs = 0;
 
 chrome.runtime.onMessage.addListener(async function (
   request,
@@ -101,6 +102,8 @@ window.onload = async function () {
     sendResponse
   ) {
     if (request.msg == "tab changed") {
+      inputs = [];
+      totalLengthOfInputs = 0;
       onOffVal = await getOnOffValue();
       highlightedRgbVal = await getRBGValue();
       updateBG(highlightedRgbVal);
@@ -125,9 +128,7 @@ window.onload = async function () {
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-      paras = $("p:visible").not(
-        "header p, footer p, div.dockcard_text p"
-      );
+      paras = $("p:visible").not("header p, footer p, div.dockcard_text p");
       for (var i = 0; i < paras.length; i++) {
         Splitting({ target: paras[i], by: "words" });
       }
@@ -151,7 +152,9 @@ window.onload = async function () {
           previousWordTop = $(wordsInSpan[0]).offset().top;
         }
         //pushes the difference between the last word, and the current one (can detect line breaks/special characters like sub/superscripts)
-        differences.push(Math.abs(currentWordTop - previousWordTop));
+        differences.push(
+          Math.round(Math.abs(currentWordTop - previousWordTop))
+        );
 
         lineMedians.push(Math.round((currentWordBottom - currentWordTop) / 2));
       }
@@ -193,7 +196,6 @@ window.onload = async function () {
           middleOfWordOffsets[i] >= lineOffsetsTop[index] &&
           middleOfWordOffsets[i] <= lineOffsetsBottom[index]
         ) {
-          wordsInSpan[i].setAttribute("line-number", lineNumberAttr);
           $(wordsInSpan[i]).addClass("highlighted");
           updateBG(highlightedRgbVal);
           // $(".highlighted").css("background-color", highlightedRgbVal);
@@ -238,18 +240,17 @@ window.onload = async function () {
 
     //see below
     function handleKeyPress(e) {
-      if (e.keyCode == 38 && index > 0 && lineNumberAttr > 0) {
-        index--;
-        lineNumberAttr--;
-        highlight();
-      } else if (
-        e.keyCode == 40 &&
-        index <= lineOffsetsTop.length &&
-        lineNumberAttr <= lineOffsetsTop.length
-      ) {
-        index++;
-        lineNumberAttr++;
-        highlight();
+      if (!$(e.target).is("input, textarea")) {
+        if (e.keyCode == 38 && index > 0) {
+          index--;
+          highlight();
+        } else if (
+          e.keyCode == 40 &&
+          index <= lineOffsetsTop.length
+        ) {
+          index++;
+          highlight();
+        }
       }
     }
 
@@ -258,9 +259,15 @@ window.onload = async function () {
 
     //prevents arrowkeys from scrolling
     $(document).keydown(function (e) {
-      if (e.keyCode == 38 || e.keyCode == 40) {
-        e.preventDefault();
+      if (!$(e.target).is("input, textarea")) {
+        if (e.keyCode == 38 || e.keyCode == 40) {
+          e.preventDefault();
+        }
       }
+      //trigger on f9
+      // if (e.keyCode == 120) {
+      //   setup();
+      // }
     });
 
     //gets new offset to calculate line on window resize
