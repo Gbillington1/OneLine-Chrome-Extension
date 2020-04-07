@@ -9,225 +9,12 @@
       href="https://fonts.googleapis.com/css?family=Roboto:400&display=swap"
       rel="stylesheet"
     />
-    <style>
-      /* cyrillic-ext */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu72xKOzY.woff2)
-            format("woff2");
-        unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF,
-          U+A640-A69F, U+FE2E-FE2F;
-      }
-      /* cyrillic */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu5mxKOzY.woff2)
-            format("woff2");
-        unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-      }
-      /* greek-ext */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu7mxKOzY.woff2)
-            format("woff2");
-        unicode-range: U+1F00-1FFF;
-      }
-      /* greek */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4WxKOzY.woff2)
-            format("woff2");
-        unicode-range: U+0370-03FF;
-      }
-      /* vietnamese */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu7WxKOzY.woff2)
-            format("woff2");
-        unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169,
-          U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
-      }
-      /* latin-ext */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu7GxKOzY.woff2)
-            format("woff2");
-        unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB,
-          U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-      }
-      /* latin */
-      @font-face {
-        font-family: "Roboto";
-        font-style: normal;
-        font-weight: 400;
-        font-display: swap;
-        src: local("Roboto"), local("Roboto-Regular"),
-          url(https://fonts.gstatic.com/s/roboto/v20/KFOmCnqEu92Fr1Mu4mxK.woff2)
-            format("woff2");
-        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
-          U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193,
-          U+2212, U+2215, U+FEFF, U+FFFD;
-      }
-      html,
-      body {
-        width: 300px;
-        height: 465px;
-        background-color: #f6f4f7;
-        margin: 0 auto;
-        font-family: "Roboto", sans-serif;
-        letter-spacing: 1px;
-      }
-
-      h1 {
-        color: #30b37a;
-        text-align: center;
-        font-size: 25px;
-        padding: 10px 0px;
-      }
-
-      .optionsWrap {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      }
-
-      .switchGroup {
-        flex-direction: row;
-      }
-
-      .colorGroup {
-        flex-direction: column;
-      }
-
-      .btnWrapper {
-        text-align: center;
-        padding: 10px 0 0 0;
-      }
-
-      .colorBtn,
-      .recommendedBtn {
-        width: 60px;
-        height: 30px;
-        margin: 0 3px;
-
-        border: 1px solid #9e9e9e;
-        border-radius: 50px;
-      }
-
-      button:focus {
-        outline: 0;
-      }
-
-      #orangeBtn {
-        background-color: #eddd6e;
-      }
-
-      #peachBtn {
-        background-color: #edd1b0;
-      }
-
-      #yellowBtn {
-        background-color: #f8fd89;
-      }
-
-      #favorites {
-        padding-top: 165px;
-        text-align: center;
-      }
-
-      #recommended {
-        padding-top: 10px;
-        text-align: center;
-      }
-
-      .settingHeader {
-        font-size: 16px;
-        display: inline-block;
-        margin: 0;
-        padding: 10px 0 0 0;
-      }
-
-      .switch {
-        height: 0;
-        width: 0;
-        visibility: hidden;
-      }
-
-      label {
-        cursor: pointer;
-        text-indent: -9999px;
-        width: 40px;
-        height: 20px;
-        background: lightgray;
-        display: inline-block;
-        border-radius: 100px;
-        position: relative;
-      }
-
-      label:after {
-        content: "";
-        position: absolute;
-        top: 1px;
-        left: 1px;
-        width: 17.5px;
-        height: 17.5px;
-        background: #fff;
-        border-radius: 90px;
-        transition: 0.3s;
-      }
-
-      input:checked + label {
-        background: #26cf86;
-      }
-
-      input:checked + label:after {
-        left: calc(100% - 1px);
-        transform: translateX(-100%);
-      }
-
-      label:active:after {
-        width: 20px;
-      }
-      #colorPicker {
-        border-radius: 50%;
-      }
-
-      #colorPicker {
-        position: absolute;
-        top: 225px;
-      }
-    </style>
-
     <script src="jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="popupstyle.css" />
   </head>
 
   <body>
-    <h1>OneLine</h1>
+    <img id="imgHeader" src="OneLineHeader.png" width="250px" height="84px" />
     <hr width="88%" />
     <div class="optionsWrap">
       <div class="switchGroup">
@@ -248,7 +35,9 @@
           <button class="recommendedBtn" id="yellowBtn"></button>
         </div>
       </div>
-      <canvas width="150" height="150" id="colorPicker"></canvas>
+      <div id="canvasWrapper">
+        <canvas width="150" height="150" id="colorPicker"></canvas>
+      </div>
       <div class="colorGroup" id="favorites">
         <h3 class="settingHeader">Favorites</h3>
         <div id="small">
@@ -262,7 +51,10 @@
         </div>
       </div>
     </div>
-
+    <div id="credits">
+      <p class="creditP">Created by <a target="_blank" href="https://tiktok.com/@grahambillington">Graham Billington</a></p>
+      <p class="creditP">Artwork by <a target="_blank" href="https://www.instagram.com/theinternetismyartschool/">Lilly Gaudiano</a></p>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
