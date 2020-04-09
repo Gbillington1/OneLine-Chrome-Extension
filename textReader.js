@@ -24,7 +24,7 @@ function updateBG(valueToSet) {
 //globals
 var index = 0;
 var paraIndex = 0;
-var wordsInSpan;
+var wordsInSpan = [];
 var line = [];
 var paras;
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -33,7 +33,6 @@ var hasRan = false;
 var lineHeight;
 var currentWord;
 var previousWord;
-var middleOfWordOffsets = [];
 var lineOffsetsTop = [];
 var lineOffsetsBottom = [];
 var differences = [];
@@ -130,8 +129,9 @@ window.onload = async function () {
     function wrapInSpans() {
       paras = $("p:visible").not("header p, footer p, div.dockcard_text p");
       for (var i = 0; i < paras.length; i++) {
-        Splitting({ target: paras[i], by: "words" });
+        Splitting({ target: paras[paraIndex], by: "words" });
       }
+      $("p span.whitespace").attr("paragraph", paraIndex);
       //puts all span elements into an array
       wordsInSpan = $("p span.word, p span.whitespace");
     }
@@ -162,8 +162,9 @@ window.onload = async function () {
       for (var i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
 
-        middleOfWordOffsets.push(
-          Math.round($(wordsInSpan[i]).offset().top) + lineMedians[i]
+        wordsInSpan[i].setAttribute(
+          "middleOffset",
+          $(wordsInSpan[i]).offset().top + lineMedians[i]
         );
 
         if (i == 0 || differences[i] >= lineHeight) {
@@ -193,8 +194,10 @@ window.onload = async function () {
     function highlight() {
       for (var i = 0; i < wordsInSpan.length; i++) {
         if (
-          middleOfWordOffsets[i] >= lineOffsetsTop[index] &&
-          middleOfWordOffsets[i] <= lineOffsetsBottom[index]
+          wordsInSpan[i].getAttribute("middleOffset") >=
+            lineOffsetsTop[index] &&
+          wordsInSpan[i].getAttribute("middleOffset") <=
+            lineOffsetsBottom[index]
         ) {
           $(wordsInSpan[i]).addClass("highlighted");
           updateBG(highlightedRgbVal);
@@ -211,7 +214,7 @@ window.onload = async function () {
           $(wordsInSpan[i]).removeClass("highlighted");
         }
       }
-      // splitNextPara();
+      splitNextPara();
     }
 
     //Optimization
@@ -220,10 +223,28 @@ window.onload = async function () {
       var spanIndex = wordsInSpan.length - 1;
       line = $(".highlighted");
       //need to figure out a way to decrease the paraIndex when line moves into previous paragraph - do I need to do this?
-      if ($(line[0]).offset().top == $(wordsInSpan[spanIndex]).offset().top) {
+      if (
+        line[0].getAttribute("middleOffset") ==
+        wordsInSpan[spanIndex].getAttribute("middleOffset")
+      ) {
         paraIndex++;
-        Splitting({ target: paras[paraIndex], by: "words" });
-        wordsInSpan = $("p span.word, p span.whitespace");
+        Splitting({ key: paraIndex, target: paras[paraIndex], by: "words" });
+        var attr = $("p span.whitespace").attr("paragrah")
+        if (typeof attr == typeof undefined) {
+          $("p span.whitespace").attr("paragraph", paraIndex);
+        }
+        newWords =
+          'p span.word[style="---' +
+          paraIndex +
+          'word-index:undefined;"], p span.whitespace[paragraph="' +
+          paraIndex +
+          '"]';
+        var jQ = $(newWords);
+        console.log(jQ)
+        for (var i = 0; i < newWords.length; i++) {
+          wordsInSpan.push(jQ[i]);
+        }
+        console.log(wordsInSpan);
         getLineOffsets();
       }
     }
@@ -244,10 +265,7 @@ window.onload = async function () {
         if (e.keyCode == 38 && index > 0) {
           index--;
           highlight();
-        } else if (
-          e.keyCode == 40 &&
-          index <= lineOffsetsTop.length
-        ) {
+        } else if (e.keyCode == 40 && index <= lineOffsetsTop.length) {
           index++;
           highlight();
         }
@@ -274,7 +292,6 @@ window.onload = async function () {
     $(window).resize(function () {
       lineOffsetsTop = [];
       lineOffsetsBottom = [];
-      middleOfWordOffsets = [];
       lineMedians = [];
       differences = [];
       getLineOffsets();
@@ -294,7 +311,6 @@ window.onload = async function () {
     $(document).off();
     lineOffsetsTop = [];
     lineOffsetsBottom = [];
-    middleOfWordOffsets = [];
     lineMedians = [];
     differences = [];
     line = [];
