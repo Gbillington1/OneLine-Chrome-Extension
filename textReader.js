@@ -132,11 +132,10 @@ window.onload = async function () {
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
       paras = $("p:visible").not("header p, footer p, div.dockcard_text p");
-      for (var i = 0; i < paras.length; i++) {
-        Splitting({ target: paras[paraIndex], by: "words" });
-      }
+      Splitting({ target: paras[paraIndex], by: "words" });
+      
       //puts all span elements into an array
-      wordsInSpan = $("p span.word, p span.whitespace");
+      wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
       for (var i = 0; i < wordsInSpan.length; i++) {
         $(wordsInSpan[i]).attr("paragraph", paraIndex);
       }
@@ -144,7 +143,15 @@ window.onload = async function () {
 
     //creates two arrays: one is full of offsets from the top of element, second is offsets from the bottom of the element
     function getLineOffsets() {
+      lineMedians = [];
+      differences = [];
+      lineOffsetsTop = [];
+      lineOffsetsBottom = [];
       for (var i = 0; i < wordsInSpan.length; i++) {
+        //give spans paragraph ##
+        // if (!wordsInSpan[i].hasAttribute("paragraph")) {
+        //   $(wordsInSpan[i]).attr("paragraph", paraIndex);
+        // }
         //gets previous and current word offsets
         lineHeight = Math.round($(wordsInSpan[i]).outerHeight());
         currentWordTop = $(wordsInSpan[i]).offset().top;
@@ -152,6 +159,7 @@ window.onload = async function () {
         if (i > 0) {
           previousWordTop = $(wordsInSpan[i - 1]).offset().top;
         } else {
+          previousWord = $(wordsInSpan[0]).offset;
           previousWordTop = $(wordsInSpan[0]).offset().top;
         }
         //pushes the difference between the last word, and the current one (can detect line breaks/special characters like sub/superscripts)
@@ -161,10 +169,10 @@ window.onload = async function () {
 
         lineMedians.push(Math.round((currentWordBottom - currentWordTop) / 2));
       }
-      console.log(lineMedians)
+
       for (var i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
-
+        // console.log(wordsInSpan[i])
         if (!wordsInSpan[i].hasAttribute("middleOffset")) {
           $(wordsInSpan[i]).attr(
             "middleOffset",
@@ -175,7 +183,6 @@ window.onload = async function () {
         if (i == 0 || differences[i] >= lineHeight) {
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
             lineOffsetsTop.push($(wordsInSpan[i]).offset().top);
-
             lineOffsetsBottom.push($(wordsInSpan[i]).offset().top + lineHeight);
           }
         }
@@ -206,7 +213,7 @@ window.onload = async function () {
         ) {
           $(wordsInSpan[i]).addClass("highlighted");
           updateBG(highlightedRgbVal);
-          
+
           //if line is outside of view, scroll to it
           if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
             keepLineInWindow();
@@ -218,46 +225,12 @@ window.onload = async function () {
           $(wordsInSpan[i]).removeClass("highlighted");
         }
       }
-      var currentLine = $(".highlighted");
-      lines.push(currentLine);
-      optimize();
-    }
-    
-    //Optimization
-    function getNewWords() {
-      for (var i = 0; i < wordsInSpan.length; i++) {
-        if (!wordsInSpan[i].hasAttribute("paragraph")) {
-          $(wordsInSpan[i]).attr("paragraph", paraIndex);
-          // newWords.push(wordsInSpan[i]);
-        }
-      }
-    }
-    
-    //When user gets to last word in current paragraph => increase paraIndex by 1 => split by paras[paraIndex]the end of the wordsInSpan array
-    function optimize() {
-      var spanIndex = wordsInSpan.length - 1;
-      console.log(lines)
-      //need to figure out a way to decrease the paraIndex when line moves into previous paragraph - do I need to do this?
-      // If selected line is the last line...
-      console.log($(line[0]).attr("middleOffset"), $(wordsInSpan[spanIndex]).attr("middleOffset"))
-      if (
-        $(line[0]).attr("middleOffset") >=
-        lineOffsetsTop[index] && 
-        $(line[0]).attr("middleOffset") <=
-        lineOffsetsBottom[index]
-        ) {
-          console.log("optimizing")
-        paraIndex++;
-        Splitting({ key: paraIndex, target: paras[paraIndex], by: "words" });
-        wordsInSpan = $("p span.word, p span.whitespace");
-        getNewWords();
-        getLineOffsets();
-        // newWords = [];
-      }
     }
 
     //whole program in one function
     function setup() {
+      index = 0;
+      $("p span.word.highlighted, p span.whitespace.highlighted").removeClass("highlighted")
       wrapInSpans();
       getLineOffsets();
       highlight();
@@ -268,13 +241,20 @@ window.onload = async function () {
 
     //see below
     function handleKeyPress(e) {
+      console.log(index, lineOffsetsTop.length);
       if (!$(e.target).is("input, textarea")) {
         if (e.keyCode == 38 && index > 0) {
           index--;
           highlight();
-        } else if (e.keyCode == 40 && index <= lineOffsetsTop.length) {
+        } else if (e.keyCode == 40 && index < lineOffsetsTop.length - 1) {
           index++;
           highlight();
+        } else if (e.keyCode == 40 && index == lineOffsetsTop.length - 1 && paraIndex < paras.length - 1) {
+          paraIndex++;
+          setup();
+        } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
+          paraIndex--;
+          setup();
         }
       }
     }
