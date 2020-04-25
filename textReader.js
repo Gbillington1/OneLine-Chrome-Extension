@@ -133,7 +133,6 @@ window.onload = async function () {
     function wrapInSpans() {
       paras = $("p:visible").not("header p, footer p, div.dockcard_text p");
       Splitting({ target: paras[paraIndex], by: "words" });
-      
       //puts all span elements into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
       for (var i = 0; i < wordsInSpan.length; i++) {
@@ -172,7 +171,6 @@ window.onload = async function () {
 
       for (var i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
-        // console.log(wordsInSpan[i])
         if (!wordsInSpan[i].hasAttribute("middleOffset")) {
           $(wordsInSpan[i]).attr(
             "middleOffset",
@@ -239,9 +237,8 @@ window.onload = async function () {
     //actually run the program
     setup();
 
-    //see below
+    //see keyup handler
     function handleKeyPress(e) {
-      console.log(index, lineOffsetsTop.length);
       if (!$(e.target).is("input, textarea")) {
         if (e.keyCode == 38 && index > 0) {
           index--;
@@ -251,10 +248,15 @@ window.onload = async function () {
           highlight();
         } else if (e.keyCode == 40 && index == lineOffsetsTop.length - 1 && paraIndex < paras.length - 1) {
           paraIndex++;
+          index++;
           setup();
         } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
           paraIndex--;
-          setup();
+          wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
+          getLineOffsets();
+          index = lineOffsetsTop.length - 1;
+          $("p span.word.highlighted, p span.whitespace.highlighted").removeClass("highlighted")
+          highlight();
         }
       }
     }
