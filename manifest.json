@@ -1,7 +1,7 @@
 {
     "name": "OneLine",
     "version": "1.0",
-    "description": "OneLine provides a simple way to help all readers while they browse the web.",
+    "description": "OneLine provides a simple way to help all users read while they browse the web.",
     "permissions": ["activeTab", "declarativeContent", "storage"],
     "background": {
         "scripts": ["background.js"],
