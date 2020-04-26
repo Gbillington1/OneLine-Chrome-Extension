@@ -132,7 +132,10 @@ window.onload = async function () {
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
       paras = $("p:visible").not("header p, footer p, div.dockcard_text p");
-      Splitting({ target: paras[paraIndex], by: "words" });
+      //only split paragraph that haven't been split
+      if (!$(paras[paraIndex]).hasClass("splitting")) {
+        Splitting({ target: paras[paraIndex], by: "words" });
+      }
       //puts all span elements into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
       for (var i = 0; i < wordsInSpan.length; i++) {
@@ -147,10 +150,6 @@ window.onload = async function () {
       lineOffsetsTop = [];
       lineOffsetsBottom = [];
       for (var i = 0; i < wordsInSpan.length; i++) {
-        //give spans paragraph ##
-        // if (!wordsInSpan[i].hasAttribute("paragraph")) {
-        //   $(wordsInSpan[i]).attr("paragraph", paraIndex);
-        // }
         //gets previous and current word offsets
         lineHeight = Math.round($(wordsInSpan[i]).outerHeight());
         currentWordTop = $(wordsInSpan[i]).offset().top;
@@ -162,21 +161,17 @@ window.onload = async function () {
           previousWordTop = $(wordsInSpan[0]).offset().top;
         }
         //pushes the difference between the last word, and the current one (can detect line breaks/special characters like sub/superscripts)
-        differences.push(
-          Math.round(Math.abs(currentWordTop - previousWordTop))
-        );
+        differences.push(Math.abs(currentWordTop - previousWordTop));
 
-        lineMedians.push(Math.round((currentWordBottom - currentWordTop) / 2));
+        lineMedians.push((currentWordBottom - currentWordTop) / 2);
       }
 
       for (var i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
-        if (!wordsInSpan[i].hasAttribute("middleOffset")) {
-          $(wordsInSpan[i]).attr(
-            "middleOffset",
-            $(wordsInSpan[i]).offset().top + lineMedians[i]
-          );
-        }
+        $(wordsInSpan[i]).attr(
+          "middleOffset",
+          $(wordsInSpan[i]).offset().top + lineMedians[i]
+        );
 
         if (i == 0 || differences[i] >= lineHeight) {
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
@@ -227,8 +222,9 @@ window.onload = async function () {
 
     //whole program in one function
     function setup() {
-      index = 0;
-      $("p span.word.highlighted, p span.whitespace.highlighted").removeClass("highlighted")
+      $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
+        "highlighted"
+      );
       wrapInSpans();
       getLineOffsets();
       highlight();
@@ -246,16 +242,23 @@ window.onload = async function () {
         } else if (e.keyCode == 40 && index < lineOffsetsTop.length - 1) {
           index++;
           highlight();
-        } else if (e.keyCode == 40 && index == lineOffsetsTop.length - 1 && paraIndex < paras.length - 1) {
+        } else if (
+          e.keyCode == 40 &&
+          index == lineOffsetsTop.length - 1 &&
+          paraIndex < paras.length - 1
+        ) {
           paraIndex++;
           index++;
+          index = 0;
           setup();
         } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
           paraIndex--;
           wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
           getLineOffsets();
           index = lineOffsetsTop.length - 1;
-          $("p span.word.highlighted, p span.whitespace.highlighted").removeClass("highlighted")
+          $(
+            "p span.word.highlighted, p span.whitespace.highlighted"
+          ).removeClass("highlighted");
           highlight();
         }
       }
@@ -271,32 +274,19 @@ window.onload = async function () {
           e.preventDefault();
         }
       }
-      //trigger on f9
-      // if (e.keyCode == 120) {
-      //   setup();
-      // }
     });
 
     //gets new offset to calculate line on window resize
-    $(window).resize(function () {
-      lineOffsetsTop = [];
-      lineOffsetsBottom = [];
-      lineMedians = [];
-      differences = [];
-      getLineOffsets();
-      highlight();
-    });
+    $(window).resize(setup);
 
     hasRan = true;
   }
 
   //what do I put in here to stop the program from running??
   function resetProgram() {
-    if (hasRan) {
-      for (var i = 0; i < wordsInSpan.length; i++) {
-        $(wordsInSpan[i]).removeClass("highlighted");
-      }
-    }
+    $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
+      "highlighted"
+    );
     $(document).off();
     lineOffsetsTop = [];
     lineOffsetsBottom = [];

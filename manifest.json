@@ -1,7 +1,7 @@
 {
-    "name": "OneLine Reading Aid",
+    "name": "OneLine",
     "version": "1.0",
-    "description": "Line-by-line reading assist for Google Chrome",
+    "description": "OneLine provides a simple way to help all readers while they browse the web.",
     "permissions": ["activeTab", "declarativeContent", "storage"],
     "background": {
         "scripts": ["background.js"],
@@ -15,7 +15,7 @@
     }],
     "browser_action": {
         "default_popup": "popup.html",
-        "default_title": "One-Line Reading Aid"
+        "default_title": "OneLine"
     },
     "icons": {
         "128": "icon128.png" 
