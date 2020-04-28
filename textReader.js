@@ -161,9 +161,11 @@ window.onload = async function () {
           previousWordTop = $(wordsInSpan[0]).offset().top;
         }
         //pushes the difference between the last word, and the current one (can detect line breaks/special characters like sub/superscripts)
-        differences.push(Math.abs(currentWordTop - previousWordTop));
+        differences.push(
+          Math.round(Math.abs(currentWordTop - previousWordTop))
+        );
 
-        lineMedians.push((currentWordBottom - currentWordTop) / 2);
+        lineMedians.push(Math.round((currentWordBottom - currentWordTop) / 2));
       }
 
       for (var i = 0; i < lineMedians.length; i++) {

@@ -1,7 +1,7 @@
 {
-    "name": "OneLine",
+    "name": "OneLine (Beta)",
     "version": "1.0",
-    "description": "OneLine provides a simple way to help all users read while they browse the web.",
+    "description": "OneLine highlights a single line to focus your reading.",
     "permissions": ["activeTab", "declarativeContent", "storage"],
     "background": {
         "scripts": ["background.js"],
@@ -13,6 +13,7 @@
         "matches": ["http://*/*", "https://*/*"],
         "exclude_globs": ["*://www.google.com/search?*"]
     }],
+    "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
     "browser_action": {
         "default_popup": "popup.html",
         "default_title": "OneLine"
