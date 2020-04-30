@@ -23,6 +23,7 @@ ga("create", "UA-154659029-2", "auto", "Popup"); // Enter your GA identifier
 ga("Popup.set", "checkProtocolTask", function () {}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("Popup.require", "displayfeatures");
 
+
 //get current bool state of switch
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
 var highlightedRgbVal;

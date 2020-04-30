@@ -26,13 +26,24 @@ ga("send", "pageview", "/OneLineExtensionBackground"); // Specify the virtual pa
 
 //when installed, set var to true
 var isInstalled = false;
-chrome.runtime.onInstalled.addListener(function () {
+chrome.runtime.onInstalled.addListener(function (details) {
   isInstalled = true;
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     chrome.tabs.sendMessage(tabs[0].id, { msg: "Extension installed" });
     chrome.storage.sync.set({ highlightedSwitch: true });
     chrome.storage.sync.set({ highlightedRgbVal: "yellow" });
   });
+
+  if ((details.reason == "install")) {
+    chrome.tabs.create({
+      url: 'http://oneline.grahambillington.com/index.php/home/thankyou/',
+      active: true
+    });
+  } else if (details.reason == "update") {
+    //redirect to update page
+  }
+
+  return false;
 });
 
 //listen for initiate message, then send message if isInstalled == true
