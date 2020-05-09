@@ -85,7 +85,7 @@ window.onload = async function () {
       }
     });
   } else {
-    chrome.runtime.onMessage.addListener(function (
+    chrome.runtime.onMessage.addListener(async function (
       request,
       sender,
       sendResponse
@@ -95,6 +95,12 @@ window.onload = async function () {
         // updateBG(highlightedRgbVal);
       } else if (request.msg == "changed to false") {
         resetProgram();
+      } else if (request.msg == "RBG changed") {
+        onOffVal = await getOnOffValue();
+        if (onOffVal) {
+          highlightedRgbVal = await getRBGValue();
+          updateBG(highlightedRgbVal);
+        }
       }
     });
   }

@@ -36,7 +36,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
   if ((details.reason == "install")) {
     chrome.tabs.create({
-      url: 'http://oneline.grahambillington.com/index.php/home/thankyou/',
+      url: 'http://oneline.grahambillington.com/thankyou/',
       active: true
     });
   } else if (details.reason == "update") {
