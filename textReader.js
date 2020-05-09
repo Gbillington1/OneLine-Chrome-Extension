@@ -47,23 +47,11 @@ var currentWordTop;
 var currentWordBottom;
 var previousWordTop;
 
-chrome.runtime.onMessage.addListener(async function (
-  request,
-  sender,
-  sendResponse
-) {
-  if (request.msg == "Extension installed") {
-    onOffVal = await getOnOffValue();
-    highlightedRgbVal = await getRBGValue();
-    updateBG(highlightedRgbVal);
-  }
-});
-
 window.onload = async function () {
   //get current state of switch
   onOffVal = await getOnOffValue();
   // highlightedRgbVal = await getRBGValue();
-
+  
   //logic to run program when switch is on/off/changed
   if (onOffVal) {
     runProgram();
@@ -71,11 +59,11 @@ window.onload = async function () {
       request,
       sender,
       sendResponse
-    ) {
-      if (request.msg == "changed to true") {
-        runProgram();
-      } else if (request.msg == "changed to false") {
-        resetProgram();
+      ) {
+        if (request.msg == "changed to true") {
+          runProgram();
+        } else if (request.msg == "changed to false") {
+          resetProgram();
       } else if (request.msg == "RBG changed") {
         onOffVal = await getOnOffValue();
         if (onOffVal) {

@@ -29,9 +29,8 @@ var isInstalled = false;
 chrome.runtime.onInstalled.addListener(function (details) {
   isInstalled = true;
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { msg: "Extension installed" });
     chrome.storage.sync.set({ highlightedSwitch: true });
-    chrome.storage.sync.set({ highlightedRgbVal: "yellow" });
+    chrome.storage.sync.set({ highlightedRgbVal: "rgb(41, 255, 77)" });
   });
 
   if ((details.reason == "install")) {
