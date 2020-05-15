@@ -31,6 +31,7 @@ var paras = [];
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
 var topOfScreen = $(window).scrollTop();
 var hasRan = false;
+var checkedForEmptyParas = false;
 var lineHeight;
 var currentWord;
 var previousWord;
@@ -42,8 +43,6 @@ var newWords = [];
 var lines = [];
 var onOffVal;
 var highlightedRgbVal;
-var inputs;
-var totalLengthOfInputs = 0;
 var currentWordTop;
 var currentWordBottom;
 var previousWordTop;
@@ -101,8 +100,6 @@ window.onload = async function () {
     sendResponse
   ) {
     if (request.msg == "tab changed") {
-      inputs = [];
-      totalLengthOfInputs = 0;
       onOffVal = await getOnOffValue();
       highlightedRgbVal = await getRBGValue();
       updateBG(highlightedRgbVal);
@@ -117,6 +114,7 @@ window.onload = async function () {
   });
 
   async function runProgram() {
+    checkedForEmptyParas = false;
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
     //redefines these variables when the user scrolls
@@ -131,9 +129,12 @@ window.onload = async function () {
       allParas = $("p:visible").not("header p, footer p, div.dockcard_text p");
     
       //if any of the paras have no text in them, dont add to paras array
-      for (var i = 0; i < allParas.length; i++) {
-        if ($(allParas[i]).text().trim().length) {
-          paras.push($(allParas[i]));
+      if (checkedForEmptyParas == false) {
+        for (var i = 0; i < allParas.length; i++) {
+          if ($(allParas[i]).text().trim().length) {
+            paras.push($(allParas[i]));
+            checkedForEmptyParas = true;
+          }
         }
       }
 
