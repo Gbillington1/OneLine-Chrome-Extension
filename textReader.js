@@ -26,7 +26,8 @@ var index = 0;
 var paraIndex = 0;
 var wordsInSpan = [];
 var line = [];
-var paras;
+var allParas;
+var paras = [];
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
 var topOfScreen = $(window).scrollTop();
 var hasRan = false;
@@ -114,6 +115,7 @@ window.onload = async function () {
       }
     }
   });
+
   async function runProgram() {
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
@@ -125,7 +127,16 @@ window.onload = async function () {
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-      paras = $("p:visible").not("header p, footer p, div.dockcard_text p");
+      //get all paragraphs
+      allParas = $("p:visible").not("header p, footer p, div.dockcard_text p");
+    
+      //if any of the paras have no text in them, dont add to paras array
+      for (var i = 0; i < allParas.length; i++) {
+        if ($(allParas[i]).text().trim().length) {
+          paras.push($(allParas[i]));
+        }
+      }
+
       //only split paragraph that haven't been split
       if (!$(paras[paraIndex]).hasClass("splitting")) {
         Splitting({ target: paras[paraIndex], by: "words" });
