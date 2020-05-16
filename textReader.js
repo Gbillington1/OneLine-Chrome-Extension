@@ -21,6 +21,15 @@ function updateBG(valueToSet) {
   document.documentElement.style.setProperty("--background", valueToSet);
 }
 
+function textColor(bgColor) {
+  var r = bgColor[0],
+    g = bgColor[1],
+    b = bgColor[2];
+  var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
+  console.log(yiq)
+  return (yiq >= 135) ? 'black' : 'white';
+}
+
 //globals
 var index = 0;
 var paraIndex = 0;
@@ -46,12 +55,16 @@ var highlightedRgbVal;
 var currentWordTop;
 var currentWordBottom;
 var previousWordTop;
+var colorToChangeTo;
+var currentHighlighter
+var originalTextColor;
 
 window.onload = async function () {
+
   //get current state of switch
   onOffVal = await getOnOffValue();
   // highlightedRgbVal = await getRBGValue();
-  
+
   //logic to run program when switch is on/off/changed
   if (onOffVal) {
     runProgram();
@@ -59,11 +72,11 @@ window.onload = async function () {
       request,
       sender,
       sendResponse
-      ) {
-        if (request.msg == "changed to true") {
-          runProgram();
-        } else if (request.msg == "changed to false") {
-          resetProgram();
+    ) {
+      if (request.msg == "changed to true") {
+        runProgram();
+      } else if (request.msg == "changed to false") {
+        resetProgram();
       } else if (request.msg == "RBG changed") {
         onOffVal = await getOnOffValue();
         if (onOffVal) {
@@ -80,7 +93,6 @@ window.onload = async function () {
     ) {
       if (request.msg == "changed to true") {
         runProgram();
-        // updateBG(highlightedRgbVal);
       } else if (request.msg == "changed to false") {
         resetProgram();
       } else if (request.msg == "RBG changed") {
@@ -103,6 +115,8 @@ window.onload = async function () {
       onOffVal = await getOnOffValue();
       highlightedRgbVal = await getRBGValue();
       updateBG(highlightedRgbVal);
+      currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+      colorToChangeTo = textColor(currentHighlighter);
       if (onOffVal) {
         if (hasRan == false) {
           runProgram();
@@ -114,9 +128,30 @@ window.onload = async function () {
   });
 
   async function runProgram() {
+
+
     checkedForEmptyParas = false;
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
+    currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+    colorToChangeTo = textColor(currentHighlighter);
+
+    chrome.runtime.onMessage.addListener(async function (
+      request,
+      sender,
+      sendResponse
+    ) {
+      if (request.msg == "RBG changed") {
+        $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
+          "highlighted"
+        ).css('color', originalTextColor);
+        highlightedRgbVal = await getRBGValue();
+        currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+        colorToChangeTo = textColor(currentHighlighter);
+        highlight();
+      }
+    });
+
     //redefines these variables when the user scrolls
     $(document).scroll(function () {
       bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -127,7 +162,7 @@ window.onload = async function () {
     function wrapInSpans() {
       //get all paragraphs
       allParas = $("p:visible").not("header p, footer p, div.dockcard_text p");
-    
+
       //if any of the paras have no text in them, dont add to paras array
       if (checkedForEmptyParas == false) {
         for (var i = 0; i < allParas.length; i++) {
@@ -208,11 +243,15 @@ window.onload = async function () {
       for (var i = 0; i < wordsInSpan.length; i++) {
         if (
           wordsInSpan[i].getAttribute("middleOffset") >=
-            lineOffsetsTop[index] &&
+          lineOffsetsTop[index] &&
           wordsInSpan[i].getAttribute("middleOffset") <=
-            lineOffsetsBottom[index]
+          lineOffsetsBottom[index]
         ) {
+          originalTextColor = $(wordsInSpan[i]).css('color');
+
           $(wordsInSpan[i]).addClass("highlighted");
+          console.log(colorToChangeTo)
+          $(wordsInSpan[i]).css('color', colorToChangeTo);
           updateBG(highlightedRgbVal);
 
           //if line is outside of view, scroll to it
@@ -224,6 +263,7 @@ window.onload = async function () {
           //remove highlight if above statement isn't true
         } else {
           $(wordsInSpan[i]).removeClass("highlighted");
+          $(wordsInSpan[i]).css('color', originalTextColor);
         }
       }
     }
@@ -232,7 +272,7 @@ window.onload = async function () {
     function setup() {
       $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
         "highlighted"
-      );
+      ).css('color', originalTextColor);
       wrapInSpans();
       getLineOffsets();
       highlight();
@@ -266,7 +306,7 @@ window.onload = async function () {
           index = lineOffsetsTop.length - 1;
           $(
             "p span.word.highlighted, p span.whitespace.highlighted"
-          ).removeClass("highlighted");
+          ).removeClass("highlighted").css('color', originalTextColor);
           highlight();
         }
       }
@@ -294,7 +334,7 @@ window.onload = async function () {
   function resetProgram() {
     $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
       "highlighted"
-    );
+    ).css('color', originalTextColor);
     $(document).off();
     lineOffsetsTop = [];
     lineOffsetsBottom = [];

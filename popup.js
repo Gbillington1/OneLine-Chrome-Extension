@@ -166,7 +166,6 @@ $(".colorBtn").mousedown(async function(e) {
 });
 
 //color picker
-//create canvas
 var canvas = document.getElementById("colorPicker");
 var ctx = canvas.getContext("2d");
 
