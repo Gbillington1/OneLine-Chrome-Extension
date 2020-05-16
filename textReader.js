@@ -26,7 +26,6 @@ function textColor(bgColor) {
     g = bgColor[1],
     b = bgColor[2];
   var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
-  console.log(yiq)
   return (yiq >= 135) ? 'black' : 'white';
 }
 
@@ -253,8 +252,6 @@ window.onload = async function () {
           if (!$(wordsInSpan[i]).attr('originalColor')) {
             $(wordsInSpan[i]).attr('originalColor', $(wordsInSpan[i]).css('color'));
           }
-          originalTextColor = $(wordsInSpan[i]).css('color');
-          console.log(originalTextColor)
 
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
           updateBG(highlightedRgbVal);
@@ -293,17 +290,23 @@ window.onload = async function () {
     //see keyup handler
     function handleKeyPress(e) {
       if (!$(e.target).is("input, textarea")) {
+        //up arrow
         if (e.keyCode == 38 && index > 0) {
+          console.log(1)
           index--;
           highlight();
+          //down arrow
         } else if (e.keyCode == 40 && index < lineOffsetsTop.length - 1) {
+          console.log(2)
           index++;
           highlight();
+          //down arrow
         } else if (
           e.keyCode == 40 &&
           index == lineOffsetsTop.length - 1 &&
           paraIndex < paras.length - 1
         ) {
+          console.log(3)
           //give current line their colors back!
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {
@@ -313,7 +316,9 @@ window.onload = async function () {
           index++;
           index = 0;
           setup();
+          //up arrow
         } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
+          console.log(4)
           //give current line their colors back!
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {
@@ -353,6 +358,7 @@ window.onload = async function () {
     for (var i = 0; i < currentLine.length; i++) {
       $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
     }
+    paras = [];
     $(document).off();
     lineOffsetsTop = [];
     lineOffsetsBottom = [];
