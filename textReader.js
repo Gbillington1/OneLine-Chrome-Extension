@@ -58,6 +58,7 @@ var previousWordTop;
 var colorToChangeTo;
 var currentHighlighter
 var originalTextColor;
+var currentLine;
 
 window.onload = async function () {
 
@@ -142,9 +143,11 @@ window.onload = async function () {
       sendResponse
     ) {
       if (request.msg == "RBG changed") {
-        $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
-          "highlighted"
-        ).css('color', originalTextColor);
+        //give current line their colors back!
+        currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
+        for (var i = 0; i < currentLine.length; i++) {
+          $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
+        }
         highlightedRgbVal = await getRBGValue();
         currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
         colorToChangeTo = textColor(currentHighlighter);
@@ -247,11 +250,13 @@ window.onload = async function () {
           wordsInSpan[i].getAttribute("middleOffset") <=
           lineOffsetsBottom[index]
         ) {
+          if (!$(wordsInSpan[i]).attr('originalColor')) {
+            $(wordsInSpan[i]).attr('originalColor', $(wordsInSpan[i]).css('color'));
+          }
           originalTextColor = $(wordsInSpan[i]).css('color');
+          console.log(originalTextColor)
 
-          $(wordsInSpan[i]).addClass("highlighted");
-          console.log(colorToChangeTo)
-          $(wordsInSpan[i]).css('color', colorToChangeTo);
+          $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
           updateBG(highlightedRgbVal);
 
           //if line is outside of view, scroll to it
@@ -263,16 +268,20 @@ window.onload = async function () {
           //remove highlight if above statement isn't true
         } else {
           $(wordsInSpan[i]).removeClass("highlighted");
-          $(wordsInSpan[i]).css('color', originalTextColor);
+          $(wordsInSpan[i]).css('color', $(wordsInSpan[i]).attr('originalColor'));
         }
       }
     }
 
     //whole program in one function
     function setup() {
-      $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
-        "highlighted"
-      ).css('color', originalTextColor);
+      // $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
+      //   "highlighted"
+      // ).css('color', $(this).attr('originalColor'));
+      currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
+      for (var i = 0; i < currentLine.length; i++) {
+        $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
+      }
       wrapInSpans();
       getLineOffsets();
       highlight();
@@ -295,18 +304,25 @@ window.onload = async function () {
           index == lineOffsetsTop.length - 1 &&
           paraIndex < paras.length - 1
         ) {
+          //give current line their colors back!
+          currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
+          for (var i = 0; i < currentLine.length; i++) {
+            $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
+          }
           paraIndex++;
           index++;
           index = 0;
           setup();
         } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
+          //give current line their colors back!
+          currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
+          for (var i = 0; i < currentLine.length; i++) {
+            $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
+          }
           paraIndex--;
           wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
           getLineOffsets();
           index = lineOffsetsTop.length - 1;
-          $(
-            "p span.word.highlighted, p span.whitespace.highlighted"
-          ).removeClass("highlighted").css('color', originalTextColor);
           highlight();
         }
       }
@@ -332,9 +348,11 @@ window.onload = async function () {
 
   //what do I put in here to stop the program from running??
   function resetProgram() {
-    $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
-      "highlighted"
-    ).css('color', originalTextColor);
+    //give current line their colors back!
+    currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
+    for (var i = 0; i < currentLine.length; i++) {
+      $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
+    }
     $(document).off();
     lineOffsetsTop = [];
     lineOffsetsBottom = [];
