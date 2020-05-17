@@ -177,7 +177,7 @@ window.onload = async function () {
 
       //only split paragraph that haven't been split
       if (!$(paras[paraIndex]).hasClass("splitting")) {
-        Splitting({ target: paras[paraIndex], by: "words" });
+        Splitting({ target: paras[paraIndex], by: "customWords" });
       }
       //puts all span elements into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
