@@ -12,3 +12,5 @@ Chrome Extension that helps users read through a page easily by highlighting one
 7. Select the other folder that you see and click "open" or whatever
 8. Click the extension
 9. Read!
+
+[![ezgif.com-gif-makerfb0524f310eb13c9.gif](https://s6.gifyu.com/images/ezgif.com-gif-makerfb0524f310eb13c9.gif)](https://gifyu.com/image/n76g)
