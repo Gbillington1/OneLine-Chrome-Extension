@@ -142,11 +142,6 @@ window.onload = async function () {
       sendResponse
     ) {
       if (request.msg == "RBG changed") {
-        //give current line their colors back!
-        currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
-        for (var i = 0; i < currentLine.length; i++) {
-          $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
-        }
         highlightedRgbVal = await getRBGValue();
         currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
         colorToChangeTo = textColor(currentHighlighter);
@@ -181,8 +176,9 @@ window.onload = async function () {
       }
       //puts all span elements into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
+      //give all span elements in paragraph their original color
       for (var i = 0; i < wordsInSpan.length; i++) {
-        $(wordsInSpan[i]).attr("paragraph", paraIndex);
+        $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
       }
     }
 
@@ -249,9 +245,6 @@ window.onload = async function () {
           wordsInSpan[i].getAttribute("middleOffset") <=
           lineOffsetsBottom[index]
         ) {
-          if (!$(wordsInSpan[i]).attr('originalColor')) {
-            $(wordsInSpan[i]).attr('originalColor', $(wordsInSpan[i]).css('color'));
-          }
 
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
           updateBG(highlightedRgbVal);
@@ -292,12 +285,10 @@ window.onload = async function () {
       if (!$(e.target).is("input, textarea")) {
         //up arrow
         if (e.keyCode == 38 && index > 0) {
-          console.log(1)
           index--;
           highlight();
           //down arrow
         } else if (e.keyCode == 40 && index < lineOffsetsTop.length - 1) {
-          console.log(2)
           index++;
           highlight();
           //down arrow
@@ -306,7 +297,6 @@ window.onload = async function () {
           index == lineOffsetsTop.length - 1 &&
           paraIndex < paras.length - 1
         ) {
-          console.log(3)
           //give current line their colors back!
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {
@@ -318,7 +308,6 @@ window.onload = async function () {
           setup();
           //up arrow
         } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
-          console.log(4)
           //give current line their colors back!
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {

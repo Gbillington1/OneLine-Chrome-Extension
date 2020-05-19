@@ -39,10 +39,10 @@ chrome.runtime.onInstalled.addListener(function (details) {
       active: true
     });
   } else if (details.reason == "update") {
-    chrome.tabs.create({
-      url: 'https://oneline.grahambillington.com/updates/v1.3/',
-      active: true
-    })
+    // chrome.tabs.create({
+    //   url: 'https://oneline.grahambillington.com/updates/v1.4/',
+    //   active: true
+    // })
   }
 
   return false;
