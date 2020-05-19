@@ -172,10 +172,11 @@ window.onload = async function () {
 
       //only split paragraph that haven't been split
       if (!$(paras[paraIndex]).hasClass("splitting")) {
-        Splitting({ target: paras[paraIndex], by: "words" });
+        Splitting({ target: paras[paraIndex], by: "customPlugin"});
       }
       //puts all span elements into an array
-      wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
+      wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace").not("span.word.highlighted, span.whitespace.highlighted");
+      console.log(wordsInSpan)
       //give all span elements in paragraph their original color
       for (var i = 0; i < wordsInSpan.length; i++) {
         $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
@@ -228,6 +229,7 @@ window.onload = async function () {
       lineOffsetsBottom.sort((a, b) => {
         return a - b;
       });
+      console.log(lineOffsetsTop);
     }
 
     //keep the highlighted line in the center block of the screen
@@ -245,7 +247,7 @@ window.onload = async function () {
           wordsInSpan[i].getAttribute("middleOffset") <=
           lineOffsetsBottom[index]
         ) {
-
+          console.log(lineOffsetsTop[index]);
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
           updateBG(highlightedRgbVal);
 
