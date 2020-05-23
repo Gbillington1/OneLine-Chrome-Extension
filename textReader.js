@@ -176,10 +176,12 @@ window.onload = async function () {
       }
       //puts all span elements into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace").not("span.word.highlighted, span.whitespace.highlighted");
-      console.log(wordsInSpan)
       //give all span elements in paragraph their original color
       for (var i = 0; i < wordsInSpan.length; i++) {
         $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
+        if ($(wordsInSpan[i]).text() === ' ') {
+          $(wordsInSpan[i]).attr("class", 'whitespace');
+        }
       }
     }
 
@@ -229,7 +231,6 @@ window.onload = async function () {
       lineOffsetsBottom.sort((a, b) => {
         return a - b;
       });
-      console.log(lineOffsetsTop);
     }
 
     //keep the highlighted line in the center block of the screen
@@ -247,7 +248,6 @@ window.onload = async function () {
           wordsInSpan[i].getAttribute("middleOffset") <=
           lineOffsetsBottom[index]
         ) {
-          console.log(lineOffsetsTop[index]);
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
           updateBG(highlightedRgbVal);
 
@@ -285,7 +285,7 @@ window.onload = async function () {
     //see keyup handler
     function handleKeyPress(e) {
       if (!$(e.target).is("input, textarea")) {
-        //up arrow
+          //up arrow
         if (e.keyCode == 38 && index > 0) {
           index--;
           highlight();
