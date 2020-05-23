@@ -8,6 +8,7 @@ function getOnOffValue() {
   return value;
 }
 
+// gets the current rgb value of the line 
 function getRBGValue() {
   let value = new Promise((resolve) => {
     chrome.storage.sync.get("highlightedRgbVal", function (result) {
@@ -17,10 +18,12 @@ function getRBGValue() {
   return value;
 }
 
+// updates the color of the line
 function updateBG(valueToSet) {
   document.documentElement.style.setProperty("--background", valueToSet);
 }
 
+// determines text color based on the color of the line (takes an array)
 function textColor(bgColor) {
   var r = bgColor[0],
     g = bgColor[1],
@@ -29,43 +32,54 @@ function textColor(bgColor) {
   return (yiq >= 135) ? 'black' : 'white';
 }
 
-//globals
+// globals
+
+// indecies 
 var index = 0;
 var paraIndex = 0;
+
+// arrays 
 var wordsInSpan = [];
 var line = [];
-var allParas;
 var paras = [];
-var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
-var topOfScreen = $(window).scrollTop();
-var hasRan = false;
-var checkedForEmptyParas = false;
-var lineHeight;
-var currentWord;
-var previousWord;
 var lineOffsetsTop = [];
 var lineOffsetsBottom = [];
 var differences = [];
 var lineMedians = [];
-var newWords = [];
-var lines = [];
+var allParas;
+var currentHighlighter // color of line (split up)
+
+// booleans
+var hasRan = false;
+var checkedForEmptyParas = false;
 var onOffVal;
-var highlightedRgbVal;
+
+// vars for scrolling
+var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
+var topOfScreen = $(window).scrollTop();
+
+
+// vars about the words
+
+// offsets
 var currentWordTop;
 var currentWordBottom;
 var previousWordTop;
+
+// other vars
+var lineHeight;
+var highlightedRgbVal; // color of the line
 var colorToChangeTo;
-var currentHighlighter
-var originalTextColor;
 var currentLine;
 
 window.onload = async function () {
 
   //get current state of switch
   onOffVal = await getOnOffValue();
-  // highlightedRgbVal = await getRBGValue();
 
   //logic to run program when switch is on/off/changed
+
+  // if switch is on, run program and listen for changes on the switch
   if (onOffVal) {
     runProgram();
     chrome.runtime.onMessage.addListener(async function (
@@ -77,14 +91,9 @@ window.onload = async function () {
         runProgram();
       } else if (request.msg == "changed to false") {
         resetProgram();
-      } else if (request.msg == "RBG changed") {
-        onOffVal = await getOnOffValue();
-        if (onOffVal) {
-          highlightedRgbVal = await getRBGValue();
-          updateBG(highlightedRgbVal);
-        }
       }
     });
+    // if switch is off, listen for changes on the switch
   } else {
     chrome.runtime.onMessage.addListener(async function (
       request,
@@ -95,47 +104,23 @@ window.onload = async function () {
         runProgram();
       } else if (request.msg == "changed to false") {
         resetProgram();
-      } else if (request.msg == "RBG changed") {
-        onOffVal = await getOnOffValue();
-        if (onOffVal) {
-          highlightedRgbVal = await getRBGValue();
-          updateBG(highlightedRgbVal);
-        }
       }
     });
   }
 
-  //listens for tab change, then runs the program based on state of switch
-  chrome.runtime.onMessage.addListener(async function (
-    request,
-    sender,
-    sendResponse
-  ) {
-    if (request.msg == "tab changed") {
-      onOffVal = await getOnOffValue();
-      highlightedRgbVal = await getRBGValue();
-      updateBG(highlightedRgbVal);
-      currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
-      colorToChangeTo = textColor(currentHighlighter);
-      if (onOffVal) {
-        if (hasRan == false) {
-          runProgram();
-        }
-      } else {
-        resetProgram();
-      }
-    }
-  });
-
+  // runs the program
   async function runProgram() {
 
-
+    // program hasn't checkef for empty paras
     checkedForEmptyParas = false;
+
+    // update color of line and text
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
     colorToChangeTo = textColor(currentHighlighter);
 
+    // listen for changed in RGB and tab changes => update color of line and text
     chrome.runtime.onMessage.addListener(async function (
       request,
       sender,
@@ -143,13 +128,21 @@ window.onload = async function () {
     ) {
       if (request.msg == "RBG changed") {
         highlightedRgbVal = await getRBGValue();
+        updateBG(highlightedRgbVal);
         currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
         colorToChangeTo = textColor(currentHighlighter);
-        highlight();
+        $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
+      }
+      if (request.msg == 'tab changed') {
+        highlightedRgbVal = await getRBGValue();
+        updateBG(highlightedRgbVal);
+        currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+        colorToChangeTo = textColor(currentHighlighter);
+        $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
       }
     });
 
-    //redefines these variables when the user scrolls
+    //redefine variables when user scrolls
     $(document).scroll(function () {
       bottomOfScreen = $(window).scrollTop() + window.innerHeight;
       topOfScreen = $(window).scrollTop();
@@ -157,28 +150,32 @@ window.onload = async function () {
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-      //get all paragraphs
-      allParas = $("p:visible").not("header p, footer p, div.dockcard_text p");
-
-      //if any of the paras have no text in them, dont add to paras array
+      
+      // skip over empty paragraphs
       if (checkedForEmptyParas == false) {
+        //get all paragraphs
+        allParas = $("p:visible").not("header p, footer p, div.dockcard_text p");
         for (var i = 0; i < allParas.length; i++) {
+          // if length of para is not 0 (false) => add it to paras array
           if ($(allParas[i]).text().trim().length) {
             paras.push($(allParas[i]));
-            checkedForEmptyParas = true;
           }
         }
+        checkedForEmptyParas = true;
       }
 
       //only split paragraph that haven't been split
       if (!$(paras[paraIndex]).hasClass("splitting")) {
-        Splitting({ target: paras[paraIndex], by: "customPlugin"});
+        Splitting({ target: paras[paraIndex], by: "customPlugin" });
       }
-      //puts all span elements into an array
+
+      //puts all span elements of current paragraph into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace").not("span.word.highlighted, span.whitespace.highlighted");
+
       //give all span elements in paragraph their original color
       for (var i = 0; i < wordsInSpan.length; i++) {
         $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
+        // gives spaces a class of whitespace (needed for whitespace issue in splitting.js)
         if ($(wordsInSpan[i]).text() === ' ') {
           $(wordsInSpan[i]).attr("class", 'whitespace');
         }
@@ -187,43 +184,57 @@ window.onload = async function () {
 
     //creates two arrays: one is full of offsets from the top of element, second is offsets from the bottom of the element
     function getLineOffsets() {
+      // clearing arrays 
       lineMedians = [];
       differences = [];
       lineOffsetsTop = [];
       lineOffsetsBottom = [];
+      // loop thru all spans in para
       for (var i = 0; i < wordsInSpan.length; i++) {
-        //gets previous and current word offsets
+        // gets the top and bottom offset of current word
         lineHeight = Math.round($(wordsInSpan[i]).outerHeight());
         currentWordTop = $(wordsInSpan[i]).offset().top;
         currentWordBottom = $(wordsInSpan[i]).offset().top + lineHeight;
+        
+        // gets top offset of previous word
         if (i > 0) {
           previousWordTop = $(wordsInSpan[i - 1]).offset().top;
         } else {
-          previousWord = $(wordsInSpan[0]).offset;
           previousWordTop = $(wordsInSpan[0]).offset().top;
         }
-        //pushes the difference between the last word, and the current one (can detect line breaks/special characters like sub/superscripts)
+
+        // pushes the difference between the top of the current word and the top of the previous word
+        // detects line breaks and other irregular characters (sub/superscripts)
         differences.push(
           Math.round(Math.abs(currentWordTop - previousWordTop))
         );
 
+        // pushes the middle offset of the current word
         lineMedians.push(Math.round((currentWordBottom - currentWordTop) / 2));
       }
 
+      // loops thru every middle offset
       for (var i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
+        // add middle offset as an attribute to each word to be used in highlight() later on
         $(wordsInSpan[i]).attr(
           "middleOffset",
           $(wordsInSpan[i]).offset().top + lineMedians[i]
         );
 
+        // if difference is greater than lineheight (that means its line break)
         if (i == 0 || differences[i] >= lineHeight) {
+          // ignore whitespaces (workaround for splitting.js issue)
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
+            // form arrays for the first word of every line
+            // top offset of first word
             lineOffsetsTop.push($(wordsInSpan[i]).offset().top);
+            // bottom offset of first word
             lineOffsetsBottom.push($(wordsInSpan[i]).offset().top + lineHeight);
           }
         }
       }
+
       // chronologically sorts arrays
       lineOffsetsTop.sort((a, b) => {
         return a - b;
@@ -233,23 +244,27 @@ window.onload = async function () {
       });
     }
 
-    //keep the highlighted line in the center block of the screen
+    //keeps the highlighted line in the center block of the screen
     function keepLineInWindow() {
       line = $("span.word.highlighted");
       line[0].scrollIntoView({ block: "center" });
     }
 
-    //highlights words that are inbetween inbetweenOffsets[i] and lineOffsetsBottom[i]
+    //highlights words that are inbetween lineOffsetsTop[i] and lineOffsetsBottom[i]
     function highlight() {
+      // loop thru all spans in current paragraph
       for (var i = 0; i < wordsInSpan.length; i++) {
+        // if the middle of current word is inbetween the top and bottom of the first word = > highlight
+        // all words that make it through this statement are on the same line
         if (
           wordsInSpan[i].getAttribute("middleOffset") >=
           lineOffsetsTop[index] &&
           wordsInSpan[i].getAttribute("middleOffset") <=
           lineOffsetsBottom[index]
         ) {
+
+          // add highlighter to word, and change the color of the word 
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
-          updateBG(highlightedRgbVal);
 
           //if line is outside of view, scroll to it
           if ($(wordsInSpan[i]).offset().top + lineHeight > bottomOfScreen) {
@@ -257,7 +272,7 @@ window.onload = async function () {
           } else if ($(wordsInSpan[i]).offset().top < topOfScreen) {
             keepLineInWindow();
           }
-          //remove highlight if above statement isn't true
+          //remove highlighter, and change color of text to it's original color if above statement isn't true
         } else {
           $(wordsInSpan[i]).removeClass("highlighted");
           $(wordsInSpan[i]).css('color', $(wordsInSpan[i]).attr('originalColor'));
@@ -267,13 +282,6 @@ window.onload = async function () {
 
     //whole program in one function
     function setup() {
-      // $("p span.word.highlighted, p span.whitespace.highlighted").removeClass(
-      //   "highlighted"
-      // ).css('color', $(this).attr('originalColor'));
-      currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
-      for (var i = 0; i < currentLine.length; i++) {
-        $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
-      }
       wrapInSpans();
       getLineOffsets();
       highlight();
@@ -284,51 +292,64 @@ window.onload = async function () {
 
     //see keyup handler
     function handleKeyPress(e) {
+      // dont run in inputs or text areas
       if (!$(e.target).is("input, textarea")) {
-          //up arrow
+        //up arrow
         if (e.keyCode == 38 && index > 0) {
+          // move up a line
           index--;
           highlight();
           //down arrow
         } else if (e.keyCode == 40 && index < lineOffsetsTop.length - 1) {
+          // move down a line
           index++;
           highlight();
-          //down arrow
+          //down arrow (last line in paragraph but not the last paragraph on the page)
         } else if (
           e.keyCode == 40 &&
           index == lineOffsetsTop.length - 1 &&
           paraIndex < paras.length - 1
         ) {
-          //give current line their colors back!
+          // remove highlighter and restore text color
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {
             $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
           }
+          // move to next paragraph
           paraIndex++;
-          index++;
+          // reset index
           index = 0;
+          // run program for next paragraph
           setup();
-          //up arrow
+          //up arrow (first line of paragraph but not the first paragraph on the page)
         } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
-          //give current line their colors back!
+          // remove highlighter and restore text color
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {
             $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
           }
+          // move to previous paragraph
           paraIndex--;
+
+          // wrapInSpans() isn't called because that function has previously ran on this paragraph
+          // form wordsInSpan array
           wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
+          // get offsets for para
           getLineOffsets();
+          // set the index to the last line of the para
           index = lineOffsetsTop.length - 1;
+          // highlight
           highlight();
         }
       }
     }
 
-    //changes line selected with arrow keys
+    // run handelKeyPress when key is down (specifically arrow keys)
     $(document).keyup(handleKeyPress);
 
-    //prevents arrowkeys from scrolling
+    //prevents arrow keys from scrolling up/down the page
     $(document).keydown(function (e) {
+      // only prevent scrolling when the user isn't interacting with inputs or text areas
       if (!$(e.target).is("input, textarea")) {
         if (e.keyCode == 38 || e.keyCode == 40) {
           e.preventDefault();
@@ -336,26 +357,32 @@ window.onload = async function () {
       }
     });
 
-    //gets new offset to calculate line on window resize
+    // recalculates offests for paragraph because resizing the window changes the offsets of each word
     $(window).resize(setup);
 
+    // runProgram() has ran
     hasRan = true;
   }
 
-  //what do I put in here to stop the program from running??
   function resetProgram() {
-    //give current line their colors back!
+    // remove highlighter and restore color of word
     currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
     for (var i = 0; i < currentLine.length; i++) {
       $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
     }
-    paras = [];
+
+    // remove all event listeners from the document object
     $(document).off();
+
+    // clear every array
+    paras = [];
     lineOffsetsTop = [];
     lineOffsetsBottom = [];
     lineMedians = [];
     differences = [];
     line = [];
+    
+    // runProgram hasn't ran (resetting the cycle)
     hasRan = false;
   }
 };
