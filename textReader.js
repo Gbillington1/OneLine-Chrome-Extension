@@ -53,6 +53,7 @@ var currentHighlighter // color of line (split up)
 var hasRan = false;
 var checkedForEmptyParas = false;
 var onOffVal;
+var resize = false;
 
 // vars for scrolling
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -129,7 +130,6 @@ window.onload = async function () {
     }
   });
 
-
   // runs the program
   async function runProgram() {
 
@@ -192,11 +192,13 @@ window.onload = async function () {
       }
 
       //puts all span elements of current paragraph into an array
-      wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace").not("span.word.highlighted, span.whitespace.highlighted");
+      wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
 
       //give all span elements in paragraph their original color
       for (var i = 0; i < wordsInSpan.length; i++) {
-        $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
+        if (resize == false) {
+          $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
+        }
         // gives spaces a class of whitespace (needed for whitespace issue in splitting.js)
         if ($(wordsInSpan[i]).text() === ' ') {
           $(wordsInSpan[i]).attr("class", 'whitespace');
@@ -307,6 +309,7 @@ window.onload = async function () {
       wrapInSpans();
       getLineOffsets();
       highlight();
+      resize = false;
     }
 
     //actually run the program
@@ -380,7 +383,10 @@ window.onload = async function () {
     });
 
     // recalculates offests for paragraph because resizing the window changes the offsets of each word
-    $(window).resize(setup);
+    $(window).resize(function() {
+      resize = true;
+      setup();
+    });
 
     // runProgram() has ran
     hasRan = true;
