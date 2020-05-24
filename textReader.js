@@ -82,7 +82,7 @@ window.onload = async function () {
   // if switch is on, run program and listen for changes on the switch
   if (onOffVal) {
     runProgram();
-    chrome.runtime.onMessage.addListener(async function (
+    chrome.runtime.onMessage.addListener(function (
       request,
       sender,
       sendResponse
@@ -95,7 +95,7 @@ window.onload = async function () {
     });
     // if switch is off, listen for changes on the switch
   } else {
-    chrome.runtime.onMessage.addListener(async function (
+    chrome.runtime.onMessage.addListener(function (
       request,
       sender,
       sendResponse
@@ -107,6 +107,28 @@ window.onload = async function () {
       }
     });
   }
+
+  // listen for tab change
+  chrome.runtime.onMessage.addListener(async function (
+    request,
+    sender,
+    sendResponse
+  ) {
+    if (request.msg == 'tab changed') {
+      // get the on/off value
+      onOffVal = await getOnOffValue();
+      // if switch is on, and the program hasn't ran => run the program
+      if (onOffVal) {
+        if (hasRan == false) {
+          runProgram();
+        }
+      // if switch is off, reset the program
+      } else {
+        resetProgram();
+      }
+    }
+  });
+
 
   // runs the program
   async function runProgram() {
