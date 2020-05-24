@@ -32,21 +32,21 @@ chrome.runtime.onInstalled.addListener(function (details) {
     // turning the program on by default
     chrome.storage.sync.set({ highlightedSwitch: true });
     // setting the default highlighted color
-    chrome.storage.sync.set({ highlightedRgbVal: "rgb(41, 255, 77)" });
+    chrome.storage.sync.set({ highlightedRgbVal: "rgb(248, 253, 137)" });
   });
 
   // redirect to thankyou page on install 
   if ((details.reason == "install")) {
     chrome.tabs.create({
-      url: 'https://oneline.grahambillington.com/thankyou/',
+      url: 'https://useoneline.com/thankyou/',
       active: true
     });
   // redirect to update page on update
   } else if (details.reason == "update") {
-    // chrome.tabs.create({
-    //   url: 'https://oneline.grahambillington.com/updates/v1.4/',
-    //   active: true
-    // })
+    chrome.tabs.create({
+      url: 'https://useoneline.com/updates/v1.4/',
+      active: true
+    })
   }
 
   return false;

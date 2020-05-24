@@ -139,8 +139,10 @@ window.onload = async function () {
     // update color of line and text
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
+    console.log(highlightedRgbVal)
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
     colorToChangeTo = textColor(currentHighlighter);
+    console.log(colorToChangeTo)
 
     // listen for changed in RGB and tab changes => update color of line and text
     chrome.runtime.onMessage.addListener(async function (
