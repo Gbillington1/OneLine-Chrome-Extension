@@ -41,12 +41,22 @@ chrome.runtime.onInstalled.addListener(function (details) {
       url: 'https://useoneline.com/thankyou/',
       active: true
     });
+    var reload = confirm('For OneLine to work right away, every tab in Chrome must be reloaded. Should OneLine reload all of your tabs for you right now?')
+    if (reload) {
+      chrome.tabs.query({status:'complete'}, (tabs)=>{
+        tabs.forEach((tab)=>{
+            if(tab.url){
+                chrome.tabs.update(tab.id,{url: tab.url});
+             }
+            });
+        });
+    }
   // redirect to update page on update
   } else if (details.reason == "update") {
-    chrome.tabs.create({
-      url: 'https://useoneline.com/updates/v1.4/',
-      active: true
-    })
+    // chrome.tabs.create({
+    //   url: 'https://useoneline.com/updates/v1.4/',
+    //   active: true
+    // })
   }
 
   return false;
