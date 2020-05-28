@@ -201,7 +201,7 @@ window.onload = async function () {
           $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
         }
         // gives spaces a class of whitespace (needed for whitespace issue in splitting.js)
-        if ($(wordsInSpan[i]).text() === ' ') {
+        if ($.trim($(wordsInSpan[i]).text()) == '') {
           $(wordsInSpan[i]).attr("class", 'whitespace');
         }
       }
@@ -250,6 +250,7 @@ window.onload = async function () {
         // if difference is greater than lineheight (that means its line break)
         if (i == 0 || differences[i] >= lineHeight) {
           // ignore whitespaces (workaround for splitting.js issue)
+          
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
             // form arrays for the first word of every line
             // top offset of first word
@@ -302,24 +303,6 @@ window.onload = async function () {
           $(wordsInSpan[i]).removeClass("highlighted");
           $(wordsInSpan[i]).css('color', $(wordsInSpan[i]).attr('originalColor'));
         }
-      }
-      // move to next line if random whitespaces are being highlighted
-      let line = $('span.word.highlighted, span.whitespace.highlighted')
-      var lineData;
-      // form a string of the current highlighted line
-      $(line).each(function(i) {
-        if (i == 0) {
-          lineData = $(line[i]).attr('data-word');
-        } else if (typeof $(line[i]).attr('data-word') === 'string') {
-          lineData = lineData + $(line[i]).attr('data-word');
-        } else if (typeof $(line[i]).attr('data-whitespace') === 'string') {
-          lineData = lineData + $(line[i]).attr('data-whitespace');
-        }
-      })
-      // if the string is empty after it is trimmed, move to next line and highlight again
-      if($.trim(lineData) == '') {
-        index++;
-        highlight();
       }
     }
 
