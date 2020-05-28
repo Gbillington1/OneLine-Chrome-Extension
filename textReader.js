@@ -288,8 +288,6 @@ window.onload = async function () {
           lineOffsetsBottom[index]
         ) {
 
-
-
           // add highlighter to word, and change the color of the word 
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
 

@@ -60,6 +60,13 @@ function loadBtn(key) {
   });
 }
 
+// save rgb to storage 
+function saveColor(colorToSave) {
+  chrome.storage.sync.set({ highlightedRgbVal: colorToSave });
+  $('.currentColor').css('background-color', colorToSave);
+  sendMsgToCS(0, "RBG changed")
+}
+
 //when first isntalled, set switch to true and save that value
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
   if (request.msg == "Extension installed") {
@@ -100,8 +107,11 @@ $(document).ready(async function () {
     $(this).css("background-color", favBtnBG);
   });
 
+  highlightedRgbVal = await loadRbgVal();
+  $('.currentColor').css('background-color', highlightedRgbVal);
+
   //save on/off switch value when it is changed
-  $("#highlightedSwitch").change(function () {
+  $("#highlightedSwitch").change(async function () {
     highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
     chrome.storage.sync.set({ highlightedSwitch: highlightedSwitchVal });
 
@@ -120,8 +130,8 @@ $(document).ready(async function () {
 
 // Update highlighter when recommended btns are clicked
 $(".recommendedBtn").click(function () {
-  chrome.storage.sync.set({ highlightedRgbVal: $(this).css("background-color") });
-  sendMsgToCS(0, "RBG changed")
+  // save color to storage and update line
+  saveColor($(this).css("background-color"))
 
   //send Google Analytics click event
   ga("Popup.send", {
@@ -133,7 +143,7 @@ $(".recommendedBtn").click(function () {
 });
 
 // set favorites with shift click, apply favorites with left click
-$('.colorBtn').click(async function(e) {
+$('.colorBtn').click(async function (e) {
   // shift click
   if (e.shiftKey) {
     // set the color of the favorite to the current color that is selected (visual)
@@ -155,10 +165,12 @@ $('.colorBtn').click(async function(e) {
     })
     // regular left click
   } else {
-    // save value of btn and update the highlighted line
+    // save value of btn to storage and update the highlighted line
     highlightedRgbVal = await loadBtn($(this).attr("id"));
-    chrome.storage.sync.set({ highlightedRgbVal: highlightedRgbVal });
-    sendMsgToCS(0, "RBG changed");
+
+    // save color to storage and update line
+    saveColor(highlightedRgbVal)
+
     // send GA event 
     ga("Popup.send", {
       hitType: "event",
@@ -221,9 +233,10 @@ $("#colorPicker").mousedown(e => {
       var imgData = ctx.getImageData(x, y, 1, 1).data;
       // return in RGB form
       getRgb(imgData);
-      // save the RGB and update the highlighted line
-      chrome.storage.sync.set({ highlightedRgbVal: highlightedRgbVal });
-      sendMsgToCS(0, "RBG changed");
+
+      // save color to storage and update line
+      saveColor(highlightedRgbVal)
+
       break;
     default:
       break;
