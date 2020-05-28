@@ -139,10 +139,9 @@ window.onload = async function () {
     // update color of line and text
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
-    console.log(highlightedRgbVal)
+
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
     colorToChangeTo = textColor(currentHighlighter);
-    console.log(colorToChangeTo)
 
     // listen for changed in RGB and tab changes => update color of line and text
     chrome.runtime.onMessage.addListener(async function (
@@ -289,6 +288,8 @@ window.onload = async function () {
           lineOffsetsBottom[index]
         ) {
 
+
+
           // add highlighter to word, and change the color of the word 
           $(wordsInSpan[i]).addClass("highlighted").css('color', colorToChangeTo);
 
@@ -303,6 +304,24 @@ window.onload = async function () {
           $(wordsInSpan[i]).removeClass("highlighted");
           $(wordsInSpan[i]).css('color', $(wordsInSpan[i]).attr('originalColor'));
         }
+      }
+      // move to next line if random whitespaces are being highlighted
+      let line = $('span.word.highlighted, span.whitespace.highlighted')
+      var lineData;
+      // form a string of the current highlighted line
+      $(line).each(function(i) {
+        if (i == 0) {
+          lineData = $(line[i]).attr('data-word');
+        } else if (typeof $(line[i]).attr('data-word') === 'string') {
+          lineData = lineData + $(line[i]).attr('data-word');
+        } else if (typeof $(line[i]).attr('data-whitespace') === 'string') {
+          lineData = lineData + $(line[i]).attr('data-whitespace');
+        }
+      })
+      // if the string is empty after it is trimmed, move to next line and highlight again
+      if($.trim(lineData) == '') {
+        index++;
+        highlight();
       }
     }
 
