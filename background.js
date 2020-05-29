@@ -19,7 +19,7 @@
   "ga"
 ); // Note: https protocol here
 
-ga("create", "UA-154659029-2", "auto"); // Enter your GA identifier
+ga("create", "UA-154659029-2", "auto");
 ga("set", "checkProtocolTask", function () {}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("require", "displayfeatures");
 ga("send", "pageview", "/OneLineExtensionBackground"); // Specify the virtual path
@@ -29,26 +29,30 @@ var isInstalled = false;
 chrome.runtime.onInstalled.addListener(function (details) {
   isInstalled = true;
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    // turning the program on by default
     chrome.storage.sync.set({ highlightedSwitch: true });
-    chrome.storage.sync.set({ highlightedRgbVal: "rgb(41, 255, 77)" });
+    // setting the default highlighted color
+    chrome.storage.sync.set({ highlightedRgbVal: "rgb(248, 253, 137)" });
   });
 
+  // redirect to thankyou page on install 
   if ((details.reason == "install")) {
     chrome.tabs.create({
-      url: 'https://oneline.grahambillington.com/thankyou/',
+      url: 'https://useoneline.com/thankyou/',
       active: true
     });
+  // redirect to update page on update
   } else if (details.reason == "update") {
-    // chrome.tabs.create({
-    //   url: 'https://oneline.grahambillington.com/updates/v1.4/',
-    //   active: true
-    // })
+    chrome.tabs.create({
+      url: 'https://useoneline.com/updates/v1.4/',
+      active: true
+    })
   }
 
   return false;
 });
 
-//listen for initiate message, then send message if isInstalled == true
+//listen for initiate message (from popup), then send message if isInstalled == true
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request.msg == "initiate") {
     if (isInstalled) {

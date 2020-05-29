@@ -1,6 +1,6 @@
 {
-    "name": "OneLine (Beta)",
-    "version": "1.3",
+    "name": "OneLine",
+    "version": "1.4",
     "description": "OneLine highlights a single line to focus your reading.",
     "permissions": ["http://*/*", "https://*/*", "activeTab", "storage"],
     "background": {

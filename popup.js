@@ -19,12 +19,12 @@
   "ga"
 ); // Note: https protocol here
 
-ga("create", "UA-154659029-2", "auto", "Popup"); // Enter your GA identifier
+ga("create", "UA-154659029-2", "auto", "Popup"); 
 ga("Popup.set", "checkProtocolTask", function () {}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("Popup.require", "displayfeatures");
 
 
-//get current bool state of switch
+//get current state of on/off switch
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
 var highlightedRgbVal;
 
@@ -72,15 +72,16 @@ chrome.runtime.onMessage.addListener(async function(request, sender, sendRespons
   }
 });
 
+// function to easily send messages to CS 
 function sendMsgToCS(tabNumber, message) {
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     chrome.tabs.sendMessage(tabs[tabNumber].id, { msg: message });
   });
 }
 
+// returns the color of imgData in rgb form (for css)
 function getRgb(imgData) {
   var pixelData = imgData;
-  console.log(pixelData)
   var R = pixelData[0];
   var G = pixelData[1];
   var B = pixelData[2];
@@ -92,22 +93,22 @@ $(document).ready(async function() {
   //load switch value from storage
   var loadedSwitchVal = await loadSwitchVal();
   $("#highlightedSwitch").prop("checked", loadedSwitchVal);
-  var msg = "changed to " + JSON.stringify(loadedSwitchVal);
 
   //load favorites from storage
   $(".colorBtn").each(async function() {
     let favBtnBG = await loadBtn($(this).attr('id'));
-    console.log(favBtnBG)
     $(this).css("background-color", favBtnBG);
-    console.log($(this).attr('id'))
   });
 
-  //save value when it is changed
+  //save on/off switch value when it is changed
   $("#highlightedSwitch").change(function() {
     highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
     chrome.storage.sync.set({ highlightedSwitch: highlightedSwitchVal });
+
     msg = "changed to " + JSON.stringify(highlightedSwitchVal);
     sendMsgToCS(0, msg);
+
+    // send an switch toggled event to google analytics
     ga("Popup.send", {
       hitType: "event",
       eventCategory: "Switch",
@@ -117,10 +118,11 @@ $(document).ready(async function() {
   });
 });
 
-//Recommended btns
+// Update highlighter when recommended btns are clicked
 $(".recommendedBtn").click(function() {
   chrome.storage.sync.set({ highlightedRgbVal: $(this).css("background-color") });
   sendMsgToCS(0, "RBG changed")
+
   //send Google Analytics click event
   ga("Popup.send", {
     hitType: "event",
@@ -133,10 +135,13 @@ $(".recommendedBtn").click(function() {
 //set favorite with right click, apply favorite on left click
 $(".colorBtn").mousedown(async function(e) {
   switch (e.which) {
+    // left click
     case 1: 
+      // save value of btn and update the highlighted line
       highlightedRgbVal = await loadBtn($(this).attr("id"));
       chrome.storage.sync.set({ highlightedRgbVal: highlightedRgbVal });
       sendMsgToCS(0, "RBG changed");
+      // send GA event 
       ga("Popup.send", {
         hitType: "event",
         eventCategory: "Favorites",
@@ -144,15 +149,19 @@ $(".colorBtn").mousedown(async function(e) {
         eventLabel: highlightedRgbVal
       })
       break;
+    // right click
     case 3:
+      // set the color of the favorite to the current color that is selected (visual)
       let favBtnBG = await loadRbgVal();
       $(this).css("background-color", favBtnBG)
+      // save the favorite
       var id = $(this).attr('id');
       chrome.storage.sync.set({ [id]: favBtnBG });
       //prevent context menu
       $(this).contextmenu(function(e) {
         e.preventDefault();
       });
+      // send GA event
       ga("Popup.send", {
         hitType: "event",
         eventCategory: "Favorites",
@@ -173,6 +182,7 @@ var ctx = canvas.getContext("2d");
 var img = new Image();
 img.src = "ColorWheel.png";
 window.onload = function() {
+  // draw the picture to the canvas
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 };
 
@@ -180,11 +190,15 @@ window.onload = function() {
 $("#colorPicker").mousedown(e => {
 
   switch (e.which) {
+    // left click
     case 1:
+      // get the image data of the pixel that was clicked
       var x = Math.floor(e.pageX - $("#colorPicker").offset().left);
       var y = Math.floor(e.pageY - $("#colorPicker").offset().top);
       var imgData = ctx.getImageData(x, y, 1, 1).data;
+      // return in RGB form
       getRgb(imgData);
+      // save the RGB and update the highlighted line
       chrome.storage.sync.set({ highlightedRgbVal: highlightedRgbVal });
       sendMsgToCS(0, "RBG changed");
       break;
