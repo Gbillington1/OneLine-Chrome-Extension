@@ -123,7 +123,7 @@ window.onload = async function () {
         if (hasRan == false) {
           runProgram();
         }
-      // if switch is off, reset the program
+        // if switch is off, reset the program
       } else {
         resetProgram();
       }
@@ -139,10 +139,9 @@ window.onload = async function () {
     // update color of line and text
     highlightedRgbVal = await getRBGValue();
     updateBG(highlightedRgbVal);
-    console.log(highlightedRgbVal)
+
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
     colorToChangeTo = textColor(currentHighlighter);
-    console.log(colorToChangeTo)
 
     // listen for changed in RGB and tab changes => update color of line and text
     chrome.runtime.onMessage.addListener(async function (
@@ -174,7 +173,7 @@ window.onload = async function () {
 
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
-      
+
       // skip over empty paragraphs
       if (checkedForEmptyParas == false) {
         //get all paragraphs
@@ -202,7 +201,7 @@ window.onload = async function () {
           $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
         }
         // gives spaces a class of whitespace (needed for whitespace issue in splitting.js)
-        if ($(wordsInSpan[i]).text() === ' ') {
+        if ($.trim($(wordsInSpan[i]).text()) == '') {
           $(wordsInSpan[i]).attr("class", 'whitespace');
         }
       }
@@ -221,7 +220,7 @@ window.onload = async function () {
         lineHeight = Math.round($(wordsInSpan[i]).outerHeight());
         currentWordTop = $(wordsInSpan[i]).offset().top;
         currentWordBottom = $(wordsInSpan[i]).offset().top + lineHeight;
-        
+
         // gets top offset of previous word
         if (i > 0) {
           previousWordTop = $(wordsInSpan[i - 1]).offset().top;
@@ -251,6 +250,7 @@ window.onload = async function () {
         // if difference is greater than lineheight (that means its line break)
         if (i == 0 || differences[i] >= lineHeight) {
           // ignore whitespaces (workaround for splitting.js issue)
+          
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
             // form arrays for the first word of every line
             // top offset of first word
@@ -321,19 +321,30 @@ window.onload = async function () {
     function handleKeyPress(e) {
       // dont run in inputs or text areas
       if (!$(e.target).is("input, textarea")) {
-        //up arrow
-        if (e.keyCode == 38 && index > 0) {
+        //up arrow OR w
+        if (e.keyCode == 38 &&
+          index > 0 ||
+          e.keyCode == 87 &&
+          index > 0
+        ) {
           // move up a line
           index--;
           highlight();
-          //down arrow
-        } else if (e.keyCode == 40 && index < lineOffsetsTop.length - 1) {
+          //down arrow OR s
+        } else if (e.keyCode == 40 &&
+          index < lineOffsetsTop.length - 1 ||
+          e.keyCode == 83 &&
+          index < lineOffsetsTop.length - 1
+        ) {
           // move down a line
           index++;
           highlight();
           //down arrow (last line in paragraph but not the last paragraph on the page)
         } else if (
           e.keyCode == 40 &&
+          index == lineOffsetsTop.length - 1 &&
+          paraIndex < paras.length - 1 ||
+          e.keyCode == 83 &&
           index == lineOffsetsTop.length - 1 &&
           paraIndex < paras.length - 1
         ) {
@@ -348,8 +359,13 @@ window.onload = async function () {
           index = 0;
           // run program for next paragraph
           setup();
-          //up arrow (first line of paragraph but not the first paragraph on the page)
-        } else if (e.keyCode == 38 && index == 0 && paraIndex > 0) {
+          //up arrow OR w (first line of paragraph but not the first paragraph on the page)
+        } else if (e.keyCode == 38 &&
+          index == 0 && paraIndex > 0 ||
+          e.keyCode == 87 &&
+          index == 0 &&
+          paraIndex > 0
+        ) {
           // remove highlighter and restore text color
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
           for (var i = 0; i < currentLine.length; i++) {
@@ -385,7 +401,7 @@ window.onload = async function () {
     });
 
     // recalculates offests for paragraph because resizing the window changes the offsets of each word
-    $(window).resize(function() {
+    $(window).resize(function () {
       resize = true;
       setup();
     });
@@ -411,7 +427,7 @@ window.onload = async function () {
     lineMedians = [];
     differences = [];
     line = [];
-    
+
     // runProgram hasn't ran (resetting the cycle)
     hasRan = false;
   }

@@ -116,7 +116,22 @@ body {
   padding: 12px 0 0 0;
 }
 
+#currentColorWrap {
+  display: flex;
+  align-items: center;
+  padding: 5px 0 0 0;
+}
+
+.currentColor {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 1px solid black;
+  margin: 0 0 0 5px
+}
+
 .switchGroup {
+  display: flex;
   flex-direction: row;
 }
 
@@ -217,7 +232,7 @@ label:active:after {
 }
 
 #canvasWrapper {
-  padding: 20px 0;
+  padding: 5px 0;
 }
 
 a {
