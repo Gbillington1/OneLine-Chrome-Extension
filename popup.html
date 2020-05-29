@@ -30,18 +30,18 @@
       <div id="canvasWrapper">
         <canvas width="150" height="150" id="colorPicker"></canvas>
       </div>
+      <div id='small'>
+        <small id="favErr">Please delete a favorite and try again.</small>
+      </div>
       <div id="active-color">
         <h3 id='activeColorHeader'>Active Color</h3>
-        <button id='addToFavs'><img src='bookmark-b.png' class='addToFavsIcon'></button>
+        <button title="Click here to add the active color to favorites." id='addToFavs'><img src='bookmark-b.png' class='addToFavsIcon'></button>
       </div>
       <div class="colorGroup" id="favorites">
         <div id="favHead">
           <img src='bookmark-b.png' style="padding-right: 3px;" class='addToFavsIcon'>
           <h3 class="settingHeader">Favorites</h3>
         </div>
-        <!-- <div id="small">
-          <small>Shift + Left Click buttons below to set.</small>
-        </div> -->
         <div class="btnWrapper container">
           <div class="colorBtnWrap">
             <button set='false' class="colorBtn" id='favBtn1'><img src='eyedropper-b.png' class='colorBtnImg'></button>

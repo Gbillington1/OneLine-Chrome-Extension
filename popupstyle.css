@@ -94,7 +94,7 @@
 html,
 body {
   width: 300px;
-  height: 525px;
+  height: 600px;
   background-color: #f6f4f7;
   margin: 0 auto;
   font-family: "Roboto", sans-serif;
@@ -148,6 +148,11 @@ button > img {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#favErr {
+  text-align: center;
+  color: #f6f4f7;
 }
 
 .addToFavsIcon {
@@ -302,5 +307,5 @@ small, .creditP {
 
 #credits {
     text-align: center;
-    padding: 5px 0;
+    padding: 3px 0;
 }

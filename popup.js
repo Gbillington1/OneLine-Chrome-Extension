@@ -193,7 +193,13 @@ $(".recommendedBtn").click(function () {
   })
 });
 
+// function to check if every value in array is true
+function checkIfSet(bool) {
+  return bool == 'true';
+}
+
 $('#addToFavs').click(function () {
+  var isSet = []
   var added = false;
   $('.colorBtn').each(async function () {
     if ($(this).attr('set') == 'false' && added === false) {
@@ -218,18 +224,22 @@ $('#addToFavs').click(function () {
         eventAction: "setFavorite",
         eventLabel: favBtnBG
       })
-      // $(this).attr('set', true);
       saveAttr($(this), true);
-    } else {
-      console.log('cant add fav')
     }
+    // make an array of 'set' values
+    isSet.push($(this).attr('set'))
   })
+  // if every value in 'isSet' array is true => error message
+  if (isSet.every(checkIfSet) == true && isSet.length == 5) {
+    $('#favErr').css('color', '#cc0000')
+  }
 })
 
 // delete favorite that corresponds with the delete button
 $('.deleteIcon').click(function() {
   var favToDelete = $(this).attr('favToDelete');
   if ($(favToDelete).attr('set') == 'true') {
+    $('#favErr').css('color', '#f6f4f7')
     saveAttr($(favToDelete), false);
     $(favToDelete).css('background-color', '');
     $(favToDelete).find('img').attr('src', 'eyedropper-b.png');
