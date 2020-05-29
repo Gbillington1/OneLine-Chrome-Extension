@@ -81,7 +81,6 @@ function saveColor(colorToSave) {
 // save 'set' attribute to storage
 function saveAttr(el, val) {
   el.attr('set', val);
-  console.log(el.attr('set'))
   var key = el[0].id + "set";
   chrome.storage.sync.set({ [key]: val });
 }
@@ -125,6 +124,7 @@ function getRgb(imgData) {
 }
 
 $(document).ready(async function () {
+  console.log($('.addToFavs').css('background-color'))
   var rgbValArr;
   var textColor;
   //load switch value from storage
@@ -153,6 +153,7 @@ $(document).ready(async function () {
     }
   });
 
+  // change the active color and calc color of text
   highlightedRgbVal = await loadRbgVal();
   $('#active-color').css('background-color', highlightedRgbVal)
   rgbValArr = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
@@ -225,27 +226,13 @@ $('#addToFavs').click(function () {
   })
 })
 
-// set favorites with shift click, apply favorites with left click
-$('.colorBtn').click(async function (e) {
-  // shift click
-  if (e.shiftKey) {
-
-    // regular left click
-  } else {
-    // save value of btn to storage and update the highlighted line
-    if ($(this).attr('set') == 'true')
-      highlightedRgbVal = await loadBtn($(this).attr("id"));
-
-    // save color to storage and update line
-    saveColor(highlightedRgbVal)
-
-    // send GA event 
-    ga("Popup.send", {
-      hitType: "event",
-      eventCategory: "Favorites",
-      eventAction: "selectedFavorite",
-      eventLabel: highlightedRgbVal
-    })
+// delete favorite that corresponds with the delete button
+$('.deleteIcon').click(function() {
+  var favToDelete = $(this).attr('favToDelete');
+  if ($(favToDelete).attr('set') == 'true') {
+    saveAttr($(favToDelete), false);
+    $(favToDelete).css('background-color', '');
+    $(favToDelete).find('img').attr('src', 'eyedropper-b.png');
   }
 })
 
