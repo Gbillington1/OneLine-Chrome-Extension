@@ -128,6 +128,7 @@ button > img {
   border-radius: 15px;
   display: flex;
   align-items: center;
+  margin: 10px 0;
 }
 
 #activeColorHeader {
@@ -143,7 +144,13 @@ button > img {
   border: 1px solid #9e9e9e;
 }
 
-#addToFavsIcon {
+#favHead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addToFavsIcon {
   width: 20px;
   height: 20px;
 }
@@ -162,14 +169,44 @@ button > img {
   padding: 12px 0 0 0;
 }
 
+.deleteIcon {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
 .colorBtn,
 .recommendedBtn {
-  width: 60px;
-  height: 30px;
+  width: 45px;
+  height: 25px;
   margin: 0 3px;
-
+  display: inline-block;
   border: 1px solid #9e9e9e;
   border-radius: 50px;
+}
+
+.colorBtn {
+  margin: 0 5px 5px 5px;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.colorBtnWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.colorBtnImg {
+  width: 15px;
+  height: 15px;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 button:focus {
@@ -193,7 +230,7 @@ button:focus {
 }
 
 #recommended {
-  padding-top: 10px;
+  margin: 10px 0;
   text-align: center;
 }
 
@@ -247,10 +284,7 @@ label:active:after {
 
 #colorPicker {
   border-radius: 50%;
-}
-
-#canvasWrapper {
-  padding: 5px 0;
+  cursor: pointer;
 }
 
 a {
