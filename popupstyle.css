@@ -116,18 +116,36 @@ body {
   padding: 12px 0 0 0;
 }
 
-#currentColorWrap {
-  display: flex;
-  align-items: center;
-  padding: 5px 0 0 0;
+button {
+  padding: 1px 6px 1px 4.5px;
 }
 
-.currentColor {
-  width: 25px;
-  height: 25px;
+button > img {
+  vertical-align: middle;
+}
+
+#active-color {
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+}
+
+#activeColorHeader {
+  padding: 0 100px 0 20px;
+}
+
+#addToFavs {
+  /* padding:2px; */
+  width: 30px;
+  height: 30px;
+  margin-right: 20px;
   border-radius: 50%;
-  border: 1px solid black;
-  margin: 0 0 0 5px
+  border: 1px solid #9e9e9e;
+}
+
+#addToFavsIcon {
+  width: 20px;
+  height: 20px;
 }
 
 .switchGroup {

@@ -23,6 +23,13 @@ ga("create", "UA-154659029-2", "auto", "Popup");
 ga("Popup.set", "checkProtocolTask", function () { }); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("Popup.require", "displayfeatures");
 
+function colorCalc(bgColor) {
+  var r = bgColor[0],
+    g = bgColor[1],
+    b = bgColor[2];
+  var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
+  return (yiq >= 127) ? 'black' : 'white';
+}
 
 //get current state of on/off switch
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
@@ -63,7 +70,10 @@ function loadBtn(key) {
 // save rgb to storage 
 function saveColor(colorToSave) {
   chrome.storage.sync.set({ highlightedRgbVal: colorToSave });
-  $('.currentColor').css('background-color', colorToSave);
+  $('#active-color').css('background-color', colorToSave);
+  var rgbValArr = colorToSave.replace(/[^\d,.]/g, '').split(',');
+  var textColor = colorCalc(rgbValArr);
+  $('#activeColorHeader').css('color', textColor);
   sendMsgToCS(0, "RBG changed")
 }
 
@@ -108,7 +118,11 @@ $(document).ready(async function () {
   });
 
   highlightedRgbVal = await loadRbgVal();
-  $('.currentColor').css('background-color', highlightedRgbVal);
+  $('#active-color').css('background-color', highlightedRgbVal)
+  var rgbValArr = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+  var textColor = colorCalc(rgbValArr);
+  $('#activeColorHeader').css('color', textColor)
+
 
   //save on/off switch value when it is changed
   $("#highlightedSwitch").change(async function () {
