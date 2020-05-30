@@ -155,6 +155,10 @@ button > img {
   color: #f6f4f7;
 }
 
+#addToFavs:hover {
+  background-color: #d6d6d6;
+}
+
 .addToFavsIcon {
   width: 20px;
   height: 20px;
