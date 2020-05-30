@@ -23,6 +23,14 @@ ga("create", "UA-154659029-2", "auto", "Popup");
 ga("Popup.set", "checkProtocolTask", function () { }); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("Popup.require", "displayfeatures");
 
+// calc most readable color based on bg color
+function colorCalc(bgColor) {
+  var r = bgColor[0],
+    g = bgColor[1],
+    b = bgColor[2];
+  var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
+  return (yiq >= 127) ? 'black' : 'white';
+}
 
 //get current state of on/off switch
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
@@ -63,8 +71,28 @@ function loadBtn(key) {
 // save rgb to storage 
 function saveColor(colorToSave) {
   chrome.storage.sync.set({ highlightedRgbVal: colorToSave });
-  $('.currentColor').css('background-color', colorToSave);
+  $('#active-color').css('background-color', colorToSave);
+  var colorRgbArr = colorToSave.replace(/[^\d,.]/g, '').split(',');
+  var color = colorCalc(colorRgbArr);
+  $('#activeColorHeader').css('color', color);
   sendMsgToCS(0, "RBG changed")
+}
+
+// save 'set' attribute to storage
+function saveAttr(el, val) {
+  el.attr('set', val);
+  var key = el[0].id + "set";
+  chrome.storage.sync.set({ [key]: val });
+}
+
+// get 'set' attribute from storage
+function getAttr(id) {
+  var key = id + 'set';
+  return new Promise(resolve => {
+    chrome.storage.sync.get([key], function (result) {
+      resolve(result[key])
+    });
+  });
 }
 
 //when first isntalled, set switch to true and save that value
@@ -73,8 +101,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
     $("#highlightedSwitch").prop("checked", true);
     //load favorites (if any)
     $(".colorBtn").each(async function () {
-      let favBtnBG = await loadBtn($(this).attr('id'));
-      $(this).css("background-color", favBtnBG);
+      saveAttr($(this), false);
     });
   }
 });
@@ -97,18 +124,42 @@ function getRgb(imgData) {
 }
 
 $(document).ready(async function () {
+  console.log($('.addToFavs').css('background-color'))
+  var rgbValArr;
+  var textColor;
   //load switch value from storage
   var loadedSwitchVal = await loadSwitchVal();
   $("#highlightedSwitch").prop("checked", loadedSwitchVal);
 
   //load favorites from storage
   $(".colorBtn").each(async function () {
-    let favBtnBG = await loadBtn($(this).attr('id'));
-    $(this).css("background-color", favBtnBG);
+    // load btn 'set' attributes and apply them to element
+    var btnAttr = await getAttr($(this).attr('id'));
+    $(this).attr('set', btnAttr)
+
+    // if button has been set (as a favorite), load that color
+    if ($(this).attr('set') == 'true') {
+      let favBtnBG = await loadBtn($(this).attr('id'));
+      $(this).css("background-color", favBtnBG);
+
+      // calc what color the eyedropper pic should be
+      rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
+      textColor = colorCalc(rgbValArr);
+      if (textColor == 'white') {
+        $(this).find('img').attr('src', 'eyedropper-w.png')
+      } else {
+        $(this).find('img').attr('src', 'eyedropper-b.png')
+      }
+    }
   });
 
+  // change the active color and calc color of text
   highlightedRgbVal = await loadRbgVal();
-  $('.currentColor').css('background-color', highlightedRgbVal);
+  $('#active-color').css('background-color', highlightedRgbVal)
+  rgbValArr = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+  textColor = colorCalc(rgbValArr);
+  $('#activeColorHeader').css('color', textColor)
+
 
   //save on/off switch value when it is changed
   $("#highlightedSwitch").change(async function () {
@@ -142,60 +193,30 @@ $(".recommendedBtn").click(function () {
   })
 });
 
-// set favorites with shift click, apply favorites with left click
-$('.colorBtn').click(async function (e) {
-  // shift click
-  if (e.shiftKey) {
-    // set the color of the favorite to the current color that is selected (visual)
-    let favBtnBG = await loadRbgVal();
-    $(this).css("background-color", favBtnBG)
-    // save the favorite
-    var id = $(this).attr('id');
-    chrome.storage.sync.set({ [id]: favBtnBG });
-    //prevent context menu
-    // $(this).contextmenu(function (e) {
-    //   e.preventDefault();
-    // });
-    // send GA event
-    ga("Popup.send", {
-      hitType: "event",
-      eventCategory: "Favorites",
-      eventAction: "setFavorite",
-      eventLabel: favBtnBG
-    })
-    // regular left click
-  } else {
-    // save value of btn to storage and update the highlighted line
-    highlightedRgbVal = await loadBtn($(this).attr("id"));
+// function to check if every value in array is true
+function checkIfSet(bool) {
+  return bool == 'true';
+}
 
-    // save color to storage and update line
-    saveColor(highlightedRgbVal)
-
-    // send GA event 
-    ga("Popup.send", {
-      hitType: "event",
-      eventCategory: "Favorites",
-      eventAction: "selectedFavorite",
-      eventLabel: highlightedRgbVal
-    })
-  }
-})
-
-// set favorites with right click (for users that may be used to it)
-$(".colorBtn").mousedown(async function (e) {
-  switch (e.which) {
-    // right click
-    case 3:
+$('#addToFavs').click(function () {
+  var isSet = []
+  var added = false;
+  $('.colorBtn').each(async function () {
+    if ($(this).attr('set') == 'false' && added === false) {
+      added = true;
       // set the color of the favorite to the current color that is selected (visual)
       let favBtnBG = await loadRbgVal();
       $(this).css("background-color", favBtnBG)
+      rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
+      textColor = colorCalc(rgbValArr);
+      if (textColor == 'white') {
+        $(this).find('img').attr('src', 'eyedropper-w.png')
+      } else {
+        $(this).find('img').attr('src', 'eyedropper-b.png')
+      }
       // save the favorite
       var id = $(this).attr('id');
       chrome.storage.sync.set({ [id]: favBtnBG });
-      //prevent context menu
-      $(this).contextmenu(function (e) {
-        e.preventDefault();
-      });
       // send GA event
       ga("Popup.send", {
         hitType: "event",
@@ -203,11 +224,27 @@ $(".colorBtn").mousedown(async function (e) {
         eventAction: "setFavorite",
         eventLabel: favBtnBG
       })
-      break;
-    default:
-      break;
+      saveAttr($(this), true);
+    }
+    // make an array of 'set' values
+    isSet.push($(this).attr('set'))
+  })
+  // if every value in 'isSet' array is true => error message
+  if (isSet.every(checkIfSet) == true && isSet.length == 5) {
+    $('#favErr').css('color', '#cc0000')
   }
-});
+})
+
+// delete favorite that corresponds with the delete button
+$('.deleteIcon').click(function() {
+  var favToDelete = $(this).attr('favToDelete');
+  if ($(favToDelete).attr('set') == 'true') {
+    $('#favErr').css('color', '#f6f4f7')
+    saveAttr($(favToDelete), false);
+    $(favToDelete).css('background-color', '');
+    $(favToDelete).find('img').attr('src', 'eyedropper-b.png');
+  }
+})
 
 //color picker
 var canvas = document.getElementById("colorPicker");

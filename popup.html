@@ -22,28 +22,47 @@
       <div class="colorGroup" id="recommended">
         <h3 class="settingHeader">Recommended Colors</h3>
         <div class="btnWrapper">
-          <button class="recommendedBtn" id="orangeBtn"></button>
-          <button class="recommendedBtn" id="peachBtn"></button>
-          <button class="recommendedBtn" id="yellowBtn"></button>
+          <button class="recommendedBtn" id="orangeBtn"><img src='eyedropper-b.png' class='colorBtnImg'></button>
+          <button class="recommendedBtn" id="peachBtn"><img src='eyedropper-b.png' class='colorBtnImg'></button>
+          <button class="recommendedBtn" id="yellowBtn"><img src='eyedropper-b.png' class='colorBtnImg'></button>
         </div>
-      </div>
-      <div id="currentColorWrap">
-        <small id="currentColorTxt">Current Color: </small>
-        <div class='currentColor'></div>
       </div>
       <div id="canvasWrapper">
         <canvas width="150" height="150" id="colorPicker"></canvas>
       </div>
+      <div id='small'>
+        <small id="favErr">Please delete a favorite and try again.</small>
+      </div>
+      <div id="active-color">
+        <h3 id='activeColorHeader'>Active Color</h3>
+        <button title="Click here to add the active color to favorites." id='addToFavs'><img src='bookmark-b.png' class='addToFavsIcon'></button>
+      </div>
       <div class="colorGroup" id="favorites">
-        <h3 class="settingHeader">Favorites</h3>
-        <div id="small">
-          <small>Shift + Left Click buttons below to set.</small>
+        <div id="favHead">
+          <img src='bookmark-b.png' style="padding-right: 3px;" class='addToFavsIcon'>
+          <h3 class="settingHeader">Favorites</h3>
         </div>
-        <div class="btnWrapper">
-          <button class="colorBtn" id="favBtn1"></button>
-          <button class="colorBtn" id="favBtn2"></button>
-          <button class="colorBtn" id="favBtn3"></button>
-          <button class="colorBtn" id="favBtn4"></button>
+        <div class="btnWrapper container">
+          <div class="colorBtnWrap">
+            <button set='false' class="colorBtn" id='favBtn1'><img src='eyedropper-b.png' class='colorBtnImg'></button>
+            <img favToDelete='#favBtn1' class="deleteIcon" src='deleteicon.png'>
+          </div>
+          <div class="colorBtnWrap">
+            <button set='false' class="colorBtn" id='favBtn2'><img src='eyedropper-b.png' class='colorBtnImg'></button>
+            <img favToDelete='#favBtn2' class="deleteIcon" src='deleteicon.png'>
+          </div>
+          <div class="colorBtnWrap">
+            <button set='false' class="colorBtn" id='favBtn3'><img src='eyedropper-b.png' class='colorBtnImg'></button>
+            <img favToDelete='#favBtn3' class="deleteIcon" src='deleteicon.png'>
+          </div>
+          <div class="colorBtnWrap">
+            <button set='false' class="colorBtn" id='favBtn4'><img src='eyedropper-b.png' class='colorBtnImg'></button>
+            <img favToDelete='#favBtn4' class="deleteIcon" src='deleteicon.png'>
+          </div>
+          <div class="colorBtnWrap">
+            <button set='false' class="colorBtn" id='favBtn5'><img src='eyedropper-b.png' class='colorBtnImg'></button>
+            <img favToDelete='#favBtn5' class="deleteIcon" src='deleteicon.png'>
+          </div>
         </div>
       </div>
     </div>
