@@ -193,6 +193,19 @@ $(".recommendedBtn").click(function () {
   })
 });
 
+$('.colorBtn').click(function () {
+  // save color to storage and update line
+  saveColor($(this).css("background-color"))
+
+  // send GA event 
+  ga("Popup.send", {
+    hitType: "event",
+    eventCategory: "Favorites",
+    eventAction: "selectedFavorite",
+    eventLabel: highlightedRgbVal
+  })
+})
+
 // function to check if every value in array is true
 function checkIfSet(bool) {
   return bool == 'true';
@@ -236,7 +249,7 @@ $('#addToFavs').click(function () {
 })
 
 // delete favorite that corresponds with the delete button
-$('.deleteIcon').click(function() {
+$('.deleteIcon').click(function () {
   var favToDelete = $(this).attr('favToDelete');
   if ($(favToDelete).attr('set') == 'true') {
     $('#favErr').css('color', '#f6f4f7')
