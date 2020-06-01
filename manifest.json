@@ -15,7 +15,7 @@
     }],
     "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
     "browser_action": {
-        "default_popup": "popup.html",
+        "default_popup": "defaultPopup.html",
         "default_title": "OneLine"
     },
     "icons": {

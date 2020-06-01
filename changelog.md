@@ -4,6 +4,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [05/31/2020]
 ### Added
  - check if color btn is set or not before applying the bg color
+ - Menu interface so OneLine can hold more settings
 
 ### Changed
  - version number to v1.5

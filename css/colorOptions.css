@@ -83,18 +83,21 @@
 
 /* latin */
 @font-face {
-    font-family: 'Arvo';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: local('Arvo'), url(https://fonts.gstatic.com/s/arvo/v13/tDbD2oWUg0MKqScQ7Q.woff2) format('woff2');
-    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-  }
+  font-family: "Arvo";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Arvo"),
+    url(https://fonts.gstatic.com/s/arvo/v13/tDbD2oWUg0MKqScQ7Q.woff2)
+      format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
 
 html,
 body {
   width: 300px;
-  height: 600px;
   background-color: #f6f4f7;
   margin: 0 auto;
   font-family: "Roboto", sans-serif;
@@ -102,10 +105,49 @@ body {
   color: #010103;
 }
 
-#imgHeader {
-  display: block;
-  margin: 0 auto;
-  padding: 5px 0px;
+#backLink {
+  color: #010103;
+  text-decoration: none;
+}
+
+#backContainer {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 50px;
+}
+
+#row1 {
+  grid-row-start: 1;
+  grid-row-end: 2;
+  grid-column-start: 1;
+  grid-column-end: 2;
+  display: grid;
+  grid-template-columns: 30px 30px auto;
+}
+
+
+#backToMenu {
+  width: 15px;
+  grid-column-start: 0;
+  grid-column-start: 1;
+  align-self: center;
+  justify-self: right;
+}
+
+#backTitle {
+  grid-column-start: 1;
+  grid-column-start: 2;
+  align-self: center;
+  justify-self: left;
+}
+
+#backContainer:hover {
+  background-color: #e8e8e8;
+}
+
+hr {
+  padding: 0;
+  margin: 0;
 }
 
 .optionsWrap {
@@ -297,19 +339,20 @@ label:active:after {
 }
 
 a {
-    color: #2a7861;
+  color: #2a7861;
 }
 
 a:hover {
-    color: #2a7861;
+  color: #2a7861;
 }
 
-small, .creditP {
-    font-size: 11px;
-    font-weight: 600;
+small,
+.creditP {
+  font-size: 11px;
+  font-weight: 600;
 }
 
 #credits {
-    text-align: center;
-    padding: 3px 0;
+  text-align: center;
+  padding: 3px 0;
 }

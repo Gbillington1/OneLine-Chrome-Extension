@@ -1,0 +1,50 @@
+html,
+body {
+  width: 300px;
+  /* height: 600px; */
+  background-color: #f6f4f7;
+  margin: 0 auto;
+  font-family: "Roboto", sans-serif;
+  letter-spacing: 2px;
+  color: #010103;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#backContainer {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 50px;
+  }
+  
+  #row1 {
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    display: grid;
+    grid-template-columns: 30px 30px auto;
+  }
+  
+  
+  #backToMenu {
+    width: 15px;
+    grid-column-start: 0;
+    grid-column-start: 1;
+    align-self: center;
+    justify-self: right;
+  }
+  
+  #backTitle {
+    grid-column-start: 1;
+    grid-column-start: 2;
+    align-self: center;
+    justify-self: left;
+  }
+  
+  #backContainer:hover {
+    background-color: #e8e8e8;
+  }
