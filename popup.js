@@ -194,15 +194,18 @@ $(".recommendedBtn").click(function () {
 
 $('.colorBtn').click(function () {
   // save color to storage and update line
-  saveColor($(this).css("background-color"))
+  if ($(this).attr('set') == 'true') {
+    saveColor($(this).css("background-color"))
+    
+    // send GA event 
+    ga("Popup.send", {
+      hitType: "event",
+      eventCategory: "Favorites",
+      eventAction: "selectedFavorite",
+      eventLabel: highlightedRgbVal
+    })
+  }
 
-  // send GA event 
-  ga("Popup.send", {
-    hitType: "event",
-    eventCategory: "Favorites",
-    eventAction: "selectedFavorite",
-    eventLabel: highlightedRgbVal
-  })
 })
 
 // function to check if every value in array is true

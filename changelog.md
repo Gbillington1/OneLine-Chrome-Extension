@@ -3,7 +3,11 @@ All changes made after 05/30/2020 will be documented in this file.
 
 ## [05/31/2020]
 ### Added
- - Changed version number to v1.5
+ - check if color btn is set or not before applying the bg color
+
+### Changed
+ - version number to v1.5
+ - Organized files into folders
 
 ## [05/30/2020]
 ### Added
