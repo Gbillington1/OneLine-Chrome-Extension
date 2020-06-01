@@ -1,6 +1,6 @@
 {
     "name": "OneLine",
-    "version": "1.4.2",
+    "version": "1.5",
     "description": "OneLine highlights a single line to focus your reading.",
     "permissions": ["http://*/*", "https://*/*", "activeTab", "storage"],
     "background": {
@@ -8,8 +8,8 @@
         "persistent": true
     },
     "content_scripts":[{
-        "css": ["style.css"],
-        "js": ["jquery-3.4.1.min.js", "splitting.min.js", "textReader.js"],
+        "css": ["css/style.css"],
+        "js": ["libs/jquery-3.4.1.min.js", "libs/splitting.min.js", "textReader.js"],
         "matches": ["http://*/*", "https://*/*"],
         "exclude_globs": ["*://www.google.com/search?*"]
     }],
@@ -19,8 +19,8 @@
         "default_title": "OneLine"
     },
     "icons": {
-        "128": "icon128.png",
-        "48": "icon48.png"
+        "128": "images/icon128.png",
+        "48": "images/icon48.png"
     },
     "manifest_version": 2
 }

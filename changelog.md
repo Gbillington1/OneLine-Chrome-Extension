@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [05/31/2020]
+### Added
+ - Changed version number to v1.5
+
 ## [05/30/2020]
 ### Added
  - changelog

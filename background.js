@@ -53,10 +53,10 @@ chrome.runtime.onInstalled.addListener(function (details) {
     }
   // redirect to update page on update
   } else if (details.reason == "update") {
-    chrome.tabs.create({
-      url: 'https://useoneline.com/updates/v1.4/v1.4.2/',
-      active: true
-    })
+    // chrome.tabs.create({
+    //   url: 'https://useoneline.com/updates/v1.4/v1.4.2/',
+    //   active: true
+    // })
   }
 
   return false;
