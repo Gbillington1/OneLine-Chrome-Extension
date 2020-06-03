@@ -23,6 +23,11 @@ ga("create", "UA-154659029-2", "auto", "Popup");
 ga("Popup.set", "checkProtocolTask", function () { }); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("Popup.require", "displayfeatures");
 
+// set the current page to the defaut popup when back button is clicked
+$('#backLink').click(function () {
+  chrome.storage.sync.set({ currentPage: 'defaultPopup.html'});
+})
+
 // calc most readable color based on bg color
 function colorCalc(bgColor) {
   var r = bgColor[0],
@@ -144,10 +149,11 @@ $(document).ready(async function () {
       // calc what color the eyedropper pic should be
       rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
       textColor = colorCalc(rgbValArr);
+      console.log(textColor)
       if (textColor == 'white') {
         $(this).find('img').attr('src', 'images/eyedropper-w.png')
       } else {
-        $(this).find('img').attr('src', 'imgaes/eyedropper-b.png')
+        $(this).find('img').attr('src', 'images/eyedropper-b.png')
       }
     }
   });
