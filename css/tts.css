@@ -115,6 +115,50 @@ h3 {
   margin: 10px 0;
 }
 
+button {
+  padding: 1px 6px 1px 4.5px;
+  border-radius: 25px;
+  width: 75px;
+  height: 30px;
+  color: #f6f4f7;
+  outline: none;
+  border: 2px solid #54bfa0;
+  background-color: #54bfa0;
+}
+
+button:hover {
+  transition-duration: 0.2s;
+  background-color: #f6f4f7;
+  color: #54bfa0;
+  border-color:#54bfa0;
+  cursor: pointer;
+}
+
+#submit {
+  margin: 10px 0;
+}
+
+#select {
+  width: 80%;
+}
+
+#rateWrapper {
+  width: 80%;
+  margin: 0 auto;
+}
+
+#rate {
+  color: red;
+}
+
+#rateValue {
+  font-size: 14px;
+}
+
+#rateAndVal {
+  width: 100%;
+}
+
 #backContainer {
   display: grid;
   grid-template-columns: auto;
