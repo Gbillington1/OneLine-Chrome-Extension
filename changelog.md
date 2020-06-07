@@ -6,6 +6,7 @@ All changes made after 05/30/2020 will be documented in this file.
  - styling for tts popup
  - js to only set default values in background if they are undefined
  - rate saves and updates when changed
+ - transitions to hoverstates on tabs and back buttons
 
 ### Changed
  - popup.js to colorOptions.js
