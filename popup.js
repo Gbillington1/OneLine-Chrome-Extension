@@ -25,7 +25,7 @@ ga("Popup.require", "displayfeatures");
 
 // set the current page to the defaut popup when back button is clicked
 $('#backLink').click(function () {
-  chrome.storage.sync.set({ currentPage: 'defaultPopup.html'});
+  chrome.storage.sync.set({ currentPage: 'defaultPopup.html' });
 })
 
 // calc most readable color based on bg color
@@ -41,7 +41,7 @@ function colorCalc(bgColor) {
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
 var highlightedRgbVal;
 
-//function to load value from storage that was saved in saveVal()
+//function to load swtich value from storage
 function loadSwitchVal() {
   let value = new Promise(resolve => {
     chrome.storage.sync.get("highlightedSwitch", function (result) {
@@ -97,13 +97,24 @@ function getAttr(id) {
   });
 }
 
+//initiate connection with background page
+chrome.runtime.sendMessage({ msg: "initiate" });
+
 //when first isntalled, set switch to true and save that value
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
   if (request.msg == "Extension installed") {
-    $("#highlightedSwitch").prop("checked", true);
-    //load favorites (if any)
+
+    // loop through favorites and load them if they have previously been set
     $(".colorBtn").each(async function () {
-      saveAttr($(this), false);
+      var set = await getAttr($(this).attr('id'));
+
+      if (set === undefined) {
+        saveAttr($(this), false);
+      } else if (set) {
+        $(this).attr('set', set);
+        var favBtnBg = await loadRbgVal($(this).attr('id'))
+        $(this).css('background-color', favBtnBg)
+      }
     });
   }
 });
@@ -146,7 +157,6 @@ $(document).ready(async function () {
       // calc what color the eyedropper pic should be
       rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
       textColor = colorCalc(rgbValArr);
-      console.log(textColor)
       if (textColor == 'white') {
         $(this).find('img').attr('src', 'images/eyedropper-w.png')
       } else {
@@ -199,7 +209,7 @@ $('.colorBtn').click(function () {
   // save color to storage and update line
   if ($(this).attr('set') == 'true') {
     saveColor($(this).css("background-color"))
-    
+
     // send GA event 
     ga("Popup.send", {
       hitType: "event",

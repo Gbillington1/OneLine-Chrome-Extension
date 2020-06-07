@@ -20,19 +20,63 @@
 ); // Note: https protocol here
 
 ga("create", "UA-154659029-2", "auto");
-ga("set", "checkProtocolTask", function () {}); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
+ga("set", "checkProtocolTask", function () { }); // Removes failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 ga("require", "displayfeatures");
 ga("send", "pageview", "/OneLineExtensionBackground"); // Specify the virtual path
+
+//function to load swtich value from storage
+function loadSwitchVal() {
+  let value = new Promise(resolve => {
+    chrome.storage.sync.get("highlightedSwitch", function (result) {
+      resolve(result.highlightedSwitch);
+    });
+  });
+  return value;
+}
+
+//function to load rate from storage
+function getRate() {
+  let value = new Promise(resolve => {
+    chrome.storage.sync.get("rate", function (result) {
+      resolve(result.rate);
+    });
+  });
+  return value;
+}
+
+//load the color picker value
+function loadRbgVal() {
+  let value = new Promise(resolve => {
+    chrome.storage.sync.get("highlightedRgbVal", function (result) {
+      resolve(result.highlightedRgbVal);
+    });
+  });
+  return value;
+}
 
 //when installed, set var to true
 var isInstalled = false;
 chrome.runtime.onInstalled.addListener(function (details) {
   isInstalled = true;
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    // turning the program on by default
-    chrome.storage.sync.set({ highlightedSwitch: true });
-    // setting the default highlighted color
-    chrome.storage.sync.set({ highlightedRgbVal: "rgb(248, 253, 137)" });
+  chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
+
+    // check if values have been set
+    // if they haven't => set them
+
+    var switchVal = await loadSwitchVal();
+    if (switchVal === undefined) {
+      chrome.storage.sync.set({ highlightedSwitch: true });
+    }
+
+    var rate = await getRate();
+    if (rate === undefined) {
+      chrome.storage.sync.set({ rate: 1 });
+    }
+
+    var rgbVal = await loadRbgVal();
+    if (rgbVal === undefined) {
+      chrome.storage.sync.set({ highlightedRgbVal: "rgb(248, 253, 137)" });
+    }
   });
 
   // redirect to thankyou page on install 
@@ -43,15 +87,15 @@ chrome.runtime.onInstalled.addListener(function (details) {
     });
     var reload = confirm('For OneLine to work right away, every tab in Chrome must be reloaded. Should OneLine reload all of your tabs for you right now?')
     if (reload) {
-      chrome.tabs.query({status:'complete'}, (tabs)=>{
-        tabs.forEach((tab)=>{
-            if(tab.url){
-                chrome.tabs.update(tab.id,{url: tab.url});
-             }
-            });
+      chrome.tabs.query({ status: 'complete' }, (tabs) => {
+        tabs.forEach((tab) => {
+          if (tab.url) {
+            chrome.tabs.update(tab.id, { url: tab.url });
+          }
         });
+      });
     }
-  // redirect to update page on update
+    // redirect to update page on update
   } else if (details.reason == "update") {
     // chrome.tabs.create({
     //   url: 'https://useoneline.com/updates/v1.4/v1.4.2/',

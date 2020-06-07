@@ -1,6 +1,15 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/06/2020]
+### Added
+ - styling for tts popup
+ - js to only set default values in background if they are undefined
+ - rate saves and updates when changed
+
+### Changed 
+ - initiation message moved from color options popup to default popup
+
 ## [06/04/2020]
 ### Added
  - start button to tts popup

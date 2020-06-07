@@ -1,4 +1,13 @@
-$(document).ready(function () {
+function getRate() {
+    return new Promise(resolve => {
+        chrome.storage.sync.get('rate', function(result) {
+            resolve(result.rate)
+        })
+    })
+}
+
+
+$(document).ready(async function () {
 
     // set the currentPage to defaultPopup when the back button is clicked
     $('#backLink').click(function () {
@@ -33,7 +42,15 @@ $(document).ready(function () {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
-    var rate = $('#rate').val();
-    $('#rate')
+    var rate = await getRate();
+    $('#rate').val(rate);
+    $('#rateValue').html(rate + 'x');
+    console.log('set')
+
+    $('#rate').change(function() {
+        rate = $(this).val()
+        chrome.storage.sync.set({ rate: rate });
+        $('#rateValue').html(rate + 'x');
+    })
 
 })

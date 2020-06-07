@@ -138,6 +138,10 @@ window.onload = async function () {
 
     // update color of line and text
     highlightedRgbVal = await getRBGValue();
+    // if rgb val hasn't been set => set it 
+    if (highlightedRgbVal === undefined) {
+      highlightedRgbVal = 'rgb(248, 253, 137)';
+    }
     updateBG(highlightedRgbVal);
 
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
