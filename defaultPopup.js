@@ -1,3 +1,7 @@
+//initiate connection with background page
+chrome.runtime.sendMessage({ msg: "initiate" });
+
+
 // function that returns the value of 'currentPage'
 function getCurrentPage() {
     let value = new Promise(resolve => {

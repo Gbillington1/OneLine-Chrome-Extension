@@ -41,9 +41,6 @@ function colorCalc(bgColor) {
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
 var highlightedRgbVal;
 
-//initiate connection with background page
-chrome.runtime.sendMessage({ msg: "initiate" });
-
 //function to load value from storage that was saved in saveVal()
 function loadSwitchVal() {
   let value = new Promise(resolve => {

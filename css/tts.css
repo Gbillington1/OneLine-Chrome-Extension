@@ -124,13 +124,14 @@ button {
   outline: none;
   border: 2px solid #54bfa0;
   background-color: #54bfa0;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
 }
 
 button:hover {
   transition-duration: 0.2s;
-  background-color: #f6f4f7;
-  color: #54bfa0;
-  border-color:#54bfa0;
+  opacity: 1;
   cursor: pointer;
 }
 
@@ -148,7 +149,36 @@ button:hover {
 }
 
 #rate {
-  color: red;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  width: 80%;
+  outline: none;
+  border-radius: 25px;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  background: #54bfa0;
+}
+
+#rate:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#rate::-webkit-slider-thumb {
+  border-radius: 50px;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  -webkit-transition: .2s;
+  transition: background .2s;
+  background: #357a66;
+}
+
+#rate::-webkit-slider-thumb:hover {
+  background: #2c6655;
 }
 
 #rateValue {

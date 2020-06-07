@@ -5,6 +5,7 @@ $(document).ready(function () {
         chrome.storage.sync.set({ currentPage: 'defaultPopup.html' });
     })
 
+    // populate voices
     var synth = window.speechSynthesis;
     var select = $('#select')
 
@@ -31,5 +32,8 @@ $(document).ready(function () {
     if (speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
+
+    var rate = $('#rate').val();
+    $('#rate')
 
 })
