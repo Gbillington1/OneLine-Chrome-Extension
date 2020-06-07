@@ -114,6 +114,8 @@ body {
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 50px;
+  -webkit-transition: .2s;
+  transition: background-color .2s;
 }
 
 #row1 {
