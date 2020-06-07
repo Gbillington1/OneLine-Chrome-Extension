@@ -7,8 +7,8 @@ All changes made after 05/30/2020 will be documented in this file.
  - js to only set default values in background if they are undefined
  - rate saves and updates when changed
 
-### Changed 
- - initiation message moved from color options popup to default popup
+### Changed
+ - popup.js to colorOptions.js
 
 ## [06/04/2020]
 ### Added
