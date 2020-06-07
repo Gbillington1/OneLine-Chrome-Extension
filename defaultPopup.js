@@ -15,8 +15,8 @@ $(document).ready(async function () {
     // only enter if value isn't undefined
     if (currentPage !== undefined) {
         // determine which page to load
-        if (currentPage == 'colorOption.html') {
-            window.location.href = 'colorOption.html';
+        if (currentPage == 'colorOptions.html') {
+            window.location.href = 'colorOptions.html';
         } else if (currentPage == 'textToSpeech.html') {
             window.location.href = 'textToSpeech.html'
         }
@@ -24,8 +24,8 @@ $(document).ready(async function () {
 
     // if "change color" is clicked, navigate to that page and set it as the current page
     $("#row1").click(function () {
-        chrome.storage.sync.set({ currentPage: 'colorOption.html' });
-        window.location.href = 'colorOption.html'
+        chrome.storage.sync.set({ currentPage: 'colorOptions.html' });
+        window.location.href = 'colorOptions.html'
     })
 
     // if "Text to Speech" is clicked, navigate to that page and set it as the current page
