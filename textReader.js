@@ -181,8 +181,7 @@ window.onload = async function () {
       }
       if (request.msg == 'tts started') {
         rate = await getRate();
-        console.log(rate)
-        var utterThis = new SpeechSynthesisUtterance('test');
+        var utterThis = new SpeechSynthesisUtterance('testing testing 1 2 3');
         utterThis.pitch = pitch;
         utterThis.rate = rate;
         synth.speak(utterThis);

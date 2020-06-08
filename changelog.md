@@ -1,6 +1,12 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/07/2020]
+### Added
+ - JS to speak when start button is pressed
+ - start to saving the voice
+
+
 ## [06/06/2020]
 ### Added
  - styling for tts popup
@@ -40,6 +46,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
+[06/07/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/06bf9b3..HEAD
 [06/06/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/06bf9b3..HEAD
 [06/04/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extnesion/compare/99a0bed..6ceb18a
 [06/02/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/de90531..675c448

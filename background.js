@@ -44,6 +44,15 @@ function getRate() {
   return value;
 }
 
+// gets voice from storage
+function getVoice() {
+  return new Promise(resolve => {
+      chrome.storage.sync.get('voice', function (result) {
+          resolve(result.voice)
+      })
+  })
+}
+
 //load the color picker value
 function loadRbgVal() {
   let value = new Promise(resolve => {
@@ -72,6 +81,11 @@ chrome.runtime.onInstalled.addListener(function (details) {
     if (rate === undefined) {
       chrome.storage.sync.set({ rate: 1 });
     }
+
+    // var voice = await getVoice();
+    // if (voice == undefined) {
+    //   chrome.storage.sync.set({ voice: 'Microsoft David Desktop - English (United States)'})
+    // }
 
     var rgbVal = await loadRbgVal();
     if (rgbVal === undefined) {

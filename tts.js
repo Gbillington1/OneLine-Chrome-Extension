@@ -7,12 +7,21 @@ function getRate() {
     })
 }
 
+// gets voice from storage
+function getVoice() {
+    return new Promise(resolve => {
+        chrome.storage.sync.get('voice', function (result) {
+            resolve(result.voice)
+        })
+    })
+}
+
 // function to easily send messages to CS 
 function sendMsgToCS(tabNumber, message) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      chrome.tabs.sendMessage(tabs[tabNumber].id, { msg: message });
+        chrome.tabs.sendMessage(tabs[tabNumber].id, { msg: message });
     });
-  }
+}
 
 $(document).ready(async function () {
 
@@ -27,6 +36,19 @@ $(document).ready(async function () {
     var voiceSelect = document.querySelector('select');
 
     var voices = [];
+
+    var voiceIndex;
+
+    // find selected voice - returns index
+    function findSelectedVoice(selectEl) {
+        var selectedOption = selectEl.selectedOptions[0].getAttribute('data-name');
+        for (i = 0; i < voices.length; i++) {
+            if (voices[i].name === selectedOption) {
+                console.log(voices[i])
+                return i;
+            }
+        }
+    }
 
     function populateVoiceList() {
         voices = synth.getVoices();
@@ -61,23 +83,30 @@ $(document).ready(async function () {
         $('#rateValue').html(rate + 'x');
     })
 
+    // var voice = await getVoice();
+    // voiceIndex = findSelectedVoice(voiceSelect);
+    // $('#select').change(function () {
+    //     voiceIndex = findSelectedVoice(voiceSelect);
+    //     chrome.storage.sync.set({ currentVoice: voices[voiceIndex] })
+
+    //     // voice = $(this).find(':selected').attr('data-name')
+    // })
+
     $('#ttsForm').submit(function (e) {
         e.preventDefault();
 
-        // tell CS that the tts should start
-        // somehow pass the correct voice over to the CS (along with rate)
 
-        // var utterThis = new SpeechSynthesisUtterance(inputTxt.value);
-        var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
-        for (i = 0; i < voices.length; i++) {
-            if (voices[i].name === selectedOption) {
-                chrome.storage.sync.set({ currentVoice: voices[i] })
-                // utterThis.voice = voices[i];
-            }
-        }
-        
+        voiceIndex = findSelectedVoice(voiceSelect);
+        console.log(voices[voiceIndex])
+        chrome.storage.sync.set({ currentVoice: voices[voiceIndex] })
+        // var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+        // for (i = 0; i < voices.length; i++) {
+        //     if (voices[i].name === selectedOption) {
+        //         chrome.storage.sync.set({ currentVoice: voices[i] })
+        //     }
+        // }
+
         sendMsgToCS(0, 'tts started');
-        // synth.speak(utterThis);
     })
 
 })
