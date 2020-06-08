@@ -32,6 +32,16 @@ function textColor(bgColor) {
   return (yiq >= 135) ? 'black' : 'white';
 }
 
+// gets rate from storage
+function getRate() {
+  return new Promise(resolve => {
+      chrome.storage.sync.get('rate', function (result) {
+          resolve(result.rate)
+      })
+  })
+}
+
+
 // globals
 
 // indecies 
@@ -59,9 +69,6 @@ var resize = false;
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
 var topOfScreen = $(window).scrollTop();
 
-
-// vars about the words
-
 // offsets
 var currentWordTop;
 var currentWordBottom;
@@ -72,6 +79,11 @@ var lineHeight;
 var highlightedRgbVal; // color of the line
 var colorToChangeTo;
 var currentLine;
+
+// for tts
+var synth = window.speechSynthesis;
+var rate;
+var pitch = 1;
 
 window.onload = async function () {
 
@@ -166,6 +178,14 @@ window.onload = async function () {
         currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
         colorToChangeTo = textColor(currentHighlighter);
         $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
+      }
+      if (request.msg == 'tts started') {
+        rate = await getRate();
+        console.log(rate)
+        var utterThis = new SpeechSynthesisUtterance('test');
+        utterThis.pitch = pitch;
+        utterThis.rate = rate;
+        synth.speak(utterThis);
       }
     });
 

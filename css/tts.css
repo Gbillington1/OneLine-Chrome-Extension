@@ -232,3 +232,7 @@ button:hover {
   width: 80%;
   margin: 0 auto;
 }
+
+#select {
+  cursor: pointer;
+}

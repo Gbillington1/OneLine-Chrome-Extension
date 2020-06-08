@@ -1,11 +1,18 @@
+// gets rate from storage
 function getRate() {
     return new Promise(resolve => {
-        chrome.storage.sync.get('rate', function(result) {
+        chrome.storage.sync.get('rate', function (result) {
             resolve(result.rate)
         })
     })
 }
 
+// function to easily send messages to CS 
+function sendMsgToCS(tabNumber, message) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[tabNumber].id, { msg: message });
+    });
+  }
 
 $(document).ready(async function () {
 
@@ -16,7 +23,8 @@ $(document).ready(async function () {
 
     // populate voices
     var synth = window.speechSynthesis;
-    var select = $('#select')
+
+    var voiceSelect = document.querySelector('select');
 
     var voices = [];
 
@@ -33,7 +41,7 @@ $(document).ready(async function () {
 
             option.setAttribute('data-lang', voices[i].lang);
             option.setAttribute('data-name', voices[i].name);
-            select.append(option);
+            voiceSelect.appendChild(option);
         }
     }
 
@@ -42,15 +50,34 @@ $(document).ready(async function () {
         speechSynthesis.onvoiceschanged = populateVoiceList;
     }
 
+    // save/update rate on change
     var rate = await getRate();
     $('#rate').val(rate);
     $('#rateValue').html(rate + 'x');
-    console.log('set')
 
-    $('#rate').change(function() {
+    $('#rate').change(function () {
         rate = $(this).val()
         chrome.storage.sync.set({ rate: rate });
         $('#rateValue').html(rate + 'x');
+    })
+
+    $('#ttsForm').submit(function (e) {
+        e.preventDefault();
+
+        // tell CS that the tts should start
+        // somehow pass the correct voice over to the CS (along with rate)
+
+        // var utterThis = new SpeechSynthesisUtterance(inputTxt.value);
+        var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
+        for (i = 0; i < voices.length; i++) {
+            if (voices[i].name === selectedOption) {
+                chrome.storage.sync.set({ currentVoice: voices[i] })
+                // utterThis.voice = voices[i];
+            }
+        }
+        
+        sendMsgToCS(0, 'tts started');
+        // synth.speak(utterThis);
     })
 
 })
