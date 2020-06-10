@@ -1,11 +1,17 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/09/2020]
+### Added
+ - saving voice in popup
+ - sending voice to tts instance in text reader 
+ - speaking current paragraph on start 
+ - pause button that does nothing
+
 ## [06/07/2020]
 ### Added
  - JS to speak when start button is pressed
  - start to saving the voice
-
 
 ## [06/06/2020]
 ### Added

@@ -35,9 +35,18 @@ function textColor(bgColor) {
 // gets rate from storage
 function getRate() {
   return new Promise(resolve => {
-      chrome.storage.sync.get('rate', function (result) {
-          resolve(result.rate)
-      })
+    chrome.storage.sync.get('rate', function (result) {
+      resolve(result.rate)
+    })
+  })
+}
+
+// gets voice from storage
+function getVoice() {
+  return new Promise(resolve => {
+    chrome.storage.sync.get('currentVoice', function (result) {
+      resolve(result.currentVoice)
+    })
   })
 }
 
@@ -82,8 +91,11 @@ var currentLine;
 
 // for tts
 var synth = window.speechSynthesis;
+var voices = synth.getVoices();
+var voiceIndex;
 var rate;
 var pitch = 1;
+var isPaused;
 
 window.onload = async function () {
 
@@ -159,6 +171,30 @@ window.onload = async function () {
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
     colorToChangeTo = textColor(currentHighlighter);
 
+    async function textToSpeech() {
+      // get rate and voice index from storage
+      rate = await getRate();
+      voiceIndex = await getVoice();
+      // create speech instance with highlighted line as the text input
+      var utterThis = new SpeechSynthesisUtterance($(paras[paraIndex]).text());
+      // form the utterThis obj 
+      utterThis.voice = voices[voiceIndex];
+      utterThis.pitch = pitch;
+      utterThis.rate = rate;
+      // speeak
+      synth.speak(utterThis);
+
+      utterThis.addEventListener('end', function(e) {
+        console.log('ended')
+        $(function() {
+          var e = $.Event('keyup');
+          e.keyCode = 40;
+          $(document).trigger(e);
+          isPaused = false;
+        })
+      })
+    }
+
     // listen for changed in RGB and tab changes => update color of line and text
     chrome.runtime.onMessage.addListener(async function (
       request,
@@ -180,11 +216,11 @@ window.onload = async function () {
         $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
       }
       if (request.msg == 'tts started') {
-        rate = await getRate();
-        var utterThis = new SpeechSynthesisUtterance('testing testing 1 2 3');
-        utterThis.pitch = pitch;
-        utterThis.rate = rate;
-        synth.speak(utterThis);
+        isPaused = false;
+          textToSpeech();
+      }
+      if (request.msg == 'paused') {
+        isPaused = true;
       }
     });
 
@@ -273,7 +309,7 @@ window.onload = async function () {
         // if difference is greater than lineheight (that means its line break)
         if (i == 0 || differences[i] >= lineHeight) {
           // ignore whitespaces (workaround for splitting.js issue)
-          
+
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
             // form arrays for the first word of every line
             // top offset of first word
@@ -342,6 +378,7 @@ window.onload = async function () {
 
     //see keyup handler
     function handleKeyPress(e) {
+      console.log(e.keyCode)
       // dont run in inputs or text areas
       if (!$(e.target).is("input, textarea")) {
         //up arrow OR w

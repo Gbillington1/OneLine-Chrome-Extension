@@ -10,8 +10,8 @@ function getRate() {
 // gets voice from storage
 function getVoice() {
     return new Promise(resolve => {
-        chrome.storage.sync.get('voice', function (result) {
-            resolve(result.voice)
+        chrome.storage.sync.get('currentVoice', function (result) {
+            resolve(result.currentVoice)
         })
     })
 }
@@ -44,7 +44,6 @@ $(document).ready(async function () {
         var selectedOption = selectEl.selectedOptions[0].getAttribute('data-name');
         for (i = 0; i < voices.length; i++) {
             if (voices[i].name === selectedOption) {
-                console.log(voices[i])
                 return i;
             }
         }
@@ -83,30 +82,25 @@ $(document).ready(async function () {
         $('#rateValue').html(rate + 'x');
     })
 
-    // var voice = await getVoice();
-    // voiceIndex = findSelectedVoice(voiceSelect);
-    // $('#select').change(function () {
-    //     voiceIndex = findSelectedVoice(voiceSelect);
-    //     chrome.storage.sync.set({ currentVoice: voices[voiceIndex] })
+    // load selected index from storage and set it in the dropdown 
+    voiceIndex = await getVoice();
+    $('#select').get(0).selectedIndex = voiceIndex;
 
-    //     // voice = $(this).find(':selected').attr('data-name')
-    // })
+    // save selected index on change
+    $('#select').change(function () {
+        voiceIndex = findSelectedVoice(voiceSelect);
+        chrome.storage.sync.set({ currentVoice: voiceIndex })
+    })
 
+    // on submit, send message
     $('#ttsForm').submit(function (e) {
         e.preventDefault();
 
-
-        voiceIndex = findSelectedVoice(voiceSelect);
-        console.log(voices[voiceIndex])
-        chrome.storage.sync.set({ currentVoice: voices[voiceIndex] })
-        // var selectedOption = voiceSelect.selectedOptions[0].getAttribute('data-name');
-        // for (i = 0; i < voices.length; i++) {
-        //     if (voices[i].name === selectedOption) {
-        //         chrome.storage.sync.set({ currentVoice: voices[i] })
-        //     }
-        // }
-
         sendMsgToCS(0, 'tts started');
+    })
+
+    $('#pause').click(function() {
+        sendMsgToCS(0, 'paused');
     })
 
 })

@@ -47,8 +47,8 @@ function getRate() {
 // gets voice from storage
 function getVoice() {
   return new Promise(resolve => {
-      chrome.storage.sync.get('voice', function (result) {
-          resolve(result.voice)
+      chrome.storage.sync.get('currentVoice', function (result) {
+          resolve(result.currentVoice)
       })
   })
 }
@@ -82,10 +82,10 @@ chrome.runtime.onInstalled.addListener(function (details) {
       chrome.storage.sync.set({ rate: 1 });
     }
 
-    // var voice = await getVoice();
-    // if (voice == undefined) {
-    //   chrome.storage.sync.set({ voice: 'Microsoft David Desktop - English (United States)'})
-    // }
+    var voice = await getVoice();
+    if (voice == undefined) {
+      chrome.storage.sync.set({ currentVoice: 0 })
+    }
 
     var rgbVal = await loadRbgVal();
     if (rgbVal === undefined) {
