@@ -1,6 +1,13 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/11/2020]
+### Added
+ - 
+
+### changed
+ - some if statements into switch case statements
+
 ## [06/09/2020]
 ### Added
  - saving voice in popup
