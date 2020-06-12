@@ -2,11 +2,10 @@
 All changes made after 05/30/2020 will be documented in this file.
 
 ## [06/11/2020]
-### Added
- - 
 
 ### changed
  - some if statements into switch case statements
+ - rate slider values 
 
 ## [06/09/2020]
 ### Added
@@ -59,7 +58,8 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[06/09/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/8b09872..HEAD
+[06/11/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/baa5eaa..HEAD
+[06/09/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/8b09872..6151166
 [06/07/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/a47577a..12594eb
 [06/06/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/06bf9b3..5538d9d
 [06/04/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extnesion/compare/99a0bed..6ceb18a
