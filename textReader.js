@@ -9,7 +9,7 @@ function getOnOffValue() {
 }
 
 // gets the current rgb value of the line 
-function getRBGValue() {
+function getRGBValue() {
   let value = new Promise((resolve) => {
     chrome.storage.sync.get("highlightedRgbVal", function (result) {
       resolve(result.highlightedRgbVal);
@@ -91,7 +91,7 @@ var currentLine;
 
 // for tts
 var synth = window.speechSynthesis;
-var voices = synth.getVoices();
+var voices = [];
 var voiceIndex;
 var rate;
 var pitch = 1;
@@ -161,7 +161,7 @@ window.onload = async function () {
     checkedForEmptyParas = false;
 
     // update color of line and text
-    highlightedRgbVal = await getRBGValue();
+    highlightedRgbVal = await getRGBValue();
     // if rgb val hasn't been set => set it 
     if (highlightedRgbVal === undefined) {
       highlightedRgbVal = 'rgb(248, 253, 137)';
@@ -175,24 +175,28 @@ window.onload = async function () {
       // get rate and voice index from storage
       rate = await getRate();
       voiceIndex = await getVoice();
+      console.log(voiceIndex)
+      voices = synth.getVoices();
+      
       // create speech instance with highlighted line as the text input
       var utterThis = new SpeechSynthesisUtterance($(paras[paraIndex]).text());
       // form the utterThis obj 
       utterThis.voice = voices[voiceIndex];
+      console.log(utterThis.voice)
       utterThis.pitch = pitch;
       utterThis.rate = rate;
       // speeak
       synth.speak(utterThis);
 
-      utterThis.addEventListener('end', function(e) {
-        console.log('ended')
-        $(function() {
+      utterThis.onmark = function () {
+        console.log('marker hit')
+        $(function () {
           var e = $.Event('keyup');
           e.keyCode = 40;
           $(document).trigger(e);
           isPaused = false;
         })
-      })
+      }
     }
 
     // listen for changed in RGB and tab changes => update color of line and text
@@ -201,26 +205,36 @@ window.onload = async function () {
       sender,
       sendResponse
     ) {
-      if (request.msg == "RBG changed") {
-        highlightedRgbVal = await getRBGValue();
-        updateBG(highlightedRgbVal);
-        currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
-        colorToChangeTo = textColor(currentHighlighter);
-        $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
-      }
-      if (request.msg == 'tab changed') {
-        highlightedRgbVal = await getRBGValue();
-        updateBG(highlightedRgbVal);
-        currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
-        colorToChangeTo = textColor(currentHighlighter);
-        $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
-      }
-      if (request.msg == 'tts started') {
-        isPaused = false;
+      switch(request.msg) {
+        case "RGB changed":
+          highlightedRgbVal = await getRGBValue();
+          updateBG(highlightedRgbVal);
+          currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+          colorToChangeTo = textColor(currentHighlighter);
+          $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
+          break;
+
+        case "tab changed":
+          highlightedRgbVal = await getRGBValue();
+          updateBG(highlightedRgbVal);
+          currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
+          colorToChangeTo = textColor(currentHighlighter);
+          $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
+          break;
+
+        case "tts started":
           textToSpeech();
-      }
-      if (request.msg == 'paused') {
-        isPaused = true;
+          break;
+
+        case "paused":
+          synth.pause();
+          break;
+
+        case "stopped":
+          synth.cancel();
+
+        default:
+          break;
       }
     });
 
@@ -313,6 +327,7 @@ window.onload = async function () {
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
             // form arrays for the first word of every line
             // top offset of first word
+            $(wordsInSpan[i]).before('<mark name="marker' + i + '" />');
             lineOffsetsTop.push($(wordsInSpan[i]).offset().top);
             // bottom offset of first word
             lineOffsetsBottom.push($(wordsInSpan[i]).offset().top + lineHeight);
@@ -378,7 +393,6 @@ window.onload = async function () {
 
     //see keyup handler
     function handleKeyPress(e) {
-      console.log(e.keyCode)
       // dont run in inputs or text areas
       if (!$(e.target).is("input, textarea")) {
         //up arrow OR w

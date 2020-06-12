@@ -88,19 +88,28 @@ $(document).ready(async function () {
 
     // save selected index on change
     $('#select').change(function () {
+        console.log('changed')
         voiceIndex = findSelectedVoice(voiceSelect);
         chrome.storage.sync.set({ currentVoice: voiceIndex })
     })
 
     // on submit, send message
-    $('#ttsForm').submit(function (e) {
+    $('#start').click(function (e) {
         e.preventDefault();
 
         sendMsgToCS(0, 'tts started');
     })
 
-    $('#pause').click(function() {
+    $('#pause').click(function(e) {
+        e.preventDefault();
+
         sendMsgToCS(0, 'paused');
+    })
+
+    $('#stop').click(function(e) {
+        e.preventDefault();
+
+        sendMsgToCS(0, 'stopped');
     })
 
 })

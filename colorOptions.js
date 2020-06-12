@@ -77,7 +77,7 @@ function saveColor(colorToSave) {
   var colorRgbArr = colorToSave.replace(/[^\d,.]/g, '').split(',');
   var color = colorCalc(colorRgbArr);
   $('#activeColorHeader').css('color', color);
-  sendMsgToCS(0, "RBG changed")
+  sendMsgToCS(0, "RGB changed")
 }
 
 // save 'set' attribute to storage

@@ -170,7 +170,7 @@ button:hover {
   cursor: pointer;
 }
 
-#submit {
+#controls button {
   margin: 10px 0;
 }
 
