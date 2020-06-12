@@ -179,24 +179,37 @@ window.onload = async function () {
       voices = synth.getVoices();
       
       // create speech instance with highlighted line as the text input
-      var utterThis = new SpeechSynthesisUtterance($(paras[paraIndex]).text());
+      var utterThis = new SpeechSynthesisUtterance($('span.word.highlighted, span.whitespace.highlighted').text());
       // form the utterThis obj 
       utterThis.voice = voices[voiceIndex];
+
       console.log(utterThis.voice)
       utterThis.pitch = pitch;
+
       utterThis.rate = rate;
+
       // speeak
       synth.speak(utterThis);
 
-      utterThis.onmark = function () {
-        console.log('marker hit')
-        $(function () {
-          var e = $.Event('keyup');
-          e.keyCode = 40;
-          $(document).trigger(e);
-          isPaused = false;
-        })
-      }
+
+      utterThis.onboundary = function(event) {
+        // $(function () {
+        //   var e = $.Event('keyup');
+        //   e.keyCode = 40;
+        //   $(document).trigger(e);
+        //   isPaused = false;
+        // })
+      };
+      
+      // utterThis.onend = function () {
+      //   console.log('marker hit')
+      //   $(function () {
+      //     var e = $.Event('keyup');
+      //     e.keyCode = 40;
+      //     $(document).trigger(e);
+      //     isPaused = false;
+      //   })
+      // }
     }
 
     // listen for changed in RGB and tab changes => update color of line and text

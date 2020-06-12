@@ -63,6 +63,7 @@ $(document).ready(async function () {
             option.setAttribute('data-lang', voices[i].lang);
             option.setAttribute('data-name', voices[i].name);
             voiceSelect.appendChild(option);
+            console.log(voices[i].localService)
         }
     }
 
