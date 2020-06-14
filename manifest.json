@@ -4,12 +4,12 @@
     "description": "OneLine highlights a single line to focus your reading.",
     "permissions": ["http://*/*", "https://*/*", "activeTab", "storage"],
     "background": {
-        "scripts": ["background.js"],
+        "scripts": ["js/background.js"],
         "persistent": true
     },
     "content_scripts":[{
         "css": ["css/style.css"],
-        "js": ["libs/jquery-3.4.1.min.js", "libs/splitting.min.js", "textReader.js"],
+        "js": ["js/jquery-3.4.1.min.js", "js/splitting.min.js", "js/textReader.js"],
         "matches": ["http://*/*", "https://*/*"],
         "exclude_globs": ["*://www.google.com/search?*"]
     }],
