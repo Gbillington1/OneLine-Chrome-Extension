@@ -1,9 +1,12 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
-## [06/11/2020]
+## [06/14/2020]
+### Added
+ - JS folder to hold all of the JS files
 
-### changed
+## [06/11/2020]
+### Changed
  - some if statements into switch case statements
  - rate slider values 
 
