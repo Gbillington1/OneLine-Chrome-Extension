@@ -4,6 +4,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [06/14/2020]
 ### Added
  - JS folder to hold all of the JS files
+ - auto indexing when line is read by tts
 
 ## [06/11/2020]
 ### Changed
@@ -61,7 +62,8 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[06/11/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/baa5eaa..HEAD
+[06/14/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/cb42fda..HEAD
+[06/11/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/baa5eaa..dbec2c2
 [06/09/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/8b09872..6151166
 [06/07/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/a47577a..12594eb
 [06/06/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/06bf9b3..5538d9d

@@ -50,12 +50,29 @@ function getVoice() {
   })
 }
 
+// Get the word of a string given the string and index
+function getWordAt(str, pos) {
+  // Perform type conversions.
+  str = String(str);
+  pos = Number(pos) >>> 0;
 
-// globals
+  // Search for the word's beginning and end.
+  var left = str.slice(0, pos + 1).search(/\S+$/),
+      right = str.slice(pos).search(/\s/);
+
+  // The last word in the string is a special case.
+  if (right < 0) {
+      return str.slice(left);
+  }
+  
+  // Return the word, using the located bounds to extract it from the string.
+  return str.slice(left, right + pos);
+}
 
 // indecies 
 var index = 0;
 var paraIndex = 0;
+var lastWordIndex = 0;
 
 // arrays 
 var wordsInSpan = [];
@@ -65,6 +82,7 @@ var lineOffsetsTop = [];
 var lineOffsetsBottom = [];
 var differences = [];
 var lineMedians = [];
+var lastWordInLine = [];
 var allParas;
 var currentHighlighter // color of line (split up)
 
@@ -73,6 +91,7 @@ var hasRan = false;
 var checkedForEmptyParas = false;
 var onOffVal;
 var resize = false;
+var ttsIsOn = false;
 
 // vars for scrolling
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -95,7 +114,7 @@ var voices = [];
 var voiceIndex;
 var rate;
 var pitch = 1;
-var isPaused;
+var currentParaText;
 
 window.onload = async function () {
 
@@ -154,6 +173,24 @@ window.onload = async function () {
     }
   });
 
+  // called on every syllable in txt to speech (local voices)
+  function onBoundaryHandler(e) {
+    // get the charIndex of the current word/syllable 
+    var wordIndex = e.charIndex;
+    // get the current word that is being spoken (string)
+    var currentWord = getWordAt(currentParaText, wordIndex);
+    console.log(currentWord == $(lastWordInLine[lastWordIndex]).text(), currentWord, $(lastWordInLine[lastWordIndex]).text(), wordIndex)
+    // if the current word is the same as the last word => send key down event 
+    if (currentWord == $(lastWordInLine[lastWordIndex]).text()) {
+      $(function () {
+        var e = $.Event('keyup');
+        e.keyCode = 40;
+        $(document).trigger(e);
+      })
+      lastWordIndex++;
+    }
+  }
+
   // runs the program
   async function runProgram() {
 
@@ -171,19 +208,19 @@ window.onload = async function () {
     currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
     colorToChangeTo = textColor(currentHighlighter);
 
+    // text to speech 
     async function textToSpeech() {
+      currentParaText = $(paras[paraIndex]).text()
       // get rate and voice index from storage
       rate = await getRate();
       voiceIndex = await getVoice();
-      console.log(voiceIndex)
       voices = synth.getVoices();
-      
+
       // create speech instance with highlighted line as the text input
-      var utterThis = new SpeechSynthesisUtterance($('span.word.highlighted, span.whitespace.highlighted').text());
+      var utterThis = new SpeechSynthesisUtterance($(paras[paraIndex]).text());
       // form the utterThis obj 
       utterThis.voice = voices[voiceIndex];
 
-      console.log(utterThis.voice)
       utterThis.pitch = pitch;
 
       utterThis.rate = rate;
@@ -191,25 +228,10 @@ window.onload = async function () {
       // speeak
       synth.speak(utterThis);
 
+      // fires on every syllable (only on local voices)
+      // auto scrolling
+      utterThis.onboundary = onBoundaryHandler; 
 
-      utterThis.onboundary = function(event) {
-        // $(function () {
-        //   var e = $.Event('keyup');
-        //   e.keyCode = 40;
-        //   $(document).trigger(e);
-        //   isPaused = false;
-        // })
-      };
-      
-      // utterThis.onend = function () {
-      //   console.log('marker hit')
-      //   $(function () {
-      //     var e = $.Event('keyup');
-      //     e.keyCode = 40;
-      //     $(document).trigger(e);
-      //     isPaused = false;
-      //   })
-      // }
     }
 
     // listen for changed in RGB and tab changes => update color of line and text
@@ -218,7 +240,7 @@ window.onload = async function () {
       sender,
       sendResponse
     ) {
-      switch(request.msg) {
+      switch (request.msg) {
         case "RGB changed":
           highlightedRgbVal = await getRGBValue();
           updateBG(highlightedRgbVal);
@@ -232,18 +254,24 @@ window.onload = async function () {
           updateBG(highlightedRgbVal);
           currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
           colorToChangeTo = textColor(currentHighlighter);
-          $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo)
+          $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo);
+          if (ttsIsOn) {
+            synth.cancel();
+          }
           break;
 
         case "tts started":
+          ttsIsOn = true;
           textToSpeech();
           break;
 
         case "paused":
+          ttsIsOn = false;
           synth.pause();
           break;
 
         case "stopped":
+          ttsIsOn = false;
           synth.cancel();
 
         default:
@@ -300,6 +328,7 @@ window.onload = async function () {
       differences = [];
       lineOffsetsTop = [];
       lineOffsetsBottom = [];
+      lastWordInLine = [];
       // loop thru all spans in para
       for (var i = 0; i < wordsInSpan.length; i++) {
         // gets the top and bottom offset of current word
@@ -335,19 +364,25 @@ window.onload = async function () {
 
         // if difference is greater than lineheight (that means its line break)
         if (i == 0 || differences[i] >= lineHeight) {
-          // ignore whitespaces (workaround for splitting.js issue)
 
+          // ignore whitespaces (workaround for splitting.js issue)
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
+
+            // add the last word in the line to an array
+            if (!Object.keys($(wordsInSpan[i - 2])).length == 0) {
+              lastWordInLine.push($(wordsInSpan[i - 2]));
+              $(wordsInSpan[i - 2]).attr('isLastWord', true);
+            }
+
             // form arrays for the first word of every line
             // top offset of first word
-            $(wordsInSpan[i]).before('<mark name="marker' + i + '" />');
             lineOffsetsTop.push($(wordsInSpan[i]).offset().top);
             // bottom offset of first word
             lineOffsetsBottom.push($(wordsInSpan[i]).offset().top + lineHeight);
           }
         }
       }
-
+  
       // chronologically sorts arrays
       lineOffsetsTop.sort((a, b) => {
         return a - b;
@@ -395,10 +430,19 @@ window.onload = async function () {
 
     //whole program in one function
     function setup() {
+      if (ttsIsOn) {
+        wordIndex = 0;
+        textToSpeech();
+      }
       wrapInSpans();
       getLineOffsets();
+      // add the last word in paragraph to last word array
+      // the last word doesn't get added because there isn't another line for it to be referenced off of
+      lastWordInLine.push($(wordsInSpan[wordsInSpan.length - 1]));
+      $(wordsInSpan[wordsInSpan.length - 1]).attr('isLastWord', true);
       highlight();
       resize = false;
+      lastWordIndex = 0;
     }
 
     //actually run the program
@@ -511,6 +555,7 @@ window.onload = async function () {
     paras = [];
     lineOffsetsTop = [];
     lineOffsetsBottom = [];
+    lastWordInLine = [];
     lineMedians = [];
     differences = [];
     line = [];
