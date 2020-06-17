@@ -104,7 +104,7 @@ $(document).ready(async function () {
     $('#pause').click(function(e) {
         e.preventDefault();
 
-        sendMsgToCS(0, 'paused');
+        sendMsgToCS(0, 'play/pause');
     })
 
     $('#stop').click(function(e) {

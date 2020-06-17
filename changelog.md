@@ -1,6 +1,11 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/16/2020]
+### Added 
+ - Play pause functionality
+ - 
+
 ## [06/14/2020]
 ### Added
  - JS folder to hold all of the JS files

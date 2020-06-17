@@ -92,6 +92,7 @@ var checkedForEmptyParas = false;
 var onOffVal;
 var resize = false;
 var ttsIsOn = false;
+var isPaused = false;
 
 // vars for scrolling
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -179,7 +180,9 @@ window.onload = async function () {
     var wordIndex = e.charIndex;
     // get the current word that is being spoken (string)
     var currentWord = getWordAt(currentParaText, wordIndex);
-    console.log(currentWord == $(lastWordInLine[lastWordIndex]).text(), currentWord, $(lastWordInLine[lastWordIndex]).text(), wordIndex)
+
+    console.log(currentWord == $(lastWordInLine[lastWordIndex]).text(), currentWord, $(lastWordInLine[lastWordIndex]).text())
+
     // if the current word is the same as the last word => send key down event 
     if (currentWord == $(lastWordInLine[lastWordIndex]).text()) {
       $(function () {
@@ -255,19 +258,29 @@ window.onload = async function () {
           currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
           colorToChangeTo = textColor(currentHighlighter);
           $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo);
-          if (ttsIsOn) {
             synth.cancel();
-          }
+            ttsIsOn = false;
+            isPaused = false;
           break;
 
         case "tts started":
-          ttsIsOn = true;
-          textToSpeech();
+          if (ttsIsOn == false) {
+            ttsIsOn = true;
+            textToSpeech();
+          } else if (isPaused) {
+            isPaused = false;
+            synth.resume();
+          }
           break;
 
-        case "paused":
-          ttsIsOn = false;
-          synth.pause();
+        case "play/pause":
+          if (ttsIsOn && isPaused == false) {
+            isPaused = true;
+            synth.pause();
+          } else if (isPaused) {
+            isPaused = false;
+            synth.resume();
+          }
           break;
 
         case "stopped":
