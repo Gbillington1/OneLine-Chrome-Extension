@@ -89,7 +89,6 @@ $(document).ready(async function () {
 
     // save selected index on change
     $('#select').change(function () {
-        console.log('changed')
         voiceIndex = findSelectedVoice(voiceSelect);
         chrome.storage.sync.set({ currentVoice: voiceIndex })
     })

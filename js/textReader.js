@@ -213,6 +213,7 @@ window.onload = async function () {
 
     // text to speech 
     async function textToSpeech() {
+
       currentParaText = $(paras[paraIndex]).text()
       // get rate and voice index from storage
       rate = await getRate();
@@ -228,7 +229,7 @@ window.onload = async function () {
 
       utterThis.rate = rate;
 
-      // speeak
+      // speak
       synth.speak(utterThis);
 
       // fires on every syllable (only on local voices)
@@ -286,6 +287,7 @@ window.onload = async function () {
         case "stopped":
           ttsIsOn = false;
           synth.cancel();
+          break;
 
         default:
           break;
