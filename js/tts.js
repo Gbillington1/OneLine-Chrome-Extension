@@ -1,17 +1,8 @@
-// gets rate from storage
-function getRate() {
+// universal function to return values from chrome storage
+function getVal(value) {
     return new Promise(resolve => {
-        chrome.storage.sync.get('rate', function (result) {
-            resolve(result.rate)
-        })
-    })
-}
-
-// gets voice from storage
-function getVoice() {
-    return new Promise(resolve => {
-        chrome.storage.sync.get('currentVoice', function (result) {
-            resolve(result.currentVoice)
+        chrome.storage.sync.get([value], result => {
+            resolve(result[value]);
         })
     })
 }
@@ -24,6 +15,8 @@ function sendMsgToCS(tabNumber, message) {
 }
 
 $(document).ready(async function () {
+
+    // alert($("#scrollSwitch").attr('checked'));
 
     // set the currentPage to defaultPopup when the back button is clicked
     $('#backLink').click(function () {
@@ -73,7 +66,7 @@ $(document).ready(async function () {
     }
 
     // save/update rate on change
-    var rate = await getRate();
+    var rate = await getVal("rate");
     $('#rate').val(rate);
     $('#rateValue').html(rate + 'x');
 
@@ -84,7 +77,7 @@ $(document).ready(async function () {
     })
 
     // load selected index from storage and set it in the dropdown 
-    voiceIndex = await getVoice();
+    voiceIndex = await getVal("currentVoice");
     $('#select').get(0).selectedIndex = voiceIndex;
 
     // save selected index on change

@@ -24,43 +24,13 @@ ga("set", "checkProtocolTask", function () { }); // Removes failing protocol che
 ga("require", "displayfeatures");
 ga("send", "pageview", "/OneLineExtensionBackground"); // Specify the virtual path
 
-//function to load swtich value from storage
-function loadSwitchVal() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("highlightedSwitch", function (result) {
-      resolve(result.highlightedSwitch);
-    });
-  });
-  return value;
-}
-
-//function to load rate from storage
-function getRate() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("rate", function (result) {
-      resolve(result.rate);
-    });
-  });
-  return value;
-}
-
-// gets voice from storage
-function getVoice() {
+// universal function to return values from chrome storage
+function getVal(value) {
   return new Promise(resolve => {
-      chrome.storage.sync.get('currentVoice', function (result) {
-          resolve(result.currentVoice)
+      chrome.storage.sync.get([value], result => {
+          resolve(result[value]);
       })
   })
-}
-
-//load the color picker value
-function loadRbgVal() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("highlightedRgbVal", function (result) {
-      resolve(result.highlightedRgbVal);
-    });
-  });
-  return value;
 }
 
 //when installed, set var to true
@@ -72,23 +42,28 @@ chrome.runtime.onInstalled.addListener(function (details) {
     // check if values have been set
     // if they haven't => set them
 
-    var switchVal = await loadSwitchVal();
-    if (switchVal === undefined) {
+    var scrollSwitch = await getVal("scrollSwitch");
+    if (typeof scrollSwitch == typeof undefined) {
+      chrome.storage.sync.set({ scrollSwitch: false });
+    }
+
+    var highlightedSwitch = await getVal("highlightedSwitch");
+    if (typeof highlightedSwitch === typeof undefined) {
       chrome.storage.sync.set({ highlightedSwitch: true });
     }
 
-    var rate = await getRate();
-    if (rate === undefined) {
+    var rate = await getVal("rate");
+    if (typeof rate === typeof undefined) {
       chrome.storage.sync.set({ rate: 1 });
     }
 
-    var voice = await getVoice();
-    if (voice == undefined) {
+    var voice = await getVoice("currentVoice");
+    if (typeof voice == typeof undefined) {
       chrome.storage.sync.set({ currentVoice: 0 })
     }
 
-    var rgbVal = await loadRbgVal();
-    if (rgbVal === undefined) {
+    var rgbVal = await getVal("highlightedRgbVal");
+    if (typeof rgbVal === typeof undefined) {
       chrome.storage.sync.set({ highlightedRgbVal: "rgb(248, 253, 137)" });
     }
   });

@@ -1,21 +1,10 @@
-//gets boolean value of switch from chrome storage
-function getOnOffValue() {
-  let value = new Promise((resolve) => {
-    chrome.storage.sync.get("highlightedSwitch", function (result) {
-      resolve(result.highlightedSwitch);
-    });
-  });
-  return value;
-}
-
-// gets the current rgb value of the line 
-function getRGBValue() {
-  let value = new Promise((resolve) => {
-    chrome.storage.sync.get("highlightedRgbVal", function (result) {
-      resolve(result.highlightedRgbVal);
-    });
-  });
-  return value;
+// universal function to return values from chrome storage
+function getVal(value) {
+  return new Promise(resolve => {
+      chrome.storage.sync.get([value], result => {
+          resolve(result[value]);
+      })
+  })
 }
 
 // updates the color of the line
@@ -30,24 +19,6 @@ function textColor(bgColor) {
     b = bgColor[2];
   var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
   return (yiq >= 135) ? 'black' : 'white';
-}
-
-// gets rate from storage
-function getRate() {
-  return new Promise(resolve => {
-    chrome.storage.sync.get('rate', function (result) {
-      resolve(result.rate)
-    })
-  })
-}
-
-// gets voice from storage
-function getVoice() {
-  return new Promise(resolve => {
-    chrome.storage.sync.get('currentVoice', function (result) {
-      resolve(result.currentVoice)
-    })
-  })
 }
 
 // Get the word of a string given the string and index
@@ -120,7 +91,7 @@ var currentParaText;
 window.onload = async function () {
 
   //get current state of switch
-  onOffVal = await getOnOffValue();
+  onOffVal = await getVal("highlightedSwitch");
 
   //logic to run program when switch is on/off/changed
 
@@ -161,7 +132,7 @@ window.onload = async function () {
   ) {
     if (request.msg == 'tab changed') {
       // get the on/off value
-      onOffVal = await getOnOffValue();
+      onOffVal = await getVal("highlightedSwitch");
       // if switch is on, and the program hasn't ran => run the program
       if (onOffVal) {
         if (hasRan == false) {
@@ -201,7 +172,7 @@ window.onload = async function () {
     checkedForEmptyParas = false;
 
     // update color of line and text
-    highlightedRgbVal = await getRGBValue();
+    highlightedRgbVal = await getVal("highlightedRgbVal");
     // if rgb val hasn't been set => set it 
     if (highlightedRgbVal === undefined) {
       highlightedRgbVal = 'rgb(248, 253, 137)';
@@ -216,8 +187,8 @@ window.onload = async function () {
 
       currentParaText = $(paras[paraIndex]).text()
       // get rate and voice index from storage
-      rate = await getRate();
-      voiceIndex = await getVoice();
+      rate = await getVal("rate");
+      voiceIndex = await getVal("currentVoice");
       voices = synth.getVoices();
 
       // create speech instance with highlighted line as the text input
@@ -246,7 +217,7 @@ window.onload = async function () {
     ) {
       switch (request.msg) {
         case "RGB changed":
-          highlightedRgbVal = await getRGBValue();
+          highlightedRgbVal = await getVal("highlightedRgbVal");
           updateBG(highlightedRgbVal);
           currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
           colorToChangeTo = textColor(currentHighlighter);
@@ -254,7 +225,7 @@ window.onload = async function () {
           break;
 
         case "tab changed":
-          highlightedRgbVal = await getRGBValue();
+          highlightedRgbVal = await getVal("highlightedRgbVal");
           updateBG(highlightedRgbVal);
           currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
           colorToChangeTo = textColor(currentHighlighter);

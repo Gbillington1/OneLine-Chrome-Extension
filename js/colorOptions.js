@@ -28,6 +28,15 @@ $('#backLink').click(function () {
   chrome.storage.sync.set({ currentPage: 'defaultPopup.html' });
 })
 
+// universal function to return values from chrome storage
+function getVal(value) {
+  return new Promise(resolve => {
+      chrome.storage.sync.get([value], result => {
+          resolve(result[value]);
+      })
+  })
+}
+
 // calc most readable color based on bg color
 function colorCalc(bgColor) {
   var r = bgColor[0],
@@ -40,35 +49,6 @@ function colorCalc(bgColor) {
 //get current state of on/off switch
 var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
 var highlightedRgbVal;
-
-//function to load swtich value from storage
-function loadSwitchVal() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("highlightedSwitch", function (result) {
-      resolve(result.highlightedSwitch);
-    });
-  });
-  return value;
-}
-
-//load the color picker value
-function loadRbgVal() {
-  let value = new Promise(resolve => {
-    chrome.storage.sync.get("highlightedRgbVal", function (result) {
-      resolve(result.highlightedRgbVal);
-    });
-  });
-  return value;
-}
-
-//load the favorites 
-function loadBtn(key) {
-  return new Promise(resolve => {
-    chrome.storage.sync.get([key], function (result) {
-      resolve(result[key]);
-    });
-  });
-}
 
 // save rgb to storage 
 function saveColor(colorToSave) {
@@ -140,7 +120,7 @@ $(document).ready(async function () {
   var rgbValArr;
   var textColor;
   //load switch value from storage
-  var loadedSwitchVal = await loadSwitchVal();
+  var loadedSwitchVal = await getVal("highlightedSwitch");
   $("#highlightedSwitch").prop("checked", loadedSwitchVal);
 
   //load favorites from storage
@@ -151,7 +131,7 @@ $(document).ready(async function () {
 
     // if button has been set (as a favorite), load that color
     if ($(this).attr('set') == 'true') {
-      let favBtnBG = await loadBtn($(this).attr('id'));
+      let favBtnBG = await getVal($(this).attr('id'));
       $(this).css("background-color", favBtnBG);
 
       // calc what color the eyedropper pic should be
@@ -166,7 +146,7 @@ $(document).ready(async function () {
   });
 
   // change the active color and calc color of text
-  highlightedRgbVal = await loadRbgVal();
+  highlightedRgbVal = await getVal("highlightedRgbVal");
   $('#active-color').css('background-color', highlightedRgbVal)
   rgbValArr = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
   textColor = colorCalc(rgbValArr);
@@ -233,7 +213,7 @@ $('#addToFavs').click(function () {
     if ($(this).attr('set') == 'false' && added === false) {
       added = true;
       // set the color of the favorite to the current color that is selected (visual)
-      let favBtnBG = await loadRbgVal();
+      let favBtnBG = await getVal("highlightedRgbVal");
       $(this).css("background-color", favBtnBG)
       rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
       textColor = colorCalc(rgbValArr);

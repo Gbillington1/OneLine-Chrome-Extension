@@ -5,6 +5,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ### Added
  - code to add hyphenated words together to be used in tts (because they are split by hyphen by splitting.js)
  - auto scrolling switch html/css
+ - universal function to get values from chrome storage
 
 ## [06/16/2020]
 ### Added 
