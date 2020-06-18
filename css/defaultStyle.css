@@ -176,3 +176,22 @@ a {
 .icon {
   width: 15px;
 }
+
+a {
+  color: #2a7861;
+}
+
+a:hover {
+  color: #2a7861;
+}
+
+small,
+.creditP {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+#credits {
+  text-align: center;
+  padding: 3px 0;
+}
