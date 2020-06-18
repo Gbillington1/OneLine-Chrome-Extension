@@ -99,8 +99,8 @@
   display: grid;
   grid-template-columns: auto;
   grid-template-rows: 50px;
-  -webkit-transition: .2s;
-  transition: background-color .2s;
+  -webkit-transition: 0.2s;
+  transition: background-color 0.2s;
 }
 
 #row1 {
@@ -160,8 +160,8 @@ button {
   border: 2px solid #54bfa0;
   background-color: #54bfa0;
   opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
 }
 
 button:hover {
@@ -191,8 +191,8 @@ button:hover {
   outline: none;
   border-radius: 25px;
   opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+  -webkit-transition: 0.2s;
+  transition: opacity 0.2s;
   background: #54bfa0;
 }
 
@@ -207,8 +207,8 @@ button:hover {
   appearance: none;
   width: 15px;
   height: 15px;
-  -webkit-transition: .2s;
-  transition: background .2s;
+  -webkit-transition: 0.2s;
+  transition: background 0.2s;
   background: #357a66;
 }
 
@@ -235,4 +235,80 @@ button:hover {
 
 #select {
   cursor: pointer;
+}
+
+.switch {
+  height: 0;
+  width: 0;
+  visibility: hidden;
+  display: none;
+}
+
+label {
+  cursor: pointer;
+  text-indent: -9999px;
+  width: 40px;
+  height: 20px;
+  background: lightgray;
+  display: inline-block;
+  border-radius: 100px;
+  position: relative;
+}
+
+label:after {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  left: 1.5px;
+  width: 17.5px;
+  height: 17.5px;
+  background: #fff;
+  border-radius: 90px;
+  transition: 0.3s;
+}
+
+input:checked + label {
+  background: #4abc9b;
+}
+
+input:checked + label:after {
+  left: calc(100% - 1px);
+  transform: translateX(-100%);
+}
+
+label:active:after {
+  width: 20px;
+}
+
+#switchWrapper {
+  display: grid;
+  width: 171px;
+  grid-template-columns: 126px auto;
+  grid-template-rows: 30px;
+  margin: 0 auto;
+  padding: 12px 0 0 0;
+}
+
+#switchHeadContainer {
+  grid-row-start: 1;
+  grid-row-end: 2;
+  grid-column-start: 1;
+  grid-column-end: 2;
+  justify-self: right;
+  align-self: center;
+  height: auto;
+}
+
+#switchContainer {
+  grid-row-start: 1;
+  grid-row-end: 2;
+  grid-column-start: 2;
+  grid-column-end: 3;
+  justify-self: left;
+  align-self: center; 
+  height: auto;
+}
+
+#scrollSwitch {
+  padding-bottom: 100px
 }
