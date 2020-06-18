@@ -57,7 +57,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
       chrome.storage.sync.set({ rate: 1 });
     }
 
-    var voice = await getVoice("currentVoice");
+    var voice = await getVal("currentVoice");
     if (typeof voice == typeof undefined) {
       chrome.storage.sync.set({ currentVoice: 0 })
     }

@@ -92,7 +92,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
         saveAttr($(this), false);
       } else if (set) {
         $(this).attr('set', set);
-        var favBtnBg = await loadRbgVal($(this).attr('id'))
+        var favBtnBg = await getVal($(this).attr('id'))
         $(this).css('background-color', favBtnBg)
       }
     });
@@ -155,10 +155,10 @@ $(document).ready(async function () {
 
   //save on/off switch value when it is changed
   $("#highlightedSwitch").change(async function () {
-    highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
+    highlightedSwitchVal = $("#highlightedSwitch").prop("checked");
     chrome.storage.sync.set({ highlightedSwitch: highlightedSwitchVal });
 
-    msg = "changed to " + JSON.stringify(highlightedSwitchVal);
+    msg = "highlighter changed to " + JSON.stringify(highlightedSwitchVal);
     sendMsgToCS(0, msg);
 
     // send an switch toggled event to google analytics

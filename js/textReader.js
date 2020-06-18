@@ -64,6 +64,7 @@ var onOffVal;
 var resize = false;
 var ttsIsOn = false;
 var isPaused = false;
+var autoScroll = false;
 
 // vars for scrolling
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -103,10 +104,26 @@ window.onload = async function () {
       sender,
       sendResponse
     ) {
-      if (request.msg == "changed to true") {
-        runProgram();
-      } else if (request.msg == "changed to false") {
-        resetProgram();
+      console.log(request.msg)
+      switch (request.msg) {
+        case "highlighter changed to true":
+          runProgram();
+          break;
+
+        case "highlighter changed to false":
+          resetProgram();
+          break;
+
+        case "scroll changed to true":
+          autoScroll = true;
+          break;
+
+        case "scroll changed to false": 
+          autoScroll = false;
+          break;
+
+        default:
+          break;
       }
     });
     // if switch is off, listen for changes on the switch
@@ -116,10 +133,25 @@ window.onload = async function () {
       sender,
       sendResponse
     ) {
-      if (request.msg == "changed to true") {
-        runProgram();
-      } else if (request.msg == "changed to false") {
-        resetProgram();
+      switch (request.msg) {
+        case "highlighter changed to true":
+          runProgram();
+          break;
+
+        case "highlighter changed to false":
+          resetProgram();
+          break;
+
+        case "scroll changed to true":
+          autoScroll = true;
+          break;
+
+        case "scroll changed to false": 
+          autoScroll = false;
+          break;
+
+        default:
+          break;
       }
     });
   }
@@ -205,7 +237,9 @@ window.onload = async function () {
 
       // fires on every syllable (only on local voices)
       // auto scrolling
-      utterThis.onboundary = onBoundaryHandler; 
+      if (autoScroll) {
+        utterThis.onboundary = onBoundaryHandler; 
+      }
 
     }
 
