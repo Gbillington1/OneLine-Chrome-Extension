@@ -1,6 +1,11 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/18/2020]
+
+### Added
+ - code to add hyphenated words together to be used in tts (because they are split by hyphen by splitting.js)
+
 ## [06/16/2020]
 ### Added 
  - Play pause functionality

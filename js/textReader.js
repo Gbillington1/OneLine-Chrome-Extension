@@ -181,10 +181,10 @@ window.onload = async function () {
     // get the current word that is being spoken (string)
     var currentWord = getWordAt(currentParaText, wordIndex);
 
-    console.log(currentWord == $(lastWordInLine[lastWordIndex]).text(), currentWord, $(lastWordInLine[lastWordIndex]).text())
+    console.log(currentWord == lastWordInLine[lastWordIndex], currentWord, lastWordInLine[lastWordIndex])
 
     // if the current word is the same as the last word => send key down event 
-    if (currentWord == $(lastWordInLine[lastWordIndex]).text()) {
+    if (currentWord == lastWordInLine[lastWordIndex]) {
       $(function () {
         var e = $.Event('keyup');
         e.keyCode = 40;
@@ -306,7 +306,7 @@ window.onload = async function () {
       // skip over empty paragraphs
       if (checkedForEmptyParas == false) {
         //get all paragraphs
-        allParas = $("p:visible").not("header p, footer p, div.dockcard_text p");
+        allParas = $("p:visible").not("header p, footer p, div.dockcard_text p, p[width^='0']");
         for (var i = 0; i < allParas.length; i++) {
           // if length of para is not 0 (false) => add it to paras array
           if ($(allParas[i]).text().trim().length) {
@@ -384,9 +384,14 @@ window.onload = async function () {
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
 
             // add the last word in the line to an array
-            if (!Object.keys($(wordsInSpan[i - 2])).length == 0) {
-              lastWordInLine.push($(wordsInSpan[i - 2]));
-              $(wordsInSpan[i - 2]).attr('isLastWord', true);
+            console.log($(wordsInSpan[i - 1]).text() != '-')
+            // if ($(wordsInSpan[i - 2]).text().match(/([A-Z]|[a-z])+/g))
+            if (!Object.keys($(wordsInSpan[i - 2])).length == 0 && $(wordsInSpan[i - 1]).text() != '-') {
+              lastWordInLine.push($(wordsInSpan[i - 2]).text());
+              // $(wordsInSpan[i - 2]).attr('isLastWord', true);
+            } else if (!Object.keys($(wordsInSpan[i - 2])).length == 0 && $(wordsInSpan[i - 1]).text() == '-') {
+              console.log($(wordsInSpan[i - 2]).text() + $(wordsInSpan[i - 1]).text() + $(wordsInSpan[i]).text())
+              lastWordInLine.push($(wordsInSpan[i - 2]).text() + $(wordsInSpan[i - 1]).text() + $(wordsInSpan[i]).text())
             }
 
             // form arrays for the first word of every line
@@ -453,8 +458,8 @@ window.onload = async function () {
       getLineOffsets();
       // add the last word in paragraph to last word array
       // the last word doesn't get added because there isn't another line for it to be referenced off of
-      lastWordInLine.push($(wordsInSpan[wordsInSpan.length - 1]));
-      $(wordsInSpan[wordsInSpan.length - 1]).attr('isLastWord', true);
+      lastWordInLine.push($(wordsInSpan[wordsInSpan.length - 1]).text());
+      // $(wordsInSpan[wordsInSpan.length - 1]).attr('isLastWord', true);
       highlight();
       resize = false;
       lastWordIndex = 0;
