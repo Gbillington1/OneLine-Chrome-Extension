@@ -8,6 +8,9 @@ All changes made after 05/30/2020 will be documented in this file.
  - universal function to get values from chrome storage
  - scrolling switch controls the autoscroll(successfully)
 
+### Changed 
+ - individual `get` functions into one function that takes a key (gets that key's value from chrome storage)
+
 ## [06/16/2020]
 ### Added 
  - Play pause functionality
