@@ -79,7 +79,8 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[06/16/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/1c1088..HEAD
+[06/18/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/03b6e61..HEAD
+[06/16/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/1c1088..f7b4fef
 [06/14/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/cb42fda..16ffdcc
 [06/11/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/baa5eaa..dbec2c2
 [06/09/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/8b09872..6151166
