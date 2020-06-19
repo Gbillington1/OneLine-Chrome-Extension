@@ -7,6 +7,7 @@ All changes made after 05/30/2020 will be documented in this file.
  - auto scrolling switch html/css
  - universal function to get values from chrome storage
  - scrolling switch controls the autoscroll(successfully)
+ - final styling for the popup
 
 ### Changed 
  - individual `get` functions into one function that takes a key (gets that key's value from chrome storage)

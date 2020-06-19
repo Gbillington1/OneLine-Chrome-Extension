@@ -25,7 +25,6 @@ $(document).ready(async function () {
         chrome.storage.sync.set({ highlightedSwitch: onOffSwitchVal });
 
         msg = "highlighter changed to " + JSON.stringify(onOffSwitchVal);
-        console.log(msg)
         sendMsgToCS(0, msg);
 
         // send an switch toggled event to google analytics

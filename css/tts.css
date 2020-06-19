@@ -313,10 +313,11 @@ label:active:after {
 
 #scrollHeader {
   margin: 0;
+  font-size: 18px;
 }
 
-#scrollHeader, #speedHead, #langHead {
-  font-size: 18px;
+#speedHead, #langHead {
+  font-size: 16px;
 }
 
 #speedHead {

@@ -172,7 +172,7 @@ button > img {
   border-radius: 15px;
   display: flex;
   align-items: center;
-  margin: 10px 0;
+  margin: 10px 0 20px 0;
 }
 
 #activeColorHeader {
@@ -245,6 +245,7 @@ button > img {
 .container {
   display: flex;
   flex-direction: row;
+  margin: 0 0 20px 0;
 }
 
 .colorBtnWrap {
@@ -283,7 +284,7 @@ button:focus {
 }
 
 #recommended {
-  margin: 10px 0;
+  margin: 0 0 10px 0;
   text-align: center;
 }
 

@@ -268,3 +268,7 @@ small,
   text-align: center;
   padding: 3px 0;
 }
+
+.header {
+  font-size: 18px;
+}

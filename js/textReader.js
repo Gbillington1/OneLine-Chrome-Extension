@@ -104,7 +104,6 @@ window.onload = async function () {
       sender,
       sendResponse
     ) {
-      console.log(request.msg)
       switch (request.msg) {
         case "highlighter changed to true":
           runProgram();
@@ -389,13 +388,10 @@ window.onload = async function () {
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
 
             // add the last word in the line to an array
-            console.log($(wordsInSpan[i - 1]).text() != '-')
-            // if ($(wordsInSpan[i - 2]).text().match(/([A-Z]|[a-z])+/g))
             if (!Object.keys($(wordsInSpan[i - 2])).length == 0 && $(wordsInSpan[i - 1]).text() != '-') {
               lastWordInLine.push($(wordsInSpan[i - 2]).text());
               // $(wordsInSpan[i - 2]).attr('isLastWord', true);
             } else if (!Object.keys($(wordsInSpan[i - 2])).length == 0 && $(wordsInSpan[i - 1]).text() == '-') {
-              console.log($(wordsInSpan[i - 2]).text() + $(wordsInSpan[i - 1]).text() + $(wordsInSpan[i]).text())
               lastWordInLine.push($(wordsInSpan[i - 2]).text() + $(wordsInSpan[i - 1]).text() + $(wordsInSpan[i]).text())
             }
 
