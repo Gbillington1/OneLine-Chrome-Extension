@@ -11,6 +11,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ### Changed 
  - individual `get` functions into one function that takes a key (gets that key's value from chrome storage)
  - moved credits to default popup
+ - moved on/off switch to default popup
 
 ## [06/16/2020]
 ### Added 

@@ -45,9 +45,6 @@ function colorCalc(bgColor) {
   var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
   return (yiq >= 127) ? 'black' : 'white';
 }
-
-//get current state of on/off switch
-var highlightedSwitchVal = $("#highlightedSwitch").is(":checked");
 var highlightedRgbVal;
 
 // save rgb to storage 
@@ -119,9 +116,6 @@ function getRgb(imgData) {
 $(document).ready(async function () {
   var rgbValArr;
   var textColor;
-  //load switch value from storage
-  var loadedSwitchVal = await getVal("highlightedSwitch");
-  $("#highlightedSwitch").prop("checked", loadedSwitchVal);
 
   //load favorites from storage
   $(".colorBtn").each(async function () {
@@ -151,24 +145,6 @@ $(document).ready(async function () {
   rgbValArr = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
   textColor = colorCalc(rgbValArr);
   $('#activeColorHeader').css('color', textColor)
-
-
-  //save on/off switch value when it is changed
-  $("#highlightedSwitch").change(async function () {
-    highlightedSwitchVal = $("#highlightedSwitch").prop("checked");
-    chrome.storage.sync.set({ highlightedSwitch: highlightedSwitchVal });
-
-    msg = "highlighter changed to " + JSON.stringify(highlightedSwitchVal);
-    sendMsgToCS(0, msg);
-
-    // send an switch toggled event to google analytics
-    ga("Popup.send", {
-      hitType: "event",
-      eventCategory: "Switch",
-      eventAction: "Toggled",
-      eventLabel: msg
-    })
-  });
 });
 
 // Update highlighter when recommended btns are clicked
