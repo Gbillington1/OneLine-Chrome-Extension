@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/23/2020]
+### Added
+ - boilerplate on boundary event to enhance the auto indexing algo
+
 ## [06/18/2020]
 ### Added
  - code to add hyphenated words together to be used in tts (because they are split by hyphen by splitting.js)

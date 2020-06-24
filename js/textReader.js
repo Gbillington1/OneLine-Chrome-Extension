@@ -176,24 +176,38 @@ window.onload = async function () {
     }
   });
 
-  // called on every syllable in txt to speech (local voices)
+  // called on every word in txt to speech (local voices)
   function onBoundaryHandler(e) {
-    // get the charIndex of the current word/syllable 
-    var wordIndex = e.charIndex;
-    // get the current word that is being spoken (string)
-    var currentWord = getWordAt(currentParaText, wordIndex);
 
-    console.log(currentWord == lastWordInLine[lastWordIndex], currentWord, lastWordInLine[lastWordIndex])
+    // get the current word that is being spoken (string)
+    //var currentWord = getWordAt(currentParaText, wordIndex);
+
+    //use the character position in the string to determine what number word we are
+    var stringUptoWord = currentParaText.substring(0, e.charIndex);
+
+    //count spaces from beggining of our paragraphg up until our word
+    //multiply by two because the spaces are word-indexed as well
+    var whichWordWeAreOn = (stringUptoWord.split(" ").length * 2);
+    
+    // var wordWeAreOnSpan = $(paras[paraIndex]).find("span[style='--word-index:" + whichWordWeAreOn + "']").text();
+    var wordWeAreOnSpan = $(paras[paraIndex]).find('span[style="--word-index:0;"]').text();
+    var nextWordSpan = $(paras[paraIndex]).find("span[style='--word-index:" + (whichWordWeAreOn + 2) + "']");
+
+    //is wordWeAReOn height less than nextWordSpan height?
+    //if true, keydown.
+
+
+    console.log(wordWeAreOnSpan, nextWordSpan)
 
     // if the current word is the same as the last word => send key down event 
-    if (currentWord == lastWordInLine[lastWordIndex]) {
-      $(function () {
-        var e = $.Event('keyup');
-        e.keyCode = 40;
-        $(document).trigger(e);
-      })
-      lastWordIndex++;
-    }
+    // if (currentWord == lastWordInLine[lastWordIndex]) {
+    //   $(function () {
+    //     var e = $.Event('keyup');
+    //     e.keyCode = 40;
+    //     $(document).trigger(e);
+    //   })
+    //   lastWordIndex++;
+    // }
   }
 
   // runs the program
@@ -223,7 +237,8 @@ window.onload = async function () {
       voices = synth.getVoices();
 
       // create speech instance with highlighted line as the text input
-      var utterThis = new SpeechSynthesisUtterance($(paras[paraIndex]).text());
+      var utterThis = new SpeechSynthesisUtterance(currentParaText);
+      
       // form the utterThis obj 
       utterThis.voice = voices[voiceIndex];
 
