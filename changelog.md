@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/24/2020]
+### Added
+ - manual indexing on words because splitting.js `--word-index` isn't very good
+
 ## [06/23/2020]
 ### Added
  - boilerplate on boundary event to enhance the auto indexing algo

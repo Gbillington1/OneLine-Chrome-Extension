@@ -1,9 +1,9 @@
 // universal function to return values from chrome storage
 function getVal(value) {
   return new Promise(resolve => {
-      chrome.storage.sync.get([value], result => {
-          resolve(result[value]);
-      })
+    chrome.storage.sync.get([value], result => {
+      resolve(result[value]);
+    })
   })
 }
 
@@ -29,13 +29,13 @@ function getWordAt(str, pos) {
 
   // Search for the word's beginning and end.
   var left = str.slice(0, pos + 1).search(/\S+$/),
-      right = str.slice(pos).search(/\s/);
+    right = str.slice(pos).search(/\s/);
 
   // The last word in the string is a special case.
   if (right < 0) {
-      return str.slice(left);
+    return str.slice(left);
   }
-  
+
   // Return the word, using the located bounds to extract it from the string.
   return str.slice(left, right + pos);
 }
@@ -65,6 +65,7 @@ var resize = false;
 var ttsIsOn = false;
 var isPaused = false;
 var autoScroll = false;
+var charIndexZero = true;
 
 // vars for scrolling
 var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
@@ -117,7 +118,7 @@ window.onload = async function () {
           autoScroll = true;
           break;
 
-        case "scroll changed to false": 
+        case "scroll changed to false":
           autoScroll = false;
           break;
 
@@ -145,7 +146,7 @@ window.onload = async function () {
           autoScroll = true;
           break;
 
-        case "scroll changed to false": 
+        case "scroll changed to false":
           autoScroll = false;
           break;
 
@@ -182,22 +183,25 @@ window.onload = async function () {
     // get the current word that is being spoken (string)
     //var currentWord = getWordAt(currentParaText, wordIndex);
 
-    //use the character position in the string to determine what number word we are
+    //use the character position in the string to determine what number word we are on
     var stringUptoWord = currentParaText.substring(0, e.charIndex);
-
     //count spaces from beggining of our paragraphg up until our word
     //multiply by two because the spaces are word-indexed as well
-    var whichWordWeAreOn = (stringUptoWord.split(" ").length * 2);
-    
-    // var wordWeAreOnSpan = $(paras[paraIndex]).find("span[style='--word-index:" + whichWordWeAreOn + "']").text();
-    var wordWeAreOnSpan = $(paras[paraIndex]).find('span[style="--word-index:0;"]').text();
-    var nextWordSpan = $(paras[paraIndex]).find("span[style='--word-index:" + (whichWordWeAreOn + 2) + "']");
+    var whichWordWeAreOn = ((stringUptoWord.split(" ").length));
+    if (e.charIndex == 0 && charIndexZero) {
+      whichWordWeAreOn = 0;
+      charIndexZero = false;
+    }
+    // console.log(e.charIndex, stringUptoWord, whichWordWeAreOn)
+
+    var wordWeAreOnSpan = $(paras[paraIndex]).find("span[index='" + whichWordWeAreOn + "']").text();
+    var nextWordSpan = $(paras[paraIndex]).find("span[index='" + (whichWordWeAreOn + 2) + "']").text();
 
     //is wordWeAReOn height less than nextWordSpan height?
     //if true, keydown.
+  console.log(wordWeAreOnSpan)
 
-
-    console.log(wordWeAreOnSpan, nextWordSpan)
+    // console.log(wordWeAreOnSpan, nextWordSpan)
 
     // if the current word is the same as the last word => send key down event 
     // if (currentWord == lastWordInLine[lastWordIndex]) {
@@ -238,7 +242,7 @@ window.onload = async function () {
 
       // create speech instance with highlighted line as the text input
       var utterThis = new SpeechSynthesisUtterance(currentParaText);
-      
+
       // form the utterThis obj 
       utterThis.voice = voices[voiceIndex];
 
@@ -252,7 +256,7 @@ window.onload = async function () {
       // fires on every syllable (only on local voices)
       // auto scrolling
       if (autoScroll) {
-        utterThis.onboundary = onBoundaryHandler; 
+        utterThis.onboundary = onBoundaryHandler;
       }
 
     }
@@ -278,9 +282,9 @@ window.onload = async function () {
           currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
           colorToChangeTo = textColor(currentHighlighter);
           $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo);
-            synth.cancel();
-            ttsIsOn = false;
-            isPaused = false;
+          synth.cancel();
+          ttsIsOn = false;
+          isPaused = false;
           break;
 
         case "tts started":
@@ -342,15 +346,24 @@ window.onload = async function () {
 
       //puts all span elements of current paragraph into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
-
+      
       //give all span elements in paragraph their original color
+      var wordIndex = 0;
       for (var i = 0; i < wordsInSpan.length; i++) {
-        if (resize == false) {
-          $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
-        }
+
         // gives spaces a class of whitespace (needed for whitespace issue in splitting.js)
         if ($.trim($(wordsInSpan[i]).text()) == '') {
           $(wordsInSpan[i]).attr("class", 'whitespace');
+        }
+
+        if (resize == false) {
+          $(wordsInSpan[i]).attr("originalColor", $(wordsInSpan[i]).css('color'));
+        }
+
+        // index all words (increments by 1) because splitting.js --word-index is broken
+        if ($(wordsInSpan[i]).hasClass('word')) {
+          $(wordsInSpan[i]).attr('index', wordIndex)
+          wordIndex++;
         }
       }
     }
@@ -418,7 +431,7 @@ window.onload = async function () {
           }
         }
       }
-  
+
       // chronologically sorts arrays
       lineOffsetsTop.sort((a, b) => {
         return a - b;
