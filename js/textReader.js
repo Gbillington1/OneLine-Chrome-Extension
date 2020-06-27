@@ -89,6 +89,7 @@ var voiceIndex;
 var rate;
 var pitch = 1;
 var currentParaText;
+var myTimeout;
 
 window.onload = async function () {
 
@@ -190,12 +191,12 @@ window.onload = async function () {
     var stringUptoWord = currentParaText.substring(0, e.charIndex);
     //count spaces from beggining of our paragraphg up until our word
     //multiply by two because the spaces are word-indexed as well
-    var whichWordWeAreOn = ((stringUptoWord.split(" ").length));
-    if (e.charIndex == 0 && charIndexZero) {
+    var whichWordWeAreOn = (stringUptoWord.split(" ").length);
+    if (e.charIndex == 0) {
       whichWordWeAreOn = 0;
       charIndexZero = false;
     }
-    // console.log(e.charIndex, stringUptoWord, whichWordWeAreOn)
+    console.log(e.charIndex, stringUptoWord, whichWordWeAreOn)
 
     var wordWeAreOnSpan = $(paras[paraIndex]).find("span[index='" + whichWordWeAreOn + "']").text();
     var nextWordSpan = $(paras[paraIndex]).find("span[index='" + (whichWordWeAreOn + 2) + "']").text();
@@ -215,6 +216,13 @@ window.onload = async function () {
     //   })
     //   lastWordIndex++;
     // }
+  }
+
+  // pause and resume speaking, sets a timer for 10 seconds (why does it do setTimeout twice? see tts function)
+  function myTimer() {
+    synth.pause();
+    synth.resume();
+    myTimeout = setTimeout(myTimer, 10000);
   }
 
   // runs the program
@@ -238,6 +246,10 @@ window.onload = async function () {
     async function textToSpeech() {
 
       currentParaText = $(paras[paraIndex]).text()
+
+      // set a timer to pause and resume every 10 seconds (prevents random stopping in the paragraph)
+      myTimeout = setTimeout(myTimer, 10000);
+
       // get rate and voice index from storage
       rate = await getVal("rate");
       voiceIndex = await getVal("currentVoice");
@@ -253,8 +265,16 @@ window.onload = async function () {
 
       utterThis.rate = rate;
 
+      console.log(utterThis);
+
+      // clear timeout on end
+      utterThis.onend = function() {
+        clearTimeout(myTimeout);
+      }
+
       // speak
       synth.speak(utterThis);
+
 
       // fires on every syllable (only on local voices)
       // auto scrolling

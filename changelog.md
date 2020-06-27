@@ -4,6 +4,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [06/27/2020]
 ### Added
  - get state of autoscrolling switch when page loads (fixes bug)
+ - timer to prevent the tts from stopping in the middle of the paragraph
 
 ## [06/24/2020]
 ### Added
