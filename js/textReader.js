@@ -92,8 +92,11 @@ var currentParaText;
 
 window.onload = async function () {
 
-  //get current state of switch
+  //get current state of on/off switch
   onOffVal = await getVal("highlightedSwitch");
+
+  // get current state of autoscroll switch (for TTS)
+  autoScroll = await getVal('scrollSwitch');
 
   //logic to run program when switch is on/off/changed
 

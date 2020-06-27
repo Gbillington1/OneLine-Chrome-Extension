@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [06/27/2020]
+### Added
+ - get state of autoscrolling switch when page loads (fixes bug)
+
 ## [06/24/2020]
 ### Added
  - manual indexing on words because splitting.js `--word-index` isn't very good
