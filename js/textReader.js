@@ -92,6 +92,7 @@ var currentParaText;
 var myTimeout;
 
 window.onload = async function () {
+  synth.cancel();
 
   //get current state of on/off switch
   onOffVal = await getVal("highlightedSwitch");
@@ -203,7 +204,7 @@ window.onload = async function () {
 
     //is wordWeAReOn height less than nextWordSpan height?
     //if true, keydown.
-  console.log(wordWeAreOnSpan)
+    console.log(wordWeAreOnSpan)
 
     // console.log(wordWeAreOnSpan, nextWordSpan)
 
@@ -249,12 +250,12 @@ window.onload = async function () {
 
       // set a timer to pause and resume every 10 seconds (prevents random stopping in the paragraph)
       myTimeout = setTimeout(myTimer, 10000);
-
+      
       // get rate and voice index from storage
       rate = await getVal("rate");
       voiceIndex = await getVal("currentVoice");
       voices = synth.getVoices();
-
+      
       // create speech instance with highlighted line as the text input
       var utterThis = new SpeechSynthesisUtterance(currentParaText);
 
@@ -268,15 +269,13 @@ window.onload = async function () {
       console.log(utterThis);
 
       // clear timeout on end
-      utterThis.onend = function() {
+      utterThis.onend = function () {
         clearTimeout(myTimeout);
       }
 
       // speak
       synth.speak(utterThis);
 
-
-      // fires on every syllable (only on local voices)
       // auto scrolling
       if (autoScroll) {
         utterThis.onboundary = onBoundaryHandler;
@@ -305,6 +304,7 @@ window.onload = async function () {
           currentHighlighter = highlightedRgbVal.replace(/[^\d,.]/g, '').split(',');
           colorToChangeTo = textColor(currentHighlighter);
           $('span.word.highlighted, span.whitespace.highlighted').css('color', colorToChangeTo);
+          clearTimeout(myTimeout);
           synth.cancel();
           ttsIsOn = false;
           isPaused = false;
@@ -315,6 +315,7 @@ window.onload = async function () {
             ttsIsOn = true;
             textToSpeech();
           } else if (isPaused) {
+            myTimeout = setTimeout(myTimer, 10000);
             isPaused = false;
             synth.resume();
           }
@@ -322,16 +323,19 @@ window.onload = async function () {
 
         case "play/pause":
           if (ttsIsOn && isPaused == false) {
+            clearTimeout(myTimeout);
             isPaused = true;
             synth.pause();
           } else if (isPaused) {
             isPaused = false;
             synth.resume();
+            myTimeout = setTimeout(myTimer, 10000);
           }
           break;
 
         case "stopped":
           ttsIsOn = false;
+          clearTimeout(myTimeout);
           synth.cancel();
           break;
 
@@ -369,7 +373,7 @@ window.onload = async function () {
 
       //puts all span elements of current paragraph into an array
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
-      
+
       //give all span elements in paragraph their original color
       var wordIndex = 0;
       for (var i = 0; i < wordsInSpan.length; i++) {
