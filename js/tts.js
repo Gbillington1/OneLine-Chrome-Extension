@@ -16,17 +16,6 @@ function sendMsgToCS(tabNumber, message) {
 
 $(document).ready(async function () {
 
-    // load switch value
-    var scrollSwitchVal = await getVal("scrollSwitch");
-    $('#scrollSwitch').prop('checked', scrollSwitchVal);
-
-    // save switch value when switch is changed
-    $('#scrollSwitch').change(function() {
-        chrome.storage.sync.set({ scrollSwitch: $(this).prop('checked') })
-        var msg = 'scroll changed to ' + JSON.stringify($(this).prop('checked'));
-        sendMsgToCS(0, msg);
-    })
-
     // set the currentPage to defaultPopup when the back button is clicked
     $('#backLink').click(function () {
         chrome.storage.sync.set({ currentPage: 'defaultPopup.html' });

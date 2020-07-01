@@ -7,6 +7,7 @@ All changes made after 05/30/2020 will be documented in this file.
 
 ### Removed 
  - All auto scrolling code from `textReader.js`
+ - All auto scrolling code from `tts.js`
 
 ## [06/27/2020]
 ### Added
