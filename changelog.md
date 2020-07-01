@@ -1,6 +1,13 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [07/1/2020]
+### Added
+ - 1.4.3 branch (based on v1.5 but without the autoscrolling)
+
+### Removed 
+ - All auto scrolling code from `textReader.js`
+
 ## [06/27/2020]
 ### Added
  - get state of autoscrolling switch when page loads (fixes bug)

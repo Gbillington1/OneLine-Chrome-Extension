@@ -64,7 +64,6 @@ var onOffVal;
 var resize = false;
 var ttsIsOn = false;
 var isPaused = false;
-var autoScroll = false;
 var charIndexZero = true;
 
 // vars for scrolling
@@ -97,9 +96,6 @@ window.onload = async function () {
   //get current state of on/off switch
   onOffVal = await getVal("highlightedSwitch");
 
-  // get current state of autoscroll switch (for TTS)
-  autoScroll = await getVal('scrollSwitch');
-
   //logic to run program when switch is on/off/changed
 
   // if switch is on, run program and listen for changes on the switch
@@ -117,14 +113,6 @@ window.onload = async function () {
 
         case "highlighter changed to false":
           resetProgram();
-          break;
-
-        case "scroll changed to true":
-          autoScroll = true;
-          break;
-
-        case "scroll changed to false":
-          autoScroll = false;
           break;
 
         default:
@@ -145,14 +133,6 @@ window.onload = async function () {
 
         case "highlighter changed to false":
           resetProgram();
-          break;
-
-        case "scroll changed to true":
-          autoScroll = true;
-          break;
-
-        case "scroll changed to false":
-          autoScroll = false;
           break;
 
         default:
@@ -181,43 +161,6 @@ window.onload = async function () {
       }
     }
   });
-
-  // called on every word in txt to speech (local voices)
-  function onBoundaryHandler(e) {
-
-    // get the current word that is being spoken (string)
-    //var currentWord = getWordAt(currentParaText, wordIndex);
-
-    //use the character position in the string to determine what number word we are on
-    var stringUptoWord = currentParaText.substring(0, e.charIndex);
-    //count spaces from beggining of our paragraphg up until our word
-    //multiply by two because the spaces are word-indexed as well
-    var whichWordWeAreOn = (stringUptoWord.split(" ").length);
-    if (e.charIndex == 0) {
-      whichWordWeAreOn = 0;
-      charIndexZero = false;
-    }
-    console.log(e.charIndex, stringUptoWord, whichWordWeAreOn)
-
-    var wordWeAreOnSpan = $(paras[paraIndex]).find("span[index='" + whichWordWeAreOn + "']").text();
-    var nextWordSpan = $(paras[paraIndex]).find("span[index='" + (whichWordWeAreOn + 2) + "']").text();
-
-    //is wordWeAReOn height less than nextWordSpan height?
-    //if true, keydown.
-    console.log(wordWeAreOnSpan)
-
-    // console.log(wordWeAreOnSpan, nextWordSpan)
-
-    // if the current word is the same as the last word => send key down event 
-    // if (currentWord == lastWordInLine[lastWordIndex]) {
-    //   $(function () {
-    //     var e = $.Event('keyup');
-    //     e.keyCode = 40;
-    //     $(document).trigger(e);
-    //   })
-    //   lastWordIndex++;
-    // }
-  }
 
   // pause and resume speaking, sets a timer for 10 seconds (why does it do setTimeout twice? see tts function)
   function myTimer() {
@@ -275,11 +218,6 @@ window.onload = async function () {
 
       // speak
       synth.speak(utterThis);
-
-      // auto scrolling
-      if (autoScroll) {
-        utterThis.onboundary = onBoundaryHandler;
-      }
 
     }
 
