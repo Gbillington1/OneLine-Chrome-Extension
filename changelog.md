@@ -10,6 +10,9 @@ All changes made after 05/30/2020 will be documented in this file.
  - All auto scrolling code from `tts.js`
  - auto scrolling swtich from `tts.css` and `textToSpeech.html`
 
+### Changed 
+ - changed version number to `1.4.3`
+
 ## [06/27/2020]
 ### Added
  - get state of autoscrolling switch when page loads (fixes bug)
