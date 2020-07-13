@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [07/13/2020]
+### Added 
+ - `key` to manifest so the ID doesn't change after every update (for OAuth)
+
 ## [07/1/2020]
 ### Added
  - 1.4.3 branch (based on v1.5 but without the autoscrolling)

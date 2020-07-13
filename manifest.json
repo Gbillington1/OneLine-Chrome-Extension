@@ -22,5 +22,6 @@
         "128": "images/icon128.png",
         "48": "images/icon48.png"
     },
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnO6+yBTNFnPTdByyPzUqxs19s51r0IGbCsDpLW8QXkCc2xxMEgWASoshemSdNM2P3eSoCWCseHXGOvm7hqTcLAjLjAhUp9YcE9famURVzXERsAm7kTR/20xzf7m7JbiQ3rce8VfY+YpFd8Aha72AFTBtvqGUS57sNhDWe6EhbVDDLhjqaeXpWaC6shG3ZksHplNdWtkFDW8gj9EItEzmfyOzVmDPdoe33n/ADtW2jnDzMVUpSS36qaw5B3pJeXTcfcM9UAF9iUHN7Z1x5PmgkyVxnZcV2WjrlveiUK0J1aJz9JR6KKstZ6j+8IpCP5oDB0YNSGzZ+UNp2ggKi0hSlQIDAQAB",
     "manifest_version": 2
 }
