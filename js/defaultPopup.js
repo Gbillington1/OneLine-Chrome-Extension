@@ -61,5 +61,9 @@ $("#row2").click(function () {
     window.location.href = 'textToSpeech.html'
 })
 
+$("#buy").click(() => {
+    chrome.tabs.create({url: 'index.html'});
+})
+
 })
 

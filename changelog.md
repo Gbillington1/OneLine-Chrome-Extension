@@ -1,6 +1,11 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [07/14/2020]
+### Added
+ - index.html and oauth.js that are hosted under the extension 
+ - OAuth 2.0 authentication that returns a token, email, and ID
+
 ## [07/13/2020]
 ### Added 
  - `key` to manifest so the ID doesn't change after every update (for OAuth)
