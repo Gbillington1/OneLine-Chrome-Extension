@@ -1,0 +1,5 @@
+# api keys
+.env
+
+# node moduels
+node/node_modules/**

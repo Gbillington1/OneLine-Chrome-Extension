@@ -104,7 +104,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
   }
   if (request.msg == "bought") {
-    chrome.tabs.create({url: '../index.html'})
+    chrome.tabs.create({url: "./index.html"})
   }
 });
 

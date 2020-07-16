@@ -132,9 +132,9 @@ $(document).ready(async function () {
       rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
       textColor = colorCalc(rgbValArr);
       if (textColor == 'white') {
-        $(this).find('img').attr('src', 'images/eyedropper-w.png')
+        $(this).find('img').attr('src', '../images/eyedropper-w.png')
       } else {
-        $(this).find('img').attr('src', 'images/eyedropper-b.png')
+        $(this).find('img').attr('src', '../images/eyedropper-b.png')
       }
     }
   });
@@ -194,9 +194,9 @@ $('#addToFavs').click(function () {
       rgbValArr = favBtnBG.replace(/[^\d,.]/g, '').split(',');
       textColor = colorCalc(rgbValArr);
       if (textColor == 'white') {
-        $(this).find('img').attr('src', 'images/eyedropper-w.png')
+        $(this).find('img').attr('src', '../images/eyedropper-w.png')
       } else {
-        $(this).find('img').attr('src', 'images/eyedropper-b.png')
+        $(this).find('img').attr('src', '../images/eyedropper-b.png')
       }
       // save the favorite
       var id = $(this).attr('id');
@@ -226,7 +226,7 @@ $('.deleteIcon').click(function () {
     $('#favErr').css('color', '#f6f4f7')
     saveAttr($(favToDelete), false);
     $(favToDelete).css('background-color', '');
-    $(favToDelete).find('img').attr('src', 'images/eyedropper-b.png');
+    $(favToDelete).find('img').attr('src', '../images/eyedropper-b.png');
   }
 })
 
@@ -236,7 +236,7 @@ var ctx = canvas.getContext("2d");
 
 //load picker image
 var img = new Image();
-img.src = "images/ColorWheel.png";
+img.src = "../images/ColorWheel.png";
 window.onload = function () {
   // draw the picture to the canvas
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);

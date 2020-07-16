@@ -1,6 +1,15 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [07/16/2020]
+### Added
+ - node environment for stripe (and eventually DB) backend
+ - .env file for stripe API keys
+ - .gitignore file
+
+### Changed
+ - organized files a little bit more
+
 ## [07/14/2020]
 ### Added
  - index.html and oauth.js that are hosted under the extension 
