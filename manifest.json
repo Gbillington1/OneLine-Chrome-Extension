@@ -1,17 +1,40 @@
 {
+    "manifest_version": 3,
     "name": "OneLine",
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl2neMiK1bvvphe9eImS70akjQ5sZvZSBSN9k/nwDnDzZjvtp1ZMIVjwiriyYqN848d4wnOFCZzSRqOqz+fLrRoIfWV20qWMzC0IsbKFayo3cGd7n01z5K5HlBDIdhmqNYPczekSQh7eQHTmRKJsUSM2NyKtQZzp1ZBp3Cx8b3JClTpPXfj2cQLGgaAq06SI2f6VumCrZhf1K7cXQsdfWwIL+q4ZRxHfgFXT7CW5PoRo/NHcSye7i3o/4Jn+9S+7KKMjCvS8gcWxfCAwE9TOdJQAoPQM/dteR0Ptxb10Q6600lY1gPR3l0UXu+4t4JEQXOofxA+9GvN4Gu4F5hbmC/QIDAQAB",
-    "version": "1.4.3",
+    "version": "2.0",
+
     "description": "OneLine highlights a single line to focus your reading.",
-    "permissions": ["http://*/*", "https://*/*", "activeTab", "storage", "identity", "identity.email"],
+    "icons": {
+        "128": "images/icon128.png",
+        "48": "images/icon48.png"
+    },
+
     "background": {
         "scripts": ["js/background.js"],
-        "persistent": true
+        "persistent": false
     },
+
+    "permissions": [
+        "activeTab", 
+        "storge",  
+        "identity", 
+        "identity.email"
+    ],
+    "host_permissions": [
+        "*://*/*"
+    ],
+
     "content_scripts":[{
         "css": ["css/style.css"],
-        "js": ["js/jquery-3.4.1.min.js", "js/splitting.min.js", "js/textReader.js"],
-        "matches": ["http://*/*", "https://*/*"],
+        "js": [
+            "js/jquery-3.4.1.min.js", 
+            "js/splitting.min.js", 
+            "js/textReader.js"
+        ],
+        "matches": [
+            "http://*/*", 
+            "https://*/*"
+        ],
         "exclude_globs": ["*://www.google.com/search?*"]
     }],
     "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
@@ -19,13 +42,10 @@
         "default_popup": "html/defaultPopup.html",
         "default_title": "OneLine"
     },
-    "icons": {
-        "128": "images/icon128.png",
-        "48": "images/icon48.png"
-    },
     "oauth2": {
         "client_id": "1013313058566-1oqhh4vu4hs84fsej1jakv3qk362bur8.apps.googleusercontent.com",
         "scopes":["https://www.googleapis.com/auth/userinfo.email"]
     },
-    "manifest_version": 2
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl2neMiK1bvvphe9eImS70akjQ5sZvZSBSN9k/nwDnDzZjvtp1ZMIVjwiriyYqN848d4wnOFCZzSRqOqz+fLrRoIfWV20qWMzC0IsbKFayo3cGd7n01z5K5HlBDIdhmqNYPczekSQh7eQHTmRKJsUSM2NyKtQZzp1ZBp3Cx8b3JClTpPXfj2cQLGgaAq06SI2f6VumCrZhf1K7cXQsdfWwIL+q4ZRxHfgFXT7CW5PoRo/NHcSye7i3o/4Jn+9S+7KKMjCvS8gcWxfCAwE9TOdJQAoPQM/dteR0Ptxb10Q6600lY1gPR3l0UXu+4t4JEQXOofxA+9GvN4Gu4F5hbmC/QIDAQAB"
+   
 }
