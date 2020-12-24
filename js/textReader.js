@@ -14,86 +14,97 @@ function updateBG(valueToSet) {
 
 // determines text color based on the color of the line (takes an array)
 function textColor(bgColor) {
-  var r = bgColor[0],
+  let r = bgColor[0],
     g = bgColor[1],
     b = bgColor[2];
-  var yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
+  let yiq = ((r * 0.299) + (g * 0.587) + (b * 0.114));
   return (yiq >= 135) ? 'black' : 'white';
 }
 
 // Get the word of a string given the string and index
-function getWordAt(str, pos) {
-  // Perform type conversions.
-  str = String(str);
-  pos = Number(pos) >>> 0;
+// function getWordAt(str, pos) {
+//   // Perform type conversions.
+//   str = String(str);
+//   pos = Number(pos) >>> 0;
 
-  // Search for the word's beginning and end.
-  var left = str.slice(0, pos + 1).search(/\S+$/),
-    right = str.slice(pos).search(/\s/);
+//   // Search for the word's beginning and end.
+//   let left = str.slice(0, pos + 1).search(/\S+$/),
+//     right = str.slice(pos).search(/\s/);
 
-  // The last word in the string is a special case.
-  if (right < 0) {
-    return str.slice(left);
-  }
+//   // The last word in the string is a special case.
+//   if (right < 0) {
+//     return str.slice(left);
+//   }
 
-  // Return the word, using the located bounds to extract it from the string.
-  return str.slice(left, right + pos);
-}
+//   // Return the word, using the located bounds to extract it from the string.
+//   return str.slice(left, right + pos);
+// }
 
 // indecies 
-var index = 0;
-var paraIndex = 0;
-var lastWordIndex = 0;
+let index = 0;
+let paraIndex = 0;
+let lastWordIndex = 0;
 
 // arrays 
-var wordsInSpan = [];
-var line = [];
-var paras = [];
-var lineOffsetsTop = [];
-var lineOffsetsBottom = [];
-var differences = [];
-var lineMedians = [];
-var lastWordInLine = [];
-var allParas;
-var currentHighlighter // color of line (split up)
+let wordsInSpan = [];
+let line = [];
+let paras = [];
+let lineOffsetsTop = [];
+let lineOffsetsBottom = [];
+let differences = [];
+let lineMedians = [];
+let lastWordInLine = [];
+let allParas;
+let currentHighlighter // color of line (split up)
 
 // booleans
-var hasRan = false;
-var checkedForEmptyParas = false;
-var onOffVal;
-var resize = false;
-var ttsIsOn = false;
-var isPaused = false;
-var charIndexZero = true;
+let hasRan = false;
+let checkedForEmptyParas = false;
+let onOffVal;
+let resize = false;
+let ttsIsOn = false;
+let isPaused = false;
+let charIndexZero = true;
 
-// vars for scrolling
-var bottomOfScreen = $(window).scrollTop() + window.innerHeight;
-var topOfScreen = $(window).scrollTop();
+// lets for scrolling
+let bottomOfScreen;
+let topOfScreen;
 
-// offsets
-var currentWordTop;
-var currentWordBottom;
-var previousWordTop;
+// redifines vars when scroll
+$(document).scroll(function () {
+  bottomOfScreen = $(window).scrollTop() + window.innerHeight;
+  topOfScreen = $(window).scrollTop();
+});
+
+// offsets - # of pixels above and below 
+let  currentWordTop;
+let  currentWordBottom;
+
+// is this the middle (px val) of the word? 
+let  previousWordTop;
 
 // other vars
 var lineHeight;
-var highlightedRgbVal; // color of the line
-var colorToChangeTo;
-var currentLine;
+// color of the line
+let highlightedRgbVal;
+// holder variable?  
+let colorToChangeTo;
+let currentLine;
 
-// for tts
-var synth = window.speechSynthesis;
-var voices = [];
-var voiceIndex;
-var rate;
-var pitch = 1;
-var currentParaText;
-var myTimeout;
+// for text to speech
+let synth = window.speechSynthesis;
+let voices = [];
+let voiceIndex;
+let rate;
+let pitch = 1;
+let currentParaText;
+let myTimeout;
 
 window.onload = async function () {
+  // This stops the Speech Synthesis API (text to speech) when the page reloads
   synth.cancel();
 
-  //get current state of on/off switch
+  // This gets the boolean value of the on/off switch form Chrome storage
   onOffVal = await getVal("highlightedSwitch");
 
   //logic to run program when switch is on/off/changed
@@ -193,14 +204,14 @@ window.onload = async function () {
 
       // set a timer to pause and resume every 10 seconds (prevents random stopping in the paragraph)
       myTimeout = setTimeout(myTimer, 10000);
-      
+
       // get rate and voice index from storage
       rate = await getVal("rate");
       voiceIndex = await getVal("currentVoice");
       voices = synth.getVoices();
-      
+
       // create speech instance with highlighted line as the text input
-      var utterThis = new SpeechSynthesisUtterance(currentParaText);
+      let utterThis = new SpeechSynthesisUtterance(currentParaText);
 
       // form the utterThis obj 
       utterThis.voice = voices[voiceIndex];
@@ -282,12 +293,6 @@ window.onload = async function () {
       }
     });
 
-    //redefine variables when user scrolls
-    $(document).scroll(function () {
-      bottomOfScreen = $(window).scrollTop() + window.innerHeight;
-      topOfScreen = $(window).scrollTop();
-    });
-
     //wraps each word in a span tag and puts them in an array
     function wrapInSpans() {
 
@@ -295,7 +300,7 @@ window.onload = async function () {
       if (checkedForEmptyParas == false) {
         //get all paragraphs
         allParas = $("p:visible").not("header p, footer p, div.dockcard_text p, p[width^='0']");
-        for (var i = 0; i < allParas.length; i++) {
+        for (let i = 0; i < allParas.length; i++) {
           // if length of para is not 0 (false) => add it to paras array
           if ($(allParas[i]).text().trim().length) {
             paras.push($(allParas[i]));
@@ -313,8 +318,8 @@ window.onload = async function () {
       wordsInSpan = $(paras[paraIndex]).find("span.word, span.whitespace");
 
       //give all span elements in paragraph their original color
-      var wordIndex = 0;
-      for (var i = 0; i < wordsInSpan.length; i++) {
+      let wordIndex = 0;
+      for (let i = 0; i < wordsInSpan.length; i++) {
 
         // gives spaces a class of whitespace (needed for whitespace issue in splitting.js)
         if ($.trim($(wordsInSpan[i]).text()) == '') {
@@ -342,7 +347,7 @@ window.onload = async function () {
       lineOffsetsBottom = [];
       lastWordInLine = [];
       // loop thru all spans in para
-      for (var i = 0; i < wordsInSpan.length; i++) {
+      for (let i = 0; i < wordsInSpan.length; i++) {
         // gets the top and bottom offset of current word
         lineHeight = Math.round($(wordsInSpan[i]).outerHeight());
         currentWordTop = $(wordsInSpan[i]).offset().top;
@@ -366,7 +371,7 @@ window.onload = async function () {
       }
 
       // loops thru every middle offset
-      for (var i = 0; i < lineMedians.length; i++) {
+      for (let i = 0; i < lineMedians.length; i++) {
         lineHeight = $(wordsInSpan[i]).outerHeight();
         // add middle offset as an attribute to each word to be used in highlight() later on
         $(wordsInSpan[i]).attr(
@@ -415,7 +420,7 @@ window.onload = async function () {
     //highlights words that are inbetween lineOffsetsTop[i] and lineOffsetsBottom[i]
     function highlight() {
       // loop thru all spans in current paragraph
-      for (var i = 0; i < wordsInSpan.length; i++) {
+      for (let i = 0; i < wordsInSpan.length; i++) {
         // if the middle of current word is inbetween the top and bottom of the first word = > highlight
         // all words that make it through this statement are on the same line
         if (
@@ -495,7 +500,7 @@ window.onload = async function () {
         ) {
           // remove highlighter and restore text color
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
-          for (var i = 0; i < currentLine.length; i++) {
+          for (let i = 0; i < currentLine.length; i++) {
             $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
           }
           // move to next paragraph
@@ -513,7 +518,7 @@ window.onload = async function () {
         ) {
           // remove highlighter and restore text color
           currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
-          for (var i = 0; i < currentLine.length; i++) {
+          for (let i = 0; i < currentLine.length; i++) {
             $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
           }
           // move to previous paragraph
@@ -558,7 +563,7 @@ window.onload = async function () {
   function resetProgram() {
     // remove highlighter and restore color of word
     currentLine = $(paras[paraIndex]).find("span.word.highlighted, span.whitespace.highlighted");
-    for (var i = 0; i < currentLine.length; i++) {
+    for (let i = 0; i < currentLine.length; i++) {
       $(currentLine[i]).removeClass('highlighted').css('color', $(currentLine[i]).attr('originalColor'))
     }
 
