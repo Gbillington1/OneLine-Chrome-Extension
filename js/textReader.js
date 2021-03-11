@@ -21,7 +21,7 @@ function textColor(bgColor) {
   return (yiq >= 135) ? 'black' : 'white';
 }
 
-// Get the word of a string given the string and index
+// Get the word of a string given the string and index - unused? 
 // function getWordAt(str, pos) {
 //   // Perform type conversions.
 //   str = String(str);
@@ -306,6 +306,15 @@ window.onload = async function () {
             paras.push($(allParas[i]));
           }
         }
+
+        // possible replacement for the above code - not sure if it has that much of an advantage though
+        // paras = allParas.map((para) => {
+        //   // if length of para is not 0 (false) => add it to paras array
+        //   if ($(para).text().trim().length) {
+        //     paras.push($(para));
+        //   }
+        // })
+
         checkedForEmptyParas = true;
       }
 
@@ -385,7 +394,7 @@ window.onload = async function () {
           // ignore whitespaces (workaround for splitting.js issue)
           if (!$(wordsInSpan[i]).hasClass("whitespace")) {
 
-            // add the last word in the line to an array
+            // add the last word in the line to an array (i - 2 because there is a trailing whitespace at the end of the line)
             if (!Object.keys($(wordsInSpan[i - 2])).length == 0 && $(wordsInSpan[i - 1]).text() != '-') {
               lastWordInLine.push($(wordsInSpan[i - 2]).text());
               // $(wordsInSpan[i - 2]).attr('isLastWord', true);

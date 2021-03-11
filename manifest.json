@@ -15,7 +15,7 @@
     },
 
     "permissions": [
-        "activeTab", 
+        "activeTab",
         "storge",  
         "identity", 
         "identity.email"

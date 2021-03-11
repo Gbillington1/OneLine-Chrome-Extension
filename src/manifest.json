@@ -1,0 +1,40 @@
+{
+    "manifest_version": 3,
+    "name": "OneLine",
+    "version": "2.0",
+    "description": "Strengthen your reading OneLine at a time.",
+    "permissions": [
+        "activeTab"
+    ],
+    "host_permissions": [
+        "*://*/*"
+    ],
+
+    "web_accessible_resources": [
+        {
+            "resources": ["js/OneLine-MainFunctions.js"],
+            "matches": [],
+            "exclude": ["jquery-3.4.1.min.js", "OneLine.js", "splitting.min.js"]
+        }
+    ],
+
+    "content_scripts":[{
+    "js": [
+        "js/jquery-3.4.1.min.js", 
+        "js/splitting.min.js", 
+        "js/OneLine.js",
+        "js/OneLine-MainFunctions.js",
+        "js/OneLine-Util.js",
+        "js/Paragraph.js"
+    ],
+    "css": [
+        "css/style.css"
+    ],
+    "matches": [
+        "http://*/*", 
+        "https://*/*"
+    ],
+    "exclude_globs": ["*://www.google.com/search?*"]
+    }]
+
+}
