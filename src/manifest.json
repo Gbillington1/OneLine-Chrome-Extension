@@ -9,22 +9,13 @@
     "host_permissions": [
         "*://*/*"
     ],
-
-    "web_accessible_resources": [
-        {
-            "resources": ["js/OneLine-MainFunctions.js"],
-            "matches": [],
-            "exclude": ["jquery-3.4.1.min.js", "OneLine.js", "splitting.min.js"]
-        }
-    ],
-
     "content_scripts":[{
     "js": [
         "js/jquery-3.4.1.min.js", 
         "js/splitting.min.js", 
+        "js/OneLine-Main.js",
         "js/OneLine.js",
-        "js/OneLine-MainFunctions.js",
-        "js/OneLine-Util.js",
+        "js/ParagraphController.js",
         "js/Paragraph.js"
     ],
     "css": [
