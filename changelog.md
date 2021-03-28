@@ -1,7 +1,7 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
-## [03/28/21]
+## [03/28/2021]
 ### Changed
  - Nothing to the fully functional programm - see added below
  - Moved class based approach to `./srcjs/classes`
@@ -140,7 +140,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[03/28/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/a539e5a..HEAD
+[03/28/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/a539e5a..HEAD
 [07/19/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/ebf4192..33c7830
 [07/16/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/0d9efe2..0d9efe2
 [07/14/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/9fe2a28..67319ba
