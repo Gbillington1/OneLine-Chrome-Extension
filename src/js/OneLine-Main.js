@@ -1,12 +1,15 @@
 window.onload = () => {
 
-    // create a "global" paragraphController class to pass into the OneLine class
-    let paragraphController = new ParagraphController();
+    // create a "global" ParagraphControllerModule to manage the paragraphs
+    let ParagraphController = ParagraphControllerModule();
 
-    OneLine.start(paragraphController); 
+    const OneLine = OneLineModule(ParagraphController);
 
+    OneLine.start();
+
+    // should this be in OneLineModule? 
     $(document).keydown((e) => {
-        paragraphController.moveParagraph(e);
+        ParagraphController.moveParagraph(e);
     });
 
 }

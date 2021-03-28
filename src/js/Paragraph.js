@@ -2,7 +2,6 @@ class Paragraph {
     // make a line array that holds the words for each line (2d array?)
     constructor(paragraph) {
         this.paragraph = paragraph; 
-        this.currentParagraphIndex = 0;
         this.spansInParagraph; // array of all words/whitespace wrapped in spans in paragraph
         this.topOfWordDifferences = [0]; // value in px of current word offset top - previous word offset top
         this.linesInParagraph = [];

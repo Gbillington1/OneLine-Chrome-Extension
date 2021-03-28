@@ -5,10 +5,10 @@ class OneLine {
 
     static start(paragraphController) {
 
-        // get relevant paragraphs from ParagraphController class
         paragraphController.populateRelevantParagraphArray();
-        console.log(paragraphController.allRelevantParagraphs);
-        paragraphController.createParagraph(); 
+
+        paragraphController.createParagraph();
+
         paragraphController.beginHighlighting();
 
     }

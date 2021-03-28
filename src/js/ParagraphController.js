@@ -10,12 +10,16 @@ class ParagraphController {
     }
 
     // needs to be enhaced to filter out the irrelevant paragraphs (paras that we don't want to highlight)
-    // is this method qualified to be a static one? 
     populateRelevantParagraphArray() {
+
         this.allRelevantParagraphs = $("p:visible").not("header p, footer p");
-        console.log(this.allRelevantParagraphs); 
+
     }
 
+    /* 
+     - Creates a new Paragraph object, and adds it to this.paragraphs.
+     - Only adds the paragraph if it hasn't already in this.paragraphs
+    */
     createParagraph() {
 
         // if paragraph hasn't been added to this.paragraphs yet
@@ -65,6 +69,7 @@ class ParagraphController {
 
         }
         console.log("Current paragraph idx: " + this.currentParagraphIndex);
+        
     }
 
 }
