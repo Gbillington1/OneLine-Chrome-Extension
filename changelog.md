@@ -10,6 +10,7 @@ All changes made after 05/30/2020 will be documented in this file.
  - Refactor of the current OneLine app (stored in ./src)
   - First draft was using a Class/Prototype approach
   - Redrafted using a Modular approach, seen in `./src/js/modules`
+ - .gitignore to remove license.md for v2.0 and master
 
 ## [07/19/2020]
 ### Changed
