@@ -1,6 +1,14 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [03/28/21]
+### Changed
+ - Nothing to the fully functional programm - see added below
+
+### Added
+ - Refactor of the current OneLine app (stored in ./src)
+ - Modular based architecture to manipulate DOM 
+
 ## [07/19/2020]
 ### Changed
  - removed all of the payment system code because I am moving it onto `useoneline.com`
@@ -130,7 +138,8 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[07/16/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/ebf4192..HEAD
+[07/19/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/a539e5a..HEAD
+[07/19/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/ebf4192..33c7830
 [07/16/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/0d9efe2..0d9efe2
 [07/14/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/9fe2a28..67319ba
 [07/13/2020]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/24c8275..6cdd368
