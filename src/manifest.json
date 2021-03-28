@@ -11,12 +11,12 @@
     ],
     "content_scripts":[{
     "js": [
-        "js/jquery-3.4.1.min.js", 
-        "js/splitting.min.js", 
+        "js/OneLine-Main.js",
         "js/modules/OneLineModule.js",
         "js/modules/ParagraphControllerModule.js",
         "js/modules/ParagraphModule.js",
-        "js/OneLine-Main.js"
+        "js/libraries/splitting.min.js", 
+        "js/libraries/jquery-3.4.1.min.js"
     ],
     "css": [
         "css/style.css"

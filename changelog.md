@@ -4,10 +4,12 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [03/28/21]
 ### Changed
  - Nothing to the fully functional programm - see added below
+ - Moved class based approach to `./srcjs/classes`
 
 ### Added
  - Refactor of the current OneLine app (stored in ./src)
- - Modular based architecture to manipulate DOM 
+  - First draft was using a Class/Prototype approach
+  - Redrafted using a Modular approach, seen in `./src/js/modules`
 
 ## [07/19/2020]
 ### Changed
