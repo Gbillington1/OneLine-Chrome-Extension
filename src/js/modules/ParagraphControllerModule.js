@@ -8,18 +8,20 @@ const ParagraphControllerModule = () => {
 
     /* Arrays */
     // Array of jQuery paragraph objects 
-    let allRelevantParagraphs = []; 
+    let allRelevantParagraphs = [];
 
     /* Array of Paragraph modules */
     let paragraphs = [];
 
-
-    /* Indices */ 
+    /* Indices */
     // tracks the paragraph that highlighted line is in
-    let currentParagraphIndex = 0;
+    let currentParagraphTracker = 0;
 
-    // tracks the paragraphs that have been created + added to the paragraph array
-    let paragraphObjectIndex = 0; 
+    /*
+     - tracks the most recent paragraph that has been created
+     - helps identify which paragraphs haven't been manipulated or added to paragraphs array
+    */
+    let mostRecentParagraphTracker = 0;
 
     /* 
      - Needs to be enhaced to filter out the irrelevant paragraphs (paras that we don't want to highlight)
@@ -32,21 +34,16 @@ const ParagraphControllerModule = () => {
 
     /* 
      - Creates a new Paragraph module, and adds it to paragraphs.
-     - Only adds the paragraph if it hasn't already in paragraphs
+     - Only adds the paragraph if it hasn't already been added to paragraphs
     */
     const createParagraph = () => {
 
-        // if paragraph hasn't been added to paragraphs yet
-        if (currentParagraphIndex == paragraphObjectIndex) {
+        // add new paragraph module to array
+        paragraphs.push(
 
-            // add new paragraph module to array
-            paragraphs.push(
+            ParagraphModule(allRelevantParagraphs[mostRecentParagraphTracker])
 
-                ParagraphModule(allRelevantParagraphs[paragraphObjectIndex])
-
-            );
-
-        }
+        );
 
         console.log(paragraphs);
 
@@ -57,8 +54,8 @@ const ParagraphControllerModule = () => {
     */
     const beginHighlighting = () => {
 
-        paragraphs[currentParagraphIndex].splitIntoSpans();
-        paragraphs[currentParagraphIndex].highlightEntireParagraph(); // should be individual line
+        paragraphs[currentParagraphTracker].splitIntoSpans();
+        paragraphs[currentParagraphTracker].highlightEntireParagraph(); // should be individual line
 
     }
 
@@ -70,27 +67,55 @@ const ParagraphControllerModule = () => {
     const moveParagraph = (e) => {
 
         // if W key is pressed
-        if (e.keyCode == 87 && currentParagraphIndex > 0) {
+        if (e.keyCode == 87 && currentParagraphTracker > 0) {
 
-            paragraphs[currentParagraphIndex].removeHighlight();
-            // remove the highlight
-            currentParagraphIndex--;
-            paragraphs[currentParagraphIndex].splitIntoSpans();
-            paragraphs[currentParagraphIndex].highlightEntireParagraph();
+            moveLineUp();
 
             // if S key is pressed
-        } else if (e.keyCode == 83 && (currentParagraphIndex < allRelevantParagraphs.length - 1)) {
+        } else if (e.keyCode == 83 && (currentParagraphTracker < allRelevantParagraphs.length - 1)) {
 
-            paragraphs[currentParagraphIndex].removeHighlight();
-            currentParagraphIndex++;
-            paragraphObjectIndex++; 
-            createParagraph();
-            paragraphs[currentParagraphIndex].splitIntoSpans();
-            paragraphs[currentParagraphIndex].highlightEntireParagraph();
+            moveLineDown();
 
         }
 
-        console.log("Current paragraph idx: " + currentParagraphIndex);
+        console.log("Current paragraph idx: " + currentParagraphTracker);
+
+    }
+
+    /*
+     - Performs necessary functions and mutations to move the line up 1 index
+    */
+    const moveLineUp = () => {
+
+        paragraphs[currentParagraphTracker].removeHighlight();
+
+        currentParagraphTracker--;
+
+        paragraphs[currentParagraphTracker].highlightEntireParagraph();
+
+    }
+
+    /*
+     - Performs necessary functions, checks, and mutations to move the line down 1 index
+    */
+    const moveLineDown = () => {
+
+        paragraphs[currentParagraphTracker].removeHighlight();
+
+        // checks if the next paragraph hasn't been created as a module yet
+        if (currentParagraphTracker == mostRecentParagraphTracker) {
+
+            mostRecentParagraphTracker++;
+
+            createParagraph();
+
+            paragraphs[mostRecentParagraphTracker].splitIntoSpans();
+
+        }
+
+        currentParagraphTracker++;
+
+        paragraphs[currentParagraphTracker].highlightEntireParagraph();
 
     }
 
