@@ -54,8 +54,13 @@ const ParagraphControllerModule = () => {
     */
     const beginHighlighting = () => {
 
-        paragraphs[currentParagraphTracker].splitIntoSpans();
-        paragraphs[currentParagraphTracker].highlightEntireParagraph(); // should be individual line
+        let currentParagraph = paragraphs[currentParagraphTracker];
+
+        currentParagraph.splitIntoSpans();
+
+        currentParagraph.calculateLines();
+
+        currentParagraph.highlightEntireParagraph(); // should be individual line
 
     }
 
@@ -110,6 +115,8 @@ const ParagraphControllerModule = () => {
             createParagraph();
 
             paragraphs[mostRecentParagraphTracker].splitIntoSpans();
+
+            paragraphs[mostRecentParagraphTracker].calculateLines();
 
         }
 

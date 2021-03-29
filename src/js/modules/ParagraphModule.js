@@ -84,7 +84,7 @@ const ParagraphModule = (paragraph) => {
             if (topOfSpanDifferences[i] > lineHeightOfPreviousWord) {
 
                 linesInParagraph.push(
-                    spansInParagraph.slice(startOfLineIdx, i)
+                    LineModule(spansInParagraph.slice(startOfLineIdx, i))
                 );
 
                 startOfLineIdx = i;
@@ -95,7 +95,7 @@ const ParagraphModule = (paragraph) => {
 
         // account for the last line in the paragraph
         linesInParagraph.push(
-            spansInParagraph.slice(startOfLineIdx, topOfSpanDifferences.length)
+            LineModule(spansInParagraph.slice(startOfLineIdx, topOfSpanDifferences.length))
         );
 
     }

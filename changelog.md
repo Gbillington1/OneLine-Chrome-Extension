@@ -6,10 +6,12 @@ All changes made after 05/30/2020 will be documented in this file.
  - Moved old OneLine code to `./working-version` to be referenced later
  - Function for moving the line up and down into 2 separate functions
  - Broke up `ParagraphModule.calculateLines` into different functions
+ - `calculateLines` to populate array of line modules instead of making a 2d array
 
 ## Added
  - Two functions, one to move the line up, and one to move the line down (finished the basic line movement)
  - Two functions to clean up `calculateLines`, one populates the differences array, the other populates the line array
+ - `LineModule` that represents a line in a paragraph - stored in `linesInParagraph` array in each paragraph module
 
 ## [03/28/2021]
 ### Changed
