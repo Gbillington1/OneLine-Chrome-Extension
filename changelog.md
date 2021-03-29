@@ -5,9 +5,11 @@ All changes made after 05/30/2020 will be documented in this file.
 ### Changed
  - Moved old OneLine code to `./working-version` to be referenced later
  - Function for moving the line up and down into 2 separate functions
+ - Broke up `ParagraphModule.calculateLines` into different functions
 
 ## Added
  - Two functions, one to move the line up, and one to move the line down (finished the basic line movement)
+ - Two functions to clean up `calculateLines`, one populates the differences array, the other populates the line array
 
 ## [03/28/2021]
 ### Changed
