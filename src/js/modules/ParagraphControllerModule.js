@@ -8,7 +8,7 @@ const ParagraphControllerModule = () => {
 
     /* Arrays */
     // Array of jQuery paragraph objects 
-    let allRelevantParagraphs = [];
+    let relevantParagraphs = [];
 
     /* Array of Paragraph modules */
     let paragraphs = [];
@@ -90,7 +90,7 @@ const ParagraphControllerModule = () => {
 
             // check if paragraph a valid piece of text
             if (isValidParagraph(para)) {
-                allRelevantParagraphs.push(para);
+                relevantParagraphs.push(para);
             }
 
         })
@@ -132,7 +132,7 @@ const ParagraphControllerModule = () => {
     const createParagraph = () => {
 
         // add new paragraph module to array
-        const currentParagraph = ParagraphModule(allRelevantParagraphs[mostRecentParagraphTracker]);
+        const currentParagraph = ParagraphModule(relevantParagraphs[mostRecentParagraphTracker]);
 
         paragraphs.push(currentParagraph);
 
@@ -180,7 +180,7 @@ const ParagraphControllerModule = () => {
 
             // if line is moving DOWN
             // if S key is pressed and current paragraph is not the last paragraph on page
-        } else if (e.keyCode == 83 && (currentParagraphTracker < allRelevantParagraphs.length - 1)) {
+        } else if (e.keyCode == 83 && (currentParagraphTracker < relevantParagraphs.length - 1)) {
 
             // moving line down when there is a line in the same para below it
             if (currentLineTracker < paragraphs[currentParagraphTracker].getNumberOfLines()) {
@@ -190,7 +190,7 @@ const ParagraphControllerModule = () => {
 
             // moving line down when there isn't a line in the same para below it (has to switch paragraphs)
             } else if (currentLineTracker == paragraphs[currentParagraphTracker].getNumberOfLines() && 
-                currentParagraphTracker < allRelevantParagraphs.length - 1) {
+                currentParagraphTracker < relevantParagraphs.length - 1) {
 
                 currentLineTracker = 0;
 
