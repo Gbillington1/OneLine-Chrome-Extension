@@ -5,11 +5,14 @@ window.onload = () => {
 
     const OneLine = OneLineModule(ParagraphController);
 
-    OneLine.start();
+    OneLine.start();    
 
     // should this be in OneLineModule? 
     $(document).keydown((e) => {
-        ParagraphController.moveParagraph(e);
+        // don't move line when user is editing text in <input> or <textarea> 
+        if (!$(e.target).is("input, textarea")) {
+            ParagraphController.moveParagraph(e);
+        }
     });
 
 }

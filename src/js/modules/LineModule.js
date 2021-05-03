@@ -7,14 +7,17 @@ const LineModule = (spansInLine) => {
 
     const highlightLine = () => {
 
-        $(spansInLine).find("span").addClass("highlighted"); 
+        for (i = 0; i < spansInLine.length; i++) {
+            spansInLine[i].classList.add("highlighted");
+        }
 
     }
 
     const removeHighlighFromLine = () => {
 
-        $(spansInLine).find("span").removeClass("highlighted");
-
+        for (i = 0; i < spansInLine.length; i++) {
+            spansInLine[i].classList.remove("highlighted");
+        }
     }
 
     return {

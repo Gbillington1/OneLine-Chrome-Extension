@@ -100,26 +100,35 @@ const ParagraphModule = (paragraph) => {
 
     }
 
-    /* eventually will be highlighting individual lines - keeping it simple for testing */
-    const highlightEntireParagraph = () => {
+    const updateHighlight = (currentLineTracker) => {
 
-        $(paragraph).find("span.whitespace, span.word").addClass("highlighted");
+        removeAllHighlights();
+        console.log(currentLineTracker, linesInParagraph[currentLineTracker])
+        linesInParagraph[currentLineTracker].highlightLine();
 
     }
 
-    const removeHighlight = () => {
+    const removeAllHighlights = () => {
 
-        $(paragraph).find("span.whitespace, span.word").removeClass("highlighted");
+        $(paragraph).find("span.word.highlighted").removeClass("highlighted");
+
+    }
+
+    const getNumberOfLines = () => {
+
+        return linesInParagraph.length - 1;
 
     }
 
     // export functions that we want available
     return {
 
+        paragraph,
         splitIntoSpans,
         calculateLines,
-        highlightEntireParagraph,
-        removeHighlight
+        updateHighlight,
+        removeAllHighlights,
+        getNumberOfLines
 
     }
 

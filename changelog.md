@@ -1,6 +1,13 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [05/2/2021]
+
+- Lots of undocumented changes have been made since the last commit :/
+
+## Added
+ - Functionality to move line throughout the page (fully works now)
+
 ## [03/29/2021]
 ### Changed
  - Moved old OneLine code to `./working-version` to be referenced later
