@@ -7,6 +7,7 @@ All changes made after 05/30/2020 will be documented in this file.
 
 ## Added
  - Functionality to move line throughout the page (fully works now)
+ - Logic to filter out paragraphs that aren't deemed "relevant" - <p> with at least 5 spaces and 1 period is "relevant"
 
 ## [03/29/2021]
 ### Changed
