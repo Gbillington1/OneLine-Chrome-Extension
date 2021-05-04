@@ -5,6 +5,9 @@ All changes made after 05/30/2020 will be documented in this file.
 ## Changed
 - minor variable name changes
 
+## Added
+- Made certain paragraph properties available in ParagraphModule
+
 ## [05/2/2021]
 
 - Lots of undocumented changes have been made since the last commit :/
