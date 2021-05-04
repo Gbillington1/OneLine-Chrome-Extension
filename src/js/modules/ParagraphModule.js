@@ -21,6 +21,8 @@ const ParagraphModule = (paragraph) => {
     /* array of Line modules (eventually), currently its a 2d array of span elems */ 
     let linesInParagraph = [];
 
+    let currentLineIdx = 0;
+
     /* Module fucntions */
 
     const splitIntoSpans = () => {
@@ -105,6 +107,7 @@ const ParagraphModule = (paragraph) => {
         removeAllHighlights();
         console.log(currentLineTracker, linesInParagraph[currentLineTracker])
         linesInParagraph[currentLineTracker].highlightLine();
+        currentLineIdx = currentLineTracker;
 
     }
 
@@ -124,6 +127,8 @@ const ParagraphModule = (paragraph) => {
     return {
 
         paragraph,
+        linesInParagraph,
+        currentLineIdx,
         splitIntoSpans,
         calculateLines,
         updateHighlight,
