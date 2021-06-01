@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [05/21/2021]
+## Added
+- autoscrolling feature
+
 ## [05/3/2021]
 ## Changed
 - minor variable name changes
@@ -168,11 +172,8 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-<<<<<<< HEAD
-[05/03/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/94dd99e..HEAD
-=======
-[05/03/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/7c0a43d..HEAD
->>>>>>> 94dd99ecfc48a6a87e13df9d0687b23630d90039
+[05/31/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/7afa9de..HEAD
+[05/03/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/94dd99e..ce24e12
 [05/02/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/e28589a..7c0a43d
 [03/29/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/100f40b..99b2444
 [03/28/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/a539e5a..d9bf2d0
