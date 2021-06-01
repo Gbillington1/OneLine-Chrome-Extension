@@ -102,18 +102,44 @@ const ParagraphModule = (paragraph) => {
 
     }
 
-    const updateHighlight = (currentLineTracker) => {
+    const isLineInViewport = () => {
+
+        const topOfViewport = $(window).scrollTop();
+        const bottomOfViewport = $(window).scrollTop() + window.innerHeight;
+        const line = $("span.highlighted");
+        const topOfLine = line.offset().top;
+        const bottomOfLine = line.offset().top + line.outerHeight();
+    
+        if (bottomOfLine < topOfViewport || topOfLine > bottomOfViewport) {
+            return false; 
+        }
+    
+        return true; 
+    } 
+
+    const updateHighlight = (currentLineTracker, e) => {
 
         removeAllHighlights();
-        console.log(currentLineTracker, linesInParagraph[currentLineTracker])
+
+        // console.log(currentLineTracker, linesInParagraph[currentLineTracker])
+
         linesInParagraph[currentLineTracker].highlightLine();
         currentLineIdx = currentLineTracker;
 
+        console.log(isLineInViewport());
+
+        // scroll option 1
+        if (!isLineInViewport()) {
+            $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" })
+        }
+
+        // scroll option 2
+        // $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" }) 
     }
 
     const removeAllHighlights = () => {
 
-        $(paragraph).find("span.word.highlighted").removeClass("highlighted");
+        $(paragraph).find("span.word.highlighted, span.whitespace.highlighted").removeClass("highlighted");
 
     }
 

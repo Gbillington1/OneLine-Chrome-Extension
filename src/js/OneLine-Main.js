@@ -11,6 +11,7 @@ window.onload = () => {
     $(document).keydown((e) => {
         // don't move line when user is editing text in <input> or <textarea> 
         if (!$(e.target).is("input, textarea")) {
+            e.preventDefault();
             ParagraphController.moveParagraph(e);
         }
     });

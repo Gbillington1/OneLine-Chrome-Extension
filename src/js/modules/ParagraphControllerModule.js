@@ -89,6 +89,7 @@ const ParagraphControllerModule = () => {
         potentialParagraphs.each((i, para) => {
 
             // check if paragraph a valid piece of text
+            // this requires a # of spaces and # of punctuation threshhold - is it worth it? 
             if (isValidParagraph(para)) {
                 relevantParagraphs.push(para);
             }
@@ -157,14 +158,14 @@ const ParagraphControllerModule = () => {
     const moveParagraph = (e) => {
 
         // if line in moving UP
-        // if W key is pressed && current paragraph is not the 1st paragraph on page
-        if (e.keyCode == 87 && currentParagraphTracker >= 0) {
+        // if W key OR up arrow is pressed && current paragraph is not the 1st paragraph on page
+        if ((e.keyCode == 87 || e.keyCode == 38) && currentParagraphTracker >= 0) {
 
             // moving line UP when there is a line in the same paragraph above it (doesn't have to switch paragraphs)
             if (currentLineTracker > 0) {
 
                 currentLineTracker--; 
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
 
             // moving line UP when there isn't a line in the same para above it (has to switch paragraphs)
             } else if (currentLineTracker == 0 && currentParagraphTracker > 0) {
@@ -174,19 +175,19 @@ const ParagraphControllerModule = () => {
                 currentParagraphTracker--;
                 
                 currentLineTracker = paragraphs[currentParagraphTracker].getNumberOfLines();
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
 
             }
 
             // if line is moving DOWN
-            // if S key is pressed and current paragraph is not the last paragraph on page
-        } else if (e.keyCode == 83 && (currentParagraphTracker < relevantParagraphs.length - 1)) {
+            // if S key OR up down arrowis pressed and current paragraph is not the last paragraph on page
+        } else if ((e.keyCode == 83 || e.keyCode == 40) && (currentParagraphTracker < relevantParagraphs.length - 1)) {
 
             // moving line down when there is a line in the same para below it
             if (currentLineTracker < paragraphs[currentParagraphTracker].getNumberOfLines()) {
 
                 currentLineTracker++;
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
 
             // moving line down when there isn't a line in the same para below it (has to switch paragraphs)
             } else if (currentLineTracker == paragraphs[currentParagraphTracker].getNumberOfLines() && 
@@ -199,7 +200,7 @@ const ParagraphControllerModule = () => {
 
                 paragraphs[currentParagraphTracker].removeAllHighlights();
                 currentParagraphTracker++;
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
 
             }
 
