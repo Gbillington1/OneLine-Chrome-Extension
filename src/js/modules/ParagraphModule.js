@@ -102,6 +102,7 @@ const ParagraphModule = (paragraph) => {
 
     }
 
+    // checks if the highlighted line lies (fully) in the viewport of the user
     const isLineInViewport = () => {
 
         const topOfViewport = $(window).scrollTop();
@@ -110,7 +111,7 @@ const ParagraphModule = (paragraph) => {
         const topOfLine = line.offset().top;
         const bottomOfLine = line.offset().top + line.outerHeight();
     
-        if (bottomOfLine < topOfViewport || topOfLine > bottomOfViewport) {
+        if (topOfLine < topOfViewport || bottomOfLine > bottomOfViewport) {
             return false; 
         }
     
@@ -124,9 +125,7 @@ const ParagraphModule = (paragraph) => {
         // console.log(currentLineTracker, linesInParagraph[currentLineTracker])
 
         linesInParagraph[currentLineTracker].highlightLine();
-        currentLineIdx = currentLineTracker;
-
-        console.log(isLineInViewport());
+        currentLineIdx = currentLineTracker
 
         // scroll option 1
         if (!isLineInViewport()) {

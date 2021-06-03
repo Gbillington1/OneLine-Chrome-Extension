@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src='../js/libraries/jquery-3.4.1.min.js'></script>
+    <script type='module' src='../js/popup/util-functions.js'></script>
+    <script type='module' src='../js/popup/DefaultPopup.js'></script>
+    <link rel='stylesheet' href='../css/defaultStyle.css' />
+</head>
+
+<body>
+    <!-- OneLine image header -->
+    <img id="imgHeader" src="../images/OneLineHeader.png" width="250px" height="84px" />
+    <hr />
+
+    <!-- On/Off switch-->
+
+    <div id='switchWrapper'>
+        <div id="switchContainer">
+            <input id="onOffSwitch" class="switch" type="checkbox" />
+            <label for="onOffSwitch">Toggle</label>
+        </div>
+        <div id="switchHeadContainer">
+            <h3 id="onOffHeader" class='header'>On/Off</h3>
+        </div>
+    </div>
+
+    <!-- Tabs linking to other pages -->
+
+    <div id="tabContainer">
+        <div class="tab" id="colorSettings">
+            <div class='col1'>
+                <img class='icon' src='../images/eyedropper-b.png'>
+            </div>
+            <div class='col2'>
+                <h3 class="title">Color Settings</h3>
+            </div>
+            <div class='col3'>
+                <img class='icon' src="../images/arrow-r.png">
+            </div>
+        </div>
+        <div class="tab" id='tts'>
+            <div class='col1'>
+                <img class='icon' src='../images/speakerIcon.png'>
+            </div>
+            <div class='col2'>
+                <h3 class="title">Text to Speech</h3>
+            </div>
+            <div class='col3'>
+                <img class='icon' src="../images/arrow-r.png">
+            </div>
+        </div>
+    </div>
+
+    <!-- Credits -->
+
+    <div id="credits">
+        <p class="creditP">
+          Created by
+          <a target="_blank" href="https://tiktok.com/@grahambillington">Graham Billington</a>
+        </p>
+        <p class="creditP">
+          Artwork by
+          <a target="_blank" href="https://www.instagram.com/theinternetismyartschool/">Lilly Gaudiano</a>
+        </p>
+      </div>
+
+</body>
+
+</html>

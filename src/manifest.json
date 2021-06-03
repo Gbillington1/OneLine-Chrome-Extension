@@ -4,11 +4,23 @@
     "version": "2.0",
     "description": "Strengthen your reading OneLine at a time.",
     "permissions": [
-        "activeTab"
+        "activeTab",
+        "storage"
     ],
     "host_permissions": [
         "*://*/*"
     ],
+    "background": {
+        "service-worker": "js/background/main-background.js"
+    },
+    "action": {
+        "default_title": "OneLine",
+        "default_popup": "html/defaultPopup.html",
+        "default_icon": {
+            "48": "images/icon48.png",
+            "128": "images/iconn128.png"
+        }
+    },
     "content_scripts":[{
     "js": [
         "js/OneLine-Main.js",
@@ -27,6 +39,10 @@
         "http://*/*", 
         "https://*/*"
     ],
+    "icon": {
+        "48": "images/icon48.png",
+        "128": "images/iconn128.png"
+    },
     "exclude_globs": ["*://www.google.com/search?*"]
     }]
 
