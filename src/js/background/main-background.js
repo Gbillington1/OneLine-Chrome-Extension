@@ -4,6 +4,12 @@ const sendMsgToCS = (tabNumber, message) => {
     });
 }
 
+chrome.runtime.onInstalled.addListener((details) => {
+
+    // chrome.storage.sync.set({ "onOffSwitchValue": false });
+
+})
+
 chrome.runtime.onMessage.addListener((message, callback) => {
 
     

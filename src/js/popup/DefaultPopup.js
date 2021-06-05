@@ -1,8 +1,10 @@
-import { loadActivePage } from './util-functions.js';
+import { loadActivePage, loadOnOffSwitch } from './util-functions.js';
 
 loadActivePage();
 
 $(document).ready(() => {
+
+    loadOnOffSwitch();
 
     $('#colorSettings').click(() => {
 
@@ -16,6 +18,12 @@ $(document).ready(() => {
         chrome.storage.sync.set({ "activePage": "textToSpeech.html" })
         window.location.href = "textToSpeech.html"
     
+    })
+
+    $('#onOffSwitch').change((e) => {
+
+        chrome.storage.sync.set({ "onOffSwitchValue": e.currentTarget.checked })
+
     })
 
 })

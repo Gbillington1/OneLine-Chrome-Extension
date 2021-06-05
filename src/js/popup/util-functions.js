@@ -3,7 +3,7 @@ export const getValueFromStorage = async (key) => {
 
         chrome.storage.sync.get([key], (data) => {
 
-            resolve(data.activePage); 
+            resolve(data[key]); 
 
         })
 
@@ -13,8 +13,6 @@ export const getValueFromStorage = async (key) => {
 export const loadActivePage = async () => {
 
     getValueFromStorage("activePage").then((activePage) => {
-
-        console.log(activePage)
 
         if (activePage == "colorSettings.html") {
             window.location.href = "colorSettings.html";
@@ -30,5 +28,17 @@ export const goToDefaultPage = () => {
 
     chrome.storage.sync.set({ "activePage": "deafultPopup.html" });
     window.location.href = "defaultPopup.html";
+
+}
+
+export const loadOnOffSwitch = async () => {
+
+    const onOffSwitchVal = await getValueFromStorage("onOffSwitchValue");
+    
+    if (typeof onOffSwitchVal != typeof undefined) {
+        $("#onOffSwitch").prop("checked", onOffSwitchVal);
+    } else {
+        chrome.storage.sync.set({ "onOffSwitchValue": false });
+    }
 
 }
