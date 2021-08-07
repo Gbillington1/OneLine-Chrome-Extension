@@ -1,4 +1,4 @@
-import { loadActivePage, loadOnOffSwitch } from './util-functions.js';
+import { sendMsgToCS, loadActivePage, loadOnOffSwitch } from './util-functions.js';
 
 loadActivePage();
 
@@ -22,7 +22,9 @@ $(document).ready(() => {
 
     $('#onOffSwitch').change((e) => {
 
-        chrome.storage.sync.set({ "onOffSwitchValue": e.currentTarget.checked })
+        const stateOfSwitch = e.currentTarget.checked; 
+        chrome.storage.sync.set({ "onOffSwitchState": stateOfSwitch })
+        sendMsgToCS("on/off switch changed to " + stateOfSwitch);
 
     })
 

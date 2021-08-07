@@ -1,3 +1,9 @@
+export const sendMsgToCS = (message) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { msg: message });
+    });
+}
+
 export const getValueFromStorage = async (key) => {
     return new Promise((resolve) => {
 
@@ -33,12 +39,12 @@ export const goToDefaultPage = () => {
 
 export const loadOnOffSwitch = async () => {
 
-    const onOffSwitchVal = await getValueFromStorage("onOffSwitchValue");
+    const onOffSwitchState = await getValueFromStorage("onOffSwitchState");
     
-    if (typeof onOffSwitchVal != typeof undefined) {
-        $("#onOffSwitch").prop("checked", onOffSwitchVal);
+    if (typeof onOffSwitchState != typeof undefined) {
+        $("#onOffSwitch").prop("checked", onOffSwitchState);
     } else {
-        chrome.storage.sync.set({ "onOffSwitchValue": false });
+        chrome.storage.sync.set({ "onOffSwitchState": false });
     }
 
 }

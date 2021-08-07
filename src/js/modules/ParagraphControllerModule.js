@@ -160,6 +160,7 @@ const ParagraphControllerModule = () => {
         // if line in moving UP
         // if W key OR up arrow is pressed && current paragraph is not the 1st paragraph on page
         if ((e.keyCode == 87 || e.keyCode == 38) && currentParagraphTracker >= 0) {
+            e.preventDefault();
 
             // moving line UP when there is a line in the same paragraph above it (doesn't have to switch paragraphs)
             if (currentLineTracker > 0) {
@@ -180,8 +181,9 @@ const ParagraphControllerModule = () => {
             }
 
             // if line is moving DOWN
-            // if S key OR up down arrowis pressed and current paragraph is not the last paragraph on page
+            // if S key OR up down arrow is pressed and current paragraph is not the last paragraph on page
         } else if ((e.keyCode == 83 || e.keyCode == 40) && (currentParagraphTracker < relevantParagraphs.length - 1)) {
+            e.preventDefault();
 
             // moving line down when there is a line in the same para below it
             if (currentLineTracker < paragraphs[currentParagraphTracker].getNumberOfLines()) {

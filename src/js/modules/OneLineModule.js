@@ -8,6 +8,8 @@ const OneLineModule = (paragraphController) => {
 
     const start = () => {
 
+        // ToDo: Make sure that the necessary functions run when start() is called for a second time on the same page
+
         paragraphController.populateRelevantParagraphArray();
 
         paragraphController.createParagraph();
@@ -18,7 +20,7 @@ const OneLineModule = (paragraphController) => {
 
     const stop = () => {
 
-        console.log("stopping");
+        //ToDo: write functions/find functions to stop the program
 
     }
 
