@@ -154,6 +154,7 @@ const ParagraphControllerModule = () => {
     /* 
      - Handles logic for moving the highlighted line up and down
      - TODO: Allow users to bind the line moving key to anyone they want
+     - TODO: Clean up this function (split into more funcs?)
     */
     const moveParagraph = (e) => {
 
