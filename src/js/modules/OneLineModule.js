@@ -6,15 +6,25 @@
 
 const OneLineModule = (paragraphController) => {
 
+    let oneLineHasStarted = false;
+
     const start = () => {
 
         // ToDo: Make sure that the necessary functions run when start() is called for a second time on the same page
 
-        paragraphController.populateRelevantParagraphArray();
+        if (!oneLineHasStarted) {
 
-        paragraphController.createParagraph();
+            paragraphController.populateRelevantParagraphArray();
+
+            paragraphController.createOneLineParagraph();
+
+            oneLineHasStarted = true;
+            console.log("OneLine Started");
+
+        }
 
         paragraphController.beginHighlighting();
+        console.log("Starting to highlight");
 
     }
 
