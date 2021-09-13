@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [09/13/2021]
+## Added
+- Iro.js to add more functional and reliable color picker to popup
+
 ## [09/12/2021]
 ## Added
 - Functionality to turn OneLine on and off
