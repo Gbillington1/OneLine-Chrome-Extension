@@ -47,7 +47,7 @@ const ParagraphModule = (paragraph) => {
     /*
      - Populates an array (topOfSpanDifferences) with numbers that represent the difference between the offset top of the current span element and the offset top of the previous span element
      - Offset top is the distance from the top of the page to the top of the span element 
-     - topOfSpanDifferences starts at idx 1 because the loop needs to start at 1, and the arr needs to be the same length as spansInParagraph
+     - topOfSpanDifferences starts at idx 1 because the loop needs to start at 1 to get the offset top of the previous span (can't get previous element when at idx 0), and the arr needs to be the same length as spansInParagraph
     */
     const populateDifferencesArray = () => {
 
@@ -55,7 +55,6 @@ const ParagraphModule = (paragraph) => {
 
             let currentSpanOffsetTop = $(spansInParagraph[i]).offset().top;
             let previousSpanOffsetTop = $(spansInParagraph[i - 1]).offset().top;
-
 
             topOfSpanDifferences.push(
                 Math.round(currentSpanOffsetTop - previousSpanOffsetTop)
@@ -66,8 +65,8 @@ const ParagraphModule = (paragraph) => {
 
     /*
      - Uses the differences array to check for line breaks
-     - There is a line break if the difference is larger than the line height
-     - Using startOfLineIdx to track the first word in every line, all elements between that index and the index where the line breaks is a line
+     - There is a line break if the difference is >= the line height
+     - Using startOfLineIdx to track the first word in every line, all elements between that index, and the index where the line breaks, is a line
      - Creates a LineModule for each line, and adds it to linesInParagraph
     */
     const populateLineModuleArray = () => {
@@ -76,14 +75,12 @@ const ParagraphModule = (paragraph) => {
         let lineHeightOfPreviousWord = 0;
 
         // use differences array to find all of the lines in the paragraph
-        for (let i = 0; i < topOfSpanDifferences.length; i++) {
+        for (let i = 1; i < topOfSpanDifferences.length; i++) {
 
-            if (i > 0) {
-                lineHeightOfPreviousWord = $(spansInParagraph[i - 1]).outerHeight();
-            }
+            lineHeightOfPreviousWord = $(spansInParagraph[i - 1]).outerHeight();
 
-            // if there is a difference that is bigger than the lineHeight, that means there is a break in the lines - pushes all elements inbetween startOfLineIdx and the linebreak (the line) 
-            if (topOfSpanDifferences[i] > lineHeightOfPreviousWord) {
+            // if there is a difference that is >= the lineHeight, that means there is a break in the lines - pushes all elements inbetween startOfLineIdx and the linebreak (the line) 
+            if (topOfSpanDifferences[i] >= lineHeightOfPreviousWord) {
 
                 linesInParagraph.push(
                     LineModule(spansInParagraph.slice(startOfLineIdx, i))
