@@ -10,7 +10,7 @@ const getValueFromStorage = async (key) => {
     })
 }
 
-window.onload = () => {
+window.onload = async function() {
 
     // create a "global" ParagraphControllerModule to manage the paragraphs
     let ParagraphController = ParagraphControllerModule();
@@ -18,11 +18,10 @@ window.onload = () => {
     // creaate the OneLine instance
     const OneLine = OneLineModule(ParagraphController);
 
-    let onOffSwitchState = getValueFromStorage("onOffSwitchState");
+    let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
 
     // start OneLine if switch is set to true
     if (onOffSwitchState) {
-
         OneLine.start();
     }
 
@@ -42,7 +41,7 @@ window.onload = () => {
     // should this be in OneLineModule? 
     $(document).keydown((e) => {
         // don't move line when user is editing text in <input> or <textarea> 
-        if (!$(e.target).is("input, textarea")) {
+        if (!$(e.target).is("input, textarea") && onOffSwitchState) {
             ParagraphController.moveParagraph(e);
         }
     });
