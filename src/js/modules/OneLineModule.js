@@ -19,18 +19,17 @@ const OneLineModule = (paragraphController) => {
             paragraphController.createOneLineParagraph();
 
             oneLineHasStarted = true;
-            console.log("OneLine Started");
 
         }
 
         paragraphController.beginHighlighting();
-        console.log("Starting to highlight");
 
     }
 
     const stop = () => {
 
         //ToDo: write functions/find functions to stop the program
+        paragraphController.removeHighlightFromParagraphs()
 
     }
 

@@ -130,7 +130,7 @@ const ParagraphControllerModule = () => {
      - Creates a new Paragraph module, and adds it to paragraphs.
      - Splits paragraph into lines after it's added
     */
-    const createParagraph = () => {
+    const createOneLineParagraph = () => {
 
         // add new paragraph module to array
         const currentParagraph = ParagraphModule(relevantParagraphs[mostRecentParagraphTracker]);
@@ -147,13 +147,13 @@ const ParagraphControllerModule = () => {
     */
     const beginHighlighting = () => {
 
-        paragraphs[currentParagraphTracker].updateHighlight(0); 
+        paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker); 
 
     }
 
     /* 
      - Handles logic for moving the highlighted line up and down
-     - Allow users to bind the line moving key to anyone they want
+     - TODO: Allow users to bind the line moving key to anyone they want
     */
     const moveParagraph = (e) => {
 
@@ -198,7 +198,7 @@ const ParagraphControllerModule = () => {
                 currentLineTracker = 0;
 
                 mostRecentParagraphTracker++;
-                createParagraph();
+                createOneLineParagraph();
 
                 paragraphs[currentParagraphTracker].removeAllHighlights();
                 currentParagraphTracker++;
@@ -208,15 +208,19 @@ const ParagraphControllerModule = () => {
 
         }
 
+    }
 
+    const removeHighlightFromParagraphs = () => {
+        paragraphs[currentParagraphTracker].removeAllHighlights();
     }
 
     return {
 
         populateRelevantParagraphArray,
-        createParagraph,
+        createOneLineParagraph,
         beginHighlighting,
         moveParagraph,
+        removeHighlightFromParagraphs
 
     }
 
