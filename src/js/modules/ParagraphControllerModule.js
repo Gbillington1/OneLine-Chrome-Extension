@@ -181,8 +181,8 @@ const ParagraphControllerModule = () => {
             }
 
             // if line is moving DOWN
-            // if S key OR up down arrow is pressed and current paragraph is not the last paragraph on page
-        } else if ((e.keyCode == 83 || e.keyCode == 40) && (currentParagraphTracker < relevantParagraphs.length - 1)) {
+            // if S key OR up down arrow is pressed 
+        } else if ((e.keyCode == 83 || e.keyCode == 40)) {
             e.preventDefault();
 
             // moving line down when there is a line in the same para below it
