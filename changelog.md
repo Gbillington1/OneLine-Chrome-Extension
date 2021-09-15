@@ -2,6 +2,10 @@
 All changes made after 05/30/2020 will be documented in this file.
 
 ## [09/13/2021]
+## Changed
+- Margin and padding in color settings page to make it make more sense (will fully remake this page in the future)
+
+## [09/13/2021]
 ## Added
 - Iro.js to add more functional and reliable color picker to popup
 
