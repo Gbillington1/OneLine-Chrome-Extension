@@ -10,6 +10,11 @@ const getValueFromStorage = async (key) => {
     })
 }
 
+// updates the css varible that holds the line color
+const updateLineColor = (color) => {
+    document.documentElement.style.setProperty("--active-color", color);
+};
+
 window.onload = async function() {
 
     // create a "global" ParagraphControllerModule to manage the paragraphs
@@ -26,14 +31,31 @@ window.onload = async function() {
     }
 
     // listen for changes in the switch state
-    chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+    chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
 
-        if (message.msg == "on/off switch changed to true") {
-            onOffSwitchState = true;
-            OneLine.start();
-        } else if (message.msg == "on/off switch changed to false") {
-            onOffSwitchState = false;
-            OneLine.stop();
+        switch (message.msg) {
+        
+            case "on/off switch changed to true":
+
+                onOffSwitchState = true;
+                OneLine.start();
+
+                break;
+            case "on/off switch changed to false":
+
+                onOffSwitchState = false;
+                OneLine.stop();
+
+                break;
+            case "active color changed":
+
+                const activeColor = await getValueFromStorage("activeColor");
+                updateLineColor(activeColor);
+
+                break;
+            default:
+                break;
+
         }
 
     })
