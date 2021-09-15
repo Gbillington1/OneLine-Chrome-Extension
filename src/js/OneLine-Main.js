@@ -24,9 +24,11 @@ window.onload = async function() {
     const OneLine = OneLineModule(ParagraphController);
 
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+    let activeColor = await getValueFromStorage("activeColor");
 
     // start OneLine if switch is set to true
     if (onOffSwitchState) {
+        updateLineColor(activeColor);
         OneLine.start();
     }
 
@@ -49,7 +51,7 @@ window.onload = async function() {
                 break;
             case "active color changed":
 
-                const activeColor = await getValueFromStorage("activeColor");
+                activeColor = await getValueFromStorage("activeColor");
                 updateLineColor(activeColor);
 
                 break;
