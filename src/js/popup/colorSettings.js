@@ -1,17 +1,21 @@
-import { sendMsgToCS, goToDefaultPage } from './util-functions.js';
+import { sendMsgToCS, getValueFromStorage, goToDefaultPage } from './util-functions.js';
 
-$(document).ready(() => {
 
+$(document).ready(async () => {
+    
     $("#backContainer").click(() => {
-
+        
         goToDefaultPage();
-
+        
     })
+
+    let activeColor = await getValueFromStorage("activeColor");
+    $("#active-color").css("background-color", activeColor);
 
     // create the color picker with iro.js
     var colorPicker = new iro.ColorPicker("#colorPicker", {
         width: 150,
-        color: "#ff0",
+        color: activeColor,
         borderColor: "#9e9e9e",
         borderWidth: 1,
     });
