@@ -4,6 +4,7 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [09/13/2021]
 ## Added
 - Functionality to change the color of the line from the color picker
+- Functionality to load the last used color when the popup/extension
 
 ## Changed
 - Margin and padding in color settings page to make it make more sense (will fully remake this page in the future)
