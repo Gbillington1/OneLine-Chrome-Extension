@@ -5,5 +5,5 @@
 
 /* load the css var into the highlighted class */
 .highlighted {
-    background-color: var(--active-color); 
+    background-color: var(--active-color) !important; 
 }
