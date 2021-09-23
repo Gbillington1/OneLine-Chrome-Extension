@@ -1,3 +1,4 @@
+// UTIL FUNCTIONS
 const getValueFromStorage = async (key) => {
     return new Promise((resolve) => {
 
@@ -14,6 +15,8 @@ const getValueFromStorage = async (key) => {
 const updateLineColor = (color) => {
     document.documentElement.style.setProperty("--active-color", color);
 };
+
+// PROGRAM LOGIC STARTS HERE
 
 window.onload = async function() {
 
