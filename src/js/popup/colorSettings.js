@@ -13,7 +13,7 @@ $(document).ready(async () => {
     $("#active-color").css("background-color", activeColor);
 
     // create the color picker with iro.js
-    var colorPicker = new iro.ColorPicker("#colorPicker", {
+    let colorPicker = new iro.ColorPicker("#colorPicker", {
         width: 150,
         color: activeColor,
         borderColor: "#9e9e9e",
