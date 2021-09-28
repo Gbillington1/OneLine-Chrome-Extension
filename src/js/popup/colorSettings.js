@@ -10,11 +10,6 @@ $(document).ready(async () => {
     })
 
     let activeColor = await getValueFromStorage("activeColor");
-    // if there is no active color set in storage, set it to default
-    if (activeColor == undefined) {
-        chrome.storage.sync.set({ "activeColor": "#f8fd89"}, sendMsgToCS("active color changed"))
-        activeColor = "#f8fd89";
-    }
     $("#active-color").css("background-color", activeColor);
 
     // create the color picker with iro.js

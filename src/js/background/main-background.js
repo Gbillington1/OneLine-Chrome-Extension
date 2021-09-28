@@ -4,7 +4,7 @@ const sendMsgToCS = (message) => {
     });
 }
 
-export const getValueFromStorage = async (key) => {
+const getValueFromStorage = async (key) => {
     return new Promise((resolve) => {
 
         chrome.storage.sync.get([key], (data) => {
@@ -16,21 +16,29 @@ export const getValueFromStorage = async (key) => {
     })
 }
 
-chrome.runtime.onInstalled.addListener((details) => {
+// load default states to storage (not working) 
+chrome.runtime.onInstalled.addListener(function(details) {
 
-    // chrome.storage.sync.set({ "onOffSwitchValue": false });
+    // if (details.reason == "install") {
 
-})
+        // get the swtich state, set it to true if it's not set, tell CS to start oneline
+        chrome.storage.sync.get("onOffSwitchState", function(result) {
+            let onOffSwitchState = result.onOffSwitchState;
 
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+            if (onOffSwitchState == undefined) {
+                chrome.storage.sync.set({ "onOffSwitchState": true}, sendMsgToCS("on/off switch changed to true"));
+            }
+        })
 
-    if (message == 'get-switch-state') {
+        // get the active color, set it to default if there isn't one in storage, tell CS to change the color
+        chrome.storage.sync.get("activeColor", function(result) {
+            let activeColor = result.activeColor;
 
-        const state = await getValueFromStorage('onOffSwitchState');
-        console.log(state)  
+            if (activeColor == undefined) {
+                chrome.storage.sync.set({ "activeColor": "#f8fd89"}, sendMsgToCS("active color changed"));
+            } 
+        })
 
-        sendResponse(state)
-
-    }
+    // }
 
 })
