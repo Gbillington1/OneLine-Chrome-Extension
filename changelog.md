@@ -1,6 +1,26 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [09/28/2021]
+# Added
+- Functionality in background page to check and set defaults for the active color and the switch state
+- Updating the line color when the switch is turned to true
+
+# Removed
+- checking and setting default for switch state in util functions
+- checking and setting default for active color in popup
+
+## Changed
+- css variable color to the light yellow recommended color
+
+## [09/27/2021]
+## Added
+- check for undefined line color value which adds a default color 
+
+## [09/23/2021]
+## Added
+- `!important` flag to css of background-color of line to overwrite other styles
+
 ## [09/13/2021]
 ## Added
 - Functionality to change the color of the line from the color picker
