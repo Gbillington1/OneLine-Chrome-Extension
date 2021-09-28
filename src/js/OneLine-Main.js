@@ -43,6 +43,7 @@ window.onload = async function() {
             case "on/off switch changed to true":
 
                 onOffSwitchState = true;
+                updateLineColor(activeColor);
                 OneLine.start();
 
                 break;
