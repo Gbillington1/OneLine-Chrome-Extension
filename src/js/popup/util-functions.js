@@ -40,11 +40,6 @@ export const goToDefaultPage = () => {
 export const loadOnOffSwitch = async () => {
 
     const onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-    
-    if (typeof onOffSwitchState != typeof undefined) {
-        $("#onOffSwitch").prop("checked", onOffSwitchState);
-    } else {
-        chrome.storage.sync.set({ "onOffSwitchState": false });
-    }
+    $("#onOffSwitch").prop("checked", onOffSwitchState);
 
 }
