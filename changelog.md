@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [09/29/2021]
+# Added
+- Recommended buttons functionality (updates line, active color box, and color picker)
+
 ## [09/28/2021]
 # Added
 - Functionality in background page to check and set defaults for the active color and the switch state
