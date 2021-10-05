@@ -7,6 +7,7 @@ All changes made after 05/30/2020 will be documented in this file.
 - funcionality to load favorites from storage
 - all above functionality was added to 2 separate functions in `util-functions.js`
 - functionality to delete favorites
+- functionality to set line color by clicking the favorites
 
 # Changed
 - class of the favorite buttons in the HTML and CSS

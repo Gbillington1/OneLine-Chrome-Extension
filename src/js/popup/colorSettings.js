@@ -30,7 +30,7 @@ $(document).ready(async () => {
 
     // change color of the line when the recommened btns are clicked
     // separate function for this? 
-    $(".recommendedBtn").click(function() {
+    $(".recommendedBtn, .favoritesColorBtn").click(function() {
         
         activeColor = $(this).css("background-color");
         chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS("active color changed"));

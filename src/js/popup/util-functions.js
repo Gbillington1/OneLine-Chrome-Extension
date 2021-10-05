@@ -9,7 +9,7 @@ export const getValueFromStorage = async (key) => {
 
         chrome.storage.sync.get([key], (data) => {
 
-            resolve(data[key]); 
+            resolve(data[key]);
 
         })
 
@@ -44,6 +44,7 @@ export const loadOnOffSwitch = async () => {
 
 }
 
+// For colorSettings.js
 export const loadFavoritesFromStorage = async (elem) => {
 
     let id = $(elem).attr("id");
@@ -62,10 +63,10 @@ export const loadFavoritesFromStorage = async (elem) => {
 
 export const saveFavoritesToStorage = (activeColor) => {
 
-    let favoriteSet = false; 
+    let favoriteSet = false;
 
     $(".favoritesColorBtn").each((i, elem) => {
-        
+
         // check if the button already contains a favorite color
         if ($(elem).attr("favoriteIsSet") == 'false' && favoriteSet == false) {
 
@@ -78,7 +79,7 @@ export const saveFavoritesToStorage = (activeColor) => {
             chrome.storage.sync.set({ [`${$(elem).attr("id")} favIsSet`]: 'true' });
 
             favoriteSet = true;
-            
+
         }
 
     })
