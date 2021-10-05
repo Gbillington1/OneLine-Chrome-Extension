@@ -15,6 +15,10 @@ $(document).ready(async () => {
 
     })
 
+    // load active color from storage
+    let activeColor = await getValueFromStorage("activeColor");
+    $("#active-color").css("background-color", activeColor);
+
     // create the color picker with iro.js
     let colorPicker = new iro.ColorPicker("#colorPicker", {
         width: 150,
@@ -22,10 +26,6 @@ $(document).ready(async () => {
         borderColor: "#9e9e9e",
         borderWidth: 1,
     });
-
-    // load active color from storage
-    let activeColor = await getValueFromStorage("activeColor");
-    $("#active-color").css("background-color", activeColor);
 
     // load favorites from storage when popup opens
     $(".favoritesColorBtn").each(async (i, elem) => {
