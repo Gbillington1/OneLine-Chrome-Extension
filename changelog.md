@@ -7,6 +7,9 @@ All changes made after 05/30/2020 will be documented in this file.
 - funcionality to load favorites from storage
 - all above functionality was added to 2 separate functions in `util-functions.js`
 
+# Changed
+- class of the favorite buttons in the HTML and CSS
+
 ## [09/29/2021]
 # Added
 - Recommended buttons functionality (updates line, active color box, and color picker)
