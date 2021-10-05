@@ -29,6 +29,7 @@ $(document).ready(async () => {
     });
 
     // change color of the line when the recommened btns are clicked
+    // separate function for this? 
     $(".recommendedBtn").click(function() {
         
         activeColor = $(this).css("background-color");
@@ -59,6 +60,17 @@ $(document).ready(async () => {
     $("#addToFavs").click(() => {
         
         saveFavoritesToStorage(activeColor);
+
+    })
+
+    // delete favorites on trash button click
+    // separate util function?  
+    $(".deleteIcon").click(function() {
+
+        let favToDelete = $(this).siblings(".favoritesColorBtn")[0];
+        $(favToDelete).css('background-color', "")
+        $(favToDelete).attr("favoriteIsSet", false)
+        chrome.storage.sync.set({[ `${$(favToDelete).attr("id")} favIsSet` ]: "false" });
 
     })
 
