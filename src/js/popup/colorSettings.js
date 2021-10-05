@@ -1,4 +1,4 @@
-import { sendMsgToCS, getValueFromStorage, goToDefaultPage } from './util-functions.js';
+import { sendMsgToCS, getValueFromStorage, goToDefaultPage, loadFavoritesFromStorage, saveFavoritesToStorage } from './util-functions.js';
 
 
 $(document).ready(async () => {
@@ -9,8 +9,16 @@ $(document).ready(async () => {
         
     })
 
+    // load active color from storage
     let activeColor = await getValueFromStorage("activeColor");
     $("#active-color").css("background-color", activeColor);
+
+    // load favorites from storage when popup opens
+    $(".favoritesColorBtn").each(async (i, elem) => {
+
+        loadFavoritesFromStorage(elem)
+
+    })
 
     // create the color picker with iro.js
     let colorPicker = new iro.ColorPicker("#colorPicker", {
@@ -45,6 +53,13 @@ $(document).ready(async () => {
         // update the active color element in colorSettings.html
         $("#active-color").css("background-color", color.hexString);
         
+    })
+
+    // handle add to favorites button click
+    $("#addToFavs").click(() => {
+        
+        saveFavoritesToStorage(activeColor);
+
     })
 
 });

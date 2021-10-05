@@ -43,3 +43,43 @@ export const loadOnOffSwitch = async () => {
     $("#onOffSwitch").prop("checked", onOffSwitchState);
 
 }
+
+export const loadFavoritesFromStorage = async (elem) => {
+
+    let id = $(elem).attr("id");
+
+    // get favoriteIsSet attr from storage and set it to the element
+    let isFavSet = await getValueFromStorage(`${id} favIsSet`);
+    $(elem).attr("favoriteIsSet", isFavSet);
+
+    // if the favorite is set, get the favorite color from storage and set it to the element
+    if ($(elem).attr("favoriteIsSet") == "true") {
+        let color = await getValueFromStorage($(elem).attr("id"));
+        $(elem).css("background-color", color);
+    }
+
+}
+
+export const saveFavoritesToStorage = (activeColor) => {
+
+    let favoriteSet = false; 
+
+    $(".favoritesColorBtn").each((i, elem) => {
+        
+        // check if the button already contains a favorite color
+        if ($(elem).attr("favoriteIsSet") == 'false' && favoriteSet == false) {
+
+            // if it doesn't, add the color to the btn and set the favoriteIsSet attr to true
+            $(elem).css("background-color", activeColor);
+            $(elem).attr("favoriteIsSet", 'true');
+
+            // save favorite color and favoirteIsSet attr to storage
+            chrome.storage.sync.set({ [$(elem).attr("id")]: activeColor });
+            chrome.storage.sync.set({ [`${$(elem).attr("id")} favIsSet`]: 'true' });
+
+            favoriteSet = true;
+            
+        }
+
+    })
+}
