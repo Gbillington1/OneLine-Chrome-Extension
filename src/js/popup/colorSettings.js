@@ -1,22 +1,17 @@
-import { sendMsgToCS, getValueFromStorage, goToDefaultPage, loadFavoritesFromStorage, saveFavoritesToStorage } from './util-functions.js';
+import {
+    sendMsgToCS,
+    getValueFromStorage,
+    goToDefaultPage,
+    loadFavoritesFromStorage,
+    saveFavoritesToStorage
+} from './util-functions.js';
 
 
 $(document).ready(async () => {
-    
+
     $("#backContainer").click(() => {
-        
+
         goToDefaultPage();
-        
-    })
-
-    // load active color from storage
-    let activeColor = await getValueFromStorage("activeColor");
-    $("#active-color").css("background-color", activeColor);
-
-    // load favorites from storage when popup opens
-    $(".favoritesColorBtn").each(async (i, elem) => {
-
-        loadFavoritesFromStorage(elem)
 
     })
 
@@ -28,14 +23,14 @@ $(document).ready(async () => {
         borderWidth: 1,
     });
 
-    // change color of the line when the recommened btns are clicked
-    // separate function for this? 
-    $(".recommendedBtn, .favoritesColorBtn").click(function() {
-        
-        activeColor = $(this).css("background-color");
-        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS("active color changed"));
-        colorPicker.color.set(activeColor);
-        $("#active-color").css("background-color", activeColor);
+    // load active color from storage
+    let activeColor = await getValueFromStorage("activeColor");
+    $("#active-color").css("background-color", activeColor);
+
+    // load favorites from storage when popup opens
+    $(".favoritesColorBtn").each(async (i, elem) => {
+
+        loadFavoritesFromStorage(elem)
 
     })
 
@@ -50,27 +45,37 @@ $(document).ready(async () => {
 
     // change the color of the active color div in the popup as the user is interacting with the color picker 
     colorPicker.on("color:change", (color) => {
-        
+
         // update the active color element in colorSettings.html
         $("#active-color").css("background-color", color.hexString);
-        
+
+    })
+
+    // change color of the line when the recommened btns are clicked
+    $(".recommendedBtn, .favoritesColorBtn").click(function () {
+
+        activeColor = $(this).css("background-color");
+        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS("active color changed"));
+        colorPicker.color.set(activeColor);
+        $("#active-color").css("background-color", activeColor);
+
     })
 
     // handle add to favorites button click
     $("#addToFavs").click(() => {
-        
+
         saveFavoritesToStorage(activeColor);
 
     })
 
     // delete favorites on trash button click
     // separate util function?  
-    $(".deleteIcon").click(function() {
+    $(".deleteIcon").click(function () {
 
         let favToDelete = $(this).siblings(".favoritesColorBtn")[0];
         $(favToDelete).css('background-color', "")
         $(favToDelete).attr("favoriteIsSet", false)
-        chrome.storage.sync.set({[ `${$(favToDelete).attr("id")} favIsSet` ]: "false" });
+        chrome.storage.sync.set({ [`${$(favToDelete).attr("id")} favIsSet`]: "false" });
 
     })
 
