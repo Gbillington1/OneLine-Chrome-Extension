@@ -1,6 +1,13 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [10/8/2021]
+# Added
+- functions and logic to change the color of the highlighted text to white or black based on the YIQ value of the line color
+
+# Changed
+- exectution order of the line movement controller (needs to be rewritten in a more intuitive way) 
+
 ## [10/5/2021]
 # Added
 - functionality to save `favoriteIsSet` attr to storage
