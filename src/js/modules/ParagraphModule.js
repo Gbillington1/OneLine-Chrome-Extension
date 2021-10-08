@@ -115,9 +115,12 @@ const ParagraphModule = (paragraph) => {
         return true; 
     } 
 
+    // there's a problem with giving the words their original color back. 
+    // This uses removeAllHighlights, which doesn't have access to the 
+    // original colors of the words, so we can't revert them.
     const updateHighlight = (currentLineTracker, e) => {
 
-        removeAllHighlights();
+        removeAllHighlights(currentLineTracker);
 
         // console.log(currentLineTracker, linesInParagraph[currentLineTracker])
 
@@ -133,9 +136,11 @@ const ParagraphModule = (paragraph) => {
         // $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" }) 
     }
 
-    const removeAllHighlights = () => {
+    // make change this function to access the line module? The problem might stem from the `moveParagraph()` funciton
+    const removeAllHighlights = (currentLineTracker) => {
 
-        $(paragraph).find("span.word.highlighted, span.whitespace.highlighted").removeClass("highlighted");
+        linesInParagraph[currentLineTracker].removeHighlightFromLine();
+        // $(paragraph).find("span.word.highlighted, span.whitespace.highlighted").removeClass("highlighted");
 
     }
 

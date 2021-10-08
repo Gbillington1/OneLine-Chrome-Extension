@@ -152,7 +152,8 @@ const ParagraphControllerModule = () => {
     }
 
     /* 
-     - Handles logic for moving the highlighted line up and down
+    - Handles logic for moving the highlighted line up and down
+    - Fires when a key is pressed
      - TODO: Allow users to bind the line moving key to anyone they want
      - TODO: Clean up this function (split into more funcs?)
     */
@@ -172,7 +173,7 @@ const ParagraphControllerModule = () => {
             // moving line UP when there isn't a line in the same para above it (has to switch paragraphs)
             } else if (currentLineTracker == 0 && currentParagraphTracker > 0) {
 
-                paragraphs[currentParagraphTracker].removeAllHighlights();
+                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
 
                 currentParagraphTracker--;
                 
@@ -189,6 +190,7 @@ const ParagraphControllerModule = () => {
             // moving line down when there is a line in the same para below it
             if (currentLineTracker < paragraphs[currentParagraphTracker].getNumberOfLines()) {
 
+                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
                 currentLineTracker++;
                 paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
 
@@ -196,12 +198,12 @@ const ParagraphControllerModule = () => {
             } else if (currentLineTracker == paragraphs[currentParagraphTracker].getNumberOfLines() && 
                 currentParagraphTracker < relevantParagraphs.length - 1) {
 
+                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
                 currentLineTracker = 0;
 
                 mostRecentParagraphTracker++;
                 createOneLineParagraph();
 
-                paragraphs[currentParagraphTracker].removeAllHighlights();
                 currentParagraphTracker++;
                 paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
 
@@ -212,7 +214,7 @@ const ParagraphControllerModule = () => {
     }
 
     const removeHighlightFromParagraphs = () => {
-        paragraphs[currentParagraphTracker].removeAllHighlights();
+        paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
     }
 
     return {

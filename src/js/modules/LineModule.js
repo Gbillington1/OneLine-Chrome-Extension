@@ -5,17 +5,45 @@
 */
 const LineModule = (spansInLine) => {
 
+    // array of original color of each span in the line
+    let colorsOfWords = [];
+
+    // helper function for calculateWordColorWithYIQ
+    const hexToRgb = (hex) => {
+        const r = parseInt(hex.slice(1, 3), 16)
+        const g = parseInt(hex.slice(3, 5), 16)
+        const b = parseInt(hex.slice(5, 7), 16)
+        return {r, g, b} 
+    }
+
+    // use YIQ to calculate the optimial color of the word (easiest to read) 
+    const calculateWordColorWithYIQ = (backgroundColorHexString) => {
+        const rgb = hexToRgb(backgroundColorHexString);
+        const yiq = ((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000;
+        return (yiq >= 128) ? 'black' : 'white';
+    }
+
     const highlightLine = () => {
 
+        let backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--active-color');
+        let optimalWordColor = calculateWordColorWithYIQ(backgroundColor);
         for (i = 0; i < spansInLine.length; i++) {
+
             spansInLine[i].classList.add("highlighted");
-        }
+            // save the color of the text of each word in the line (to an array?)
+            colorsOfWords.push($(spansInLine[i]).css("color"));
+            // change the color of the text of each word in the line
+            $(spansInLine[i]).css("color", optimalWordColor);
+
+        }    
 
     }
 
-    const removeHighlighFromLine = () => {
+    const removeHighlightFromLine = () => {
 
         for (i = 0; i < spansInLine.length; i++) {
+            // revert the value of the word back to the original color
+            $(spansInLine[i]).css("color", colorsOfWords[i]);
             spansInLine[i].classList.remove("highlighted");
         }
     }
@@ -23,7 +51,7 @@ const LineModule = (spansInLine) => {
     return {
 
         highlightLine,
-        removeHighlighFromLine
+        removeHighlightFromLine
 
     }
 
