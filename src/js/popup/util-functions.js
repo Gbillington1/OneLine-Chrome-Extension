@@ -84,3 +84,32 @@ export const saveFavoritesToStorage = (activeColor) => {
 
     })
 }
+
+// helper function for calculateWordColorWithYIQ, converts colorString to rgb object
+const convertToRGB = (colorString) => {
+    // returns true if the string is a hex color, false otherwise
+    const regex = new RegExp("^#(?:[0-9a-fA-F]{3}){1,2}$")
+    let r, g, b;
+
+    // is hex
+    if (regex.test(colorString)) {
+        r = parseInt(colorString.slice(1, 3), 16)
+        g = parseInt(colorString.slice(3, 5), 16)
+        b = parseInt(colorString.slice(5, 7), 16)
+        // is rgb
+    } else {
+        let rgb = colorString.match(/\d+/g);
+        r = rgb[0];
+        g = rgb[1];
+        b = rgb[2];
+    }
+
+    return { r, g, b }
+}
+
+// use YIQ to calculate the optimial color of the word (easiest to read) 
+export const calculateWordColorWithYIQ = (backgroundColorString) => {
+    const rgb = convertToRGB(backgroundColorString);
+    const yiq = ((rgb.r * 299) + (rgb.g * 587) + (rgb.b * 114)) / 1000;
+    return (yiq >= 128) ? 'black' : 'white';
+}

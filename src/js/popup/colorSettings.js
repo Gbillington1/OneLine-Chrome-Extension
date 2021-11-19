@@ -3,7 +3,8 @@ import {
     getValueFromStorage,
     goToDefaultPage,
     loadFavoritesFromStorage,
-    saveFavoritesToStorage
+    saveFavoritesToStorage,
+    calculateWordColorWithYIQ
 } from './util-functions.js';
 
 
@@ -46,8 +47,12 @@ $(document).ready(async () => {
     // change the color of the active color div in the popup as the user is interacting with the color picker 
     colorPicker.on("color:change", (color) => {
 
+        const activeColorTextColor = calculateWordColorWithYIQ(color.hexString);
+
         // update the active color element in colorSettings.html
         $("#active-color").css("background-color", color.hexString);
+        $("#active-color").css("color", activeColorTextColor);
+
 
     })
 
