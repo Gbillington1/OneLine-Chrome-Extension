@@ -36,7 +36,7 @@ const LineModule = (spansInLine) => {
             $(spansInLine[i]).css("color", optimalWordColor);
 
         }    
-
+        console.log("highlighted line")
     }
 
     const removeHighlightFromLine = () => {

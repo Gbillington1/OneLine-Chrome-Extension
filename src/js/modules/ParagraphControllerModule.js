@@ -164,9 +164,9 @@ const ParagraphControllerModule = () => {
         if ((e.keyCode == 87 || e.keyCode == 38) && currentParagraphTracker >= 0) {
             e.preventDefault();
 
-            // moving line UP when there is a line in the same paragraph above it (doesn't have to switch paragraphs)
+            // moving line UP when there is a line in the  same paragraph above it (doesn't have to switch paragraphs)
             if (currentLineTracker > 0) {
-                
+
                 paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
                 currentLineTracker--; 
                 paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);

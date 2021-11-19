@@ -12,8 +12,9 @@ const getValueFromStorage = async (key) => {
 }
 
 // updates the css varible that holds the line color
-const updateLineColor = (color) => {
+const updateLineColor = (OneLine, color) => {
     document.documentElement.style.setProperty("--active-color", color);
+    OneLine.start()
 };
 
 // PROGRAM LOGIC STARTS HERE
@@ -31,8 +32,7 @@ window.onload = async function() {
 
     // start OneLine if switch is set to true
     if (onOffSwitchState) {
-        updateLineColor(activeColor);
-        OneLine.start();
+        updateLineColor(OneLine, activeColor);
     }
 
     // listen for changes in the switch state
@@ -43,8 +43,7 @@ window.onload = async function() {
             case "on/off switch changed to true":
 
                 onOffSwitchState = true;
-                updateLineColor(activeColor);
-                OneLine.start();
+                updateLineColor(OneLine, activeColor);
 
                 break;
             case "on/off switch changed to false":
@@ -56,7 +55,7 @@ window.onload = async function() {
             case "active color changed":
 
                 activeColor = await getValueFromStorage("activeColor");
-                updateLineColor(activeColor);
+                updateLineColor(OneLine, activeColor);
 
                 break;
             default:
