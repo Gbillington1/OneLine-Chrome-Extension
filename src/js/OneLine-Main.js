@@ -11,7 +11,8 @@ const getValueFromStorage = async (key) => {
     })
 }
 
-// updates the css varible that holds the line color
+// updates the css varible that holds the line color,
+// also starts OneLine
 const updateLineColor = (OneLine, color) => {
     document.documentElement.style.setProperty("--active-color", color);
     OneLine.start()
@@ -60,6 +61,21 @@ window.onload = async function() {
                 break;
             default:
                 break;
+
+            /* 
+            TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here
+            
+            for TTS, listen for "tts start", "tts pause/play", and "tts stop" in here
+                case "tts start":
+                    OneLine.startTTS(); // starts on current line, feeds utterance instance a line array (see project in documents folder)
+                    break;
+                case "tts pause/play":
+                    OneLine.togglePauseTTS(); // pauses/plays current utterance instance
+                    break;
+                case "tts stop":
+                    OneLine.stopTTS(); // stops and clears current utterance instance
+
+            */
 
         }
 
