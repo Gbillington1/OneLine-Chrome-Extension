@@ -1,6 +1,16 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [12/4/2021]
+## Added
+- `moveLine()` function to `OneLineModule` that checks if line should be moved up or down
+- `moveLineUp()` and `moveLineDown()` functions to `ParagraphControllerModule` to split up the old `moveParagraph()` function
+
+## Removed 
+- `paragraphControllerModule` instance from `OneLine-Main` to make the project structure more intuitve (OneLine-Main -> OneLineModule -> ParagraphControllerModule) INSTEAD OF (OneLine-Main -> OneLineModule that takes ParagraphControllerModule as a param)
+- `moveParagraph()` function from `ParagraphControllerModule`
+- unused event paramater from `updateHighlight()` in `ParagraphModule`
+
 ## [10/8/2021]
 # Added
 - functions and logic to change the color of the highlighted text to white or black based on the YIQ value of the line color

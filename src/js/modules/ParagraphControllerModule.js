@@ -7,10 +7,10 @@ const ParagraphControllerModule = () => {
     /* Global Variables */
 
     /* Arrays */
-    // Array of jQuery paragraph objects 
+    // Array of jQuery paragraph objects that pass the isValidParagraph function 
     let relevantParagraphs = [];
 
-    /* Array of Paragraph modules */
+    /* Array of Paragraph modules that are able to be highlighted */
     let paragraphs = [];
 
     /* Indices */
@@ -26,7 +26,7 @@ const ParagraphControllerModule = () => {
 
     /*
      - Tracks the highlighted line in the paragraph 
-     - Never larger than the # of lines in the paragraph - 1
+     - Never larger than paragraph.getNumberOfLines()
     */
     let currentLineTracker = 0;
 
@@ -147,68 +147,76 @@ const ParagraphControllerModule = () => {
     */
     const beginHighlighting = () => {
 
-        paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker); 
+        paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+
+    }
+
+
+    // line movement functions
+    // TODO: Allow users to bind the line moving keys to anyone they want
+    /* 
+    - Handles logic for moving the highlighted line up
+    - Fires when "W" or up arrow is pressed
+    */
+    const moveLineUp = () => {
+        // check if line is first in paragrph
+        // if it isn't, move line up
+        // if it is, check if paragraph is first in page
+        // then move paragraph track up and highlight last in new paragraph
+
+        // if line is not first in paragraph
+        if (currentLineTracker > 0) {
+
+            paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
+            currentLineTracker--;
+            paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+
+            // if line is first in paragraph and paragraph is not first in page
+        } else if (currentParagraphTracker > 0) {
+
+            paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
+
+            currentParagraphTracker--;
+
+            currentLineTracker = paragraphs[currentParagraphTracker].getNumberOfLines();
+            paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
+
+        }
 
     }
 
     /* 
-    - Handles logic for moving the highlighted line up and down
-    - Fires when a key is pressed
-     - TODO: Allow users to bind the line moving key to anyone they want
-     - TODO: Clean up this function (split into more funcs?)
+    - Handles logic for moving the highlighted line down
+    - Fires when "S" or down arrow is pressed
     */
-    const moveParagraph = (e) => {
+    const moveLineDown = () => {
+        // check if line is last in paragraph
+        // if it isn't, move line down
+        // if it is, check if paragraph is last in page
+        // then move paragraph track down and highlight first in new paragraph
 
-        // if line in moving UP
-        // if W key OR up arrow is pressed && current paragraph is not the 1st paragraph on page
-        if ((e.keyCode == 87 || e.keyCode == 38) && currentParagraphTracker >= 0) {
-            e.preventDefault();
+        // if line is not last in paragraph
+        if (currentLineTracker < paragraphs[currentParagraphTracker].getNumberOfLines()) {
 
-            // moving line UP when there is a line in the  same paragraph above it (doesn't have to switch paragraphs)
-            if (currentLineTracker > 0) {
+            paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
+            currentLineTracker++;
+            paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
 
-                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
-                currentLineTracker--; 
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
+            // if line is last in paragraph and paragraph is not last in page   
+        } else if (currentParagraphTracker < relevantParagraphs.length - 1) {
 
-            // moving line UP when there isn't a line in the same para above it (has to switch paragraphs)
-            } else if (currentLineTracker == 0 && currentParagraphTracker > 0) {
-
-                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
-
-                currentParagraphTracker--;
-                
-                currentLineTracker = paragraphs[currentParagraphTracker].getNumberOfLines();
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
-
-            }
-
-            // if line is moving DOWN
-            // if S key OR up down arrow is pressed 
-        } else if ((e.keyCode == 83 || e.keyCode == 40)) {
-            e.preventDefault();
-
-            // moving line down when there is a line in the same para below it
-            if (currentLineTracker < paragraphs[currentParagraphTracker].getNumberOfLines()) {
-
-                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
-                currentLineTracker++;
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
-
-            // moving line down when there isn't a line in the same para below it (has to switch paragraphs)
-            } else if (currentLineTracker == paragraphs[currentParagraphTracker].getNumberOfLines() && 
-                currentParagraphTracker < relevantParagraphs.length - 1) {
-
-                paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
-                currentLineTracker = 0;
-
+            // if next paragraph hasn't been created as a module
+            if (currentParagraphTracker == mostRecentParagraphTracker) {
                 mostRecentParagraphTracker++;
                 createOneLineParagraph();
-
-                currentParagraphTracker++;
-                paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker, e);
-
             }
+
+            paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
+
+            currentParagraphTracker++;
+            currentLineTracker = 0;
+
+            paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
 
         }
 
@@ -223,8 +231,9 @@ const ParagraphControllerModule = () => {
         populateRelevantParagraphArray,
         createOneLineParagraph,
         beginHighlighting,
-        moveParagraph,
-        removeHighlightFromParagraphs
+        removeHighlightFromParagraphs,
+        moveLineUp,
+        moveLineDown
 
     }
 

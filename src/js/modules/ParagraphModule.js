@@ -118,7 +118,7 @@ const ParagraphModule = (paragraph) => {
     // there's a problem with giving the words their original color back. 
     // This uses removeAllHighlights, which doesn't have access to the 
     // original colors of the words, so we can't revert them.
-    const updateHighlight = (currentLineTracker, e) => {
+    const updateHighlight = (currentLineTracker) => {
 
         removeAllHighlights(currentLineTracker);
 

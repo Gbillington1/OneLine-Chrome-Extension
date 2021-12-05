@@ -22,11 +22,8 @@ const updateLineColor = (OneLine, color) => {
 
 window.onload = async function() {
 
-    // create a "global" ParagraphControllerModule to manage the paragraphs
-    let ParagraphController = ParagraphControllerModule();
-
     // creaate the OneLine instance
-    const OneLine = OneLineModule(ParagraphController);
+    const OneLine = OneLineModule();
 
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
     let activeColor = await getValueFromStorage("activeColor");
@@ -85,7 +82,9 @@ window.onload = async function() {
     $(document).keydown((e) => {
         // don't move line when user is editing text in <input> or <textarea> 
         if (!$(e.target).is("input, textarea") && onOffSwitchState) {
-            ParagraphController.moveParagraph(e);
+  
+            OneLine.moveLine(e)
+  
         }
     });
 

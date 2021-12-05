@@ -4,8 +4,9 @@
  - Controls TTS?
 */
 
-const OneLineModule = (paragraphController) => {
+const OneLineModule = () => {
 
+    const paragraphController = ParagraphControllerModule();
     let oneLineHasStarted = false;
 
     const start = () => {
@@ -33,6 +34,22 @@ const OneLineModule = (paragraphController) => {
 
     }
 
+    const moveLine = (e) => {
+
+        // w or up arrow pressed
+        if (e.keyCode == 87 || e.keyCode == 38) {
+            e.preventDefault();
+            paragraphController.moveLineUp();
+
+        // s or down arrow pressed
+        } else if (e.keyCode == 83 || e.keyCode == 40) {
+            e.preventDefault();
+            paragraphController.moveLineDown();
+
+        }
+
+    }
+
     /*
     TODO: Should I add some type of TTS controller that can do all of this? Think about the best way to implement this feature.
 
@@ -50,7 +67,8 @@ const OneLineModule = (paragraphController) => {
     return {
 
         start,
-        stop
+        stop,
+        moveLine
 
     }
 
