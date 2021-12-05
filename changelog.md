@@ -11,6 +11,10 @@ All changes made after 05/30/2020 will be documented in this file.
 - `moveParagraph()` function from `ParagraphControllerModule`
 - unused event paramater from `updateHighlight()` in `ParagraphModule`
 
+## [11/19/2021]
+# Added
+- functionality to change text color based on YIQ of the highlighted color
+
 ## [10/8/2021]
 # Added
 - functions and logic to change the color of the highlighted text to white or black based on the YIQ value of the line color
@@ -260,7 +264,9 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[10/8/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/6784b39..HEAD
+[12/4/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/e6711b2..HEAD
+[11/19/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/da15d89..9e104d0
+[10/8/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/6784b39..02d0ea0
 [10/5/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/139c63c..b018d35
 [09/29/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/0f1ccfd..92bd4f4
 [09/28/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/7b5223f..1703ca1
