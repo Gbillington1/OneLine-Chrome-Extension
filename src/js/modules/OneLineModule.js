@@ -34,16 +34,16 @@ const OneLineModule = () => {
 
     }
 
-    const moveLine = (e) => {
+    const moveLine = (direction) => {
 
         // w or up arrow pressed
-        if (e.keyCode == 87 || e.keyCode == 38) {
-            e.preventDefault();
+        if (direction == 'up') {
+
             paragraphController.moveLineUp();
 
         // s or down arrow pressed
-        } else if (e.keyCode == 83 || e.keyCode == 40) {
-            e.preventDefault();
+        } else if (direction == 'down') {
+
             paragraphController.moveLineDown();
 
         }

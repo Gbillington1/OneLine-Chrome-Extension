@@ -20,7 +20,7 @@ const updateLineColor = (OneLine, color) => {
 
 // PROGRAM LOGIC STARTS HERE
 
-window.onload = async function() {
+window.onload = async function () {
 
     // creaate the OneLine instance
     const OneLine = OneLineModule();
@@ -37,7 +37,7 @@ window.onload = async function() {
     chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
 
         switch (message.msg) {
-        
+
             case "on/off switch changed to true":
 
                 onOffSwitchState = true;
@@ -78,13 +78,24 @@ window.onload = async function() {
 
     })
 
-    // should this be in OneLineModule? 
     $(document).keydown((e) => {
         // don't move line when user is editing text in <input> or <textarea> 
         if (!$(e.target).is("input, textarea") && onOffSwitchState) {
-  
-            OneLine.moveLine(e)
-  
+
+            // w or up arrow pressed
+            if (e.keyCode == 87 || e.keyCode == 38) {
+
+                e.preventDefault();
+                OneLine.moveLine("up");
+
+            // s or down arrow pressed
+            } else if (e.keyCode == 83 || e.keyCode == 40) {
+
+                e.preventDefault();
+                OneLine.moveLine("down");
+
+            }
+
         }
     });
 
