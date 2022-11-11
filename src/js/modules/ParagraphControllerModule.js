@@ -84,6 +84,17 @@ const ParagraphControllerModule = () => {
         */
 
         // current workaround
+        console.log($("article").find("p, ul, ol, h1, h2, h3, h4, h5, h6"));
+
+        // rough psudo for getting more than paragraphs
+        // look for <article> tag
+            // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
+            // parse all tags and attempt to split them into lines (or sentences for another mode)
+        // if not found, search for <main> tag
+            // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
+            // parse all tags and attempt to split them into lines (or sentences for another mode)
+        // if not found get all <p> tags
+            // apply current paragraph filter to the <p> tags
         let potentialParagraphs = $("p:visible").not("header p, footer p");
 
         potentialParagraphs.each((i, para) => {
