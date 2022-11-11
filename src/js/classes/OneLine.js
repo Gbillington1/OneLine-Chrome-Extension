@@ -1,20 +1,67 @@
-// controller for the entire program 
-// where we can start and stop highlighting/the entire program
-// should movement of the line be in here or in ParagraphController?
+/*
+ - Module to perform basic functions of OneLine
+ - Can start and stop the highlighting of the program
+ - Controls TTS?
+*/
+
 class OneLine {
 
-    static start(paragraphController) {
+    // private instance variables
+    #paragraphController;
+    #oneLineHasStarted;
 
-        paragraphController.populateRelevantParagraphArray();
+    constructor() {
+        this.#paragraphController = new ParagraphController();
+        this.oneLineHasStarted = false;
+    }
 
-        paragraphController.createParagraph();
+    start(paragraphController) {
 
-        paragraphController.beginHighlighting();
+        // ToDo: Make sure that the necessary functions run when start() is called for a second time on the same page
+
+
+        if (!this.oneLineHasStarted) {
+
+            this.#paragraphController.populateRelevantParagraphArray();
+
+            this.#paragraphController.createOneLineParagraph();
+
+            this.oneLineHasStarted = true;
+
+        }
+
+        // this.#paragraphController.beginHighlighting();
+        this.#paragraphController.currentParagraph.currentLine.highlight();
 
     }
 
-    static stop() {
-        // whatever we need to do to stop OneLine
+    stop() {
+        //ToDo: write functions/find functions to stop the program
+        this.#paragraphController.currentParagraph.currentLine.removeHighlight();
+    }
+
+    moveLine(direction) {
+
+        if (direction == 'up') {
+
+            this.#paragraphController.moveLineUp();
+
+            // s or down arrow pressed
+        } else if (direction == 'down') {
+
+            this.#paragraphController.moveLineDown();
+
+        }
+
+    }
+
+    // need a better way to update colors and highlighting
+    changeLineColor(newColor) {
+
+        this.#paragraphController.currentParagraph.currentLine.setColor(newColor);
+
+        this.#paragraphController.currentParagraph.currentLine.highlight();
+
     }
 
 }
