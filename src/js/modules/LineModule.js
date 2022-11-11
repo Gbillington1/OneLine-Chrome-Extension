@@ -41,7 +41,7 @@ const LineModule = (spansInLine) => {
 
         let backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--active-color');
         let optimalWordColor = calculateWordColorWithYIQ(backgroundColor);
-        for (i = 0; i < spansInLine.length; i++) {
+        for (let i = 0; i < spansInLine.length; i++) {
 
             spansInLine[i].classList.add("highlighted");
             // save the color of the text of each word in the line (to an array?)
@@ -54,7 +54,7 @@ const LineModule = (spansInLine) => {
 
     const removeHighlightFromLine = () => {
 
-        for (i = 0; i < spansInLine.length; i++) {
+        for (let i = 0; i < spansInLine.length; i++) {
             // revert the value of the word back to the original color
             $(spansInLine[i]).css("color", colorsOfWords[i]);
             spansInLine[i].classList.remove("highlighted");
