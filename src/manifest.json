@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "OneLine",
+    "name": "OneLine v2",
     "version": "2.0",
     "description": "Strengthen your reading OneLine at a time.",
     "permissions": [
@@ -13,12 +13,16 @@
     "background": {
         "service-worker": "js/background/main-background.js"
     },
+    "icons": {
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+    },
     "action": {
         "default_title": "OneLine",
         "default_popup": "html/defaultPopup.html",
         "default_icon": {
             "48": "images/icon48.png",
-            "128": "images/iconn128.png"
+            "128": "images/icon128.png"
         }
     },
     "content_scripts":[{
@@ -39,10 +43,6 @@
         "http://*/*", 
         "https://*/*"
     ],
-    "icon": {
-        "48": "images/icon48.png",
-        "128": "images/iconn128.png"
-    },
     "exclude_globs": ["*://www.google.com/search?*"]
     }]
 
