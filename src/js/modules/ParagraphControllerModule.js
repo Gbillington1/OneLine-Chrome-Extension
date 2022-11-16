@@ -83,8 +83,11 @@ const ParagraphControllerModule = () => {
             - split and highlight those elements
         */
 
-        // current workaround
-        console.log($("article").find("p, ul, ol, h1, h2, h3, h4, h5, h6"));
+
+
+        // not a bad query if you want more elements, can be tricky with the ols and uls tho
+        // console.log($("article").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
+        // console.log($("main").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
 
         // rough psudo for getting more than paragraphs
         // look for <article> tag
@@ -95,14 +98,16 @@ const ParagraphControllerModule = () => {
             // parse all tags and attempt to split them into lines (or sentences for another mode)
         // if not found get all <p> tags
             // apply current paragraph filter to the <p> tags
-        let potentialParagraphs = $("p:visible").not("header p, footer p");
+        
+        let potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        // let potentialParagraphs = $("article").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
 
-        potentialParagraphs.each((i, para) => {
+        potentialParagraphs.each((i, elem) => {
 
             // check if paragraph a valid piece of text
             // this requires a # of spaces and # of punctuation threshhold - is it worth it? 
-            if (isValidParagraph(para)) {
-                relevantParagraphs.push(para);
+            if (isValidParagraph(elem)) {
+                relevantParagraphs.push(elem);
             }
 
         })
