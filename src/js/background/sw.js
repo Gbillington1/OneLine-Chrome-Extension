@@ -42,3 +42,12 @@ chrome.runtime.onInstalled.addListener(function(details) {
     // }
 
 })
+
+chrome.webNavigation.onCompleted.addListener((details) => {
+    if(details.url.includes('.pdf')) {
+        // chrome.tabs.executeScript(details.tabId, {file: "js/content/pdf.js"});
+        // open new tab of html file that has pdf.js imported
+        // somehow pass the url of the pdf to that html file, and in the script tag of that html file convert the pddf to html
+        chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${details.url}`) })
+    }
+})
