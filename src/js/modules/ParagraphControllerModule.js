@@ -85,6 +85,18 @@ const ParagraphControllerModule = () => {
 
 
 
+
+        /* BRO JUST MAKE A MENU SO THE USER CAN SELECT WHICH TEXT ELEMENTS THEY WANT TO HIGHLIGHT
+            - Headings (H1, H2, H3, H4, H5, H6)
+            - Paragraphs
+            - Lists (ol, ul) (will have to filter out lists not in the article/content)
+            - Code blocks (pre, code)
+            - Tables (table, tr, td, th) (??)
+        */
+
+
+            
+
         // not a bad query if you want more elements, can be tricky with the ols and uls tho
         // console.log($("article").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
         // console.log($("main").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
