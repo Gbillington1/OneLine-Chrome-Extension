@@ -34,6 +34,7 @@ window.onload = async function () {
     }
 
     // listen for changes in the switch state
+    // TODO: make sure all message passing is working with manifest v3
     chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
 
         switch (message.msg) {
@@ -42,18 +43,21 @@ window.onload = async function () {
 
                 onOffSwitchState = true;
                 updateLineColor(OneLine, activeColor);
+                sendResponse({ resp: "on/off switch changed to true" });
 
                 break;
             case "on/off switch changed to false":
 
                 onOffSwitchState = false;
                 OneLine.stop();
+                sendResponse({ resp: "on/off switch changed to false" });
 
                 break;
             case "active color changed":
 
                 activeColor = await getValueFromStorage("activeColor");
                 updateLineColor(OneLine, activeColor);
+                sendResponse({ resp: "active color changed" });
 
                 break;
             default:
