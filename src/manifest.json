@@ -2,16 +2,17 @@
     "manifest_version": 3,
     "name": "OneLine v2",
     "version": "2.0",
-    "description": "Strengthen your reading OneLine at a time.",
+    "description": "Strengthen your reading OneLine at a time.",    
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "webNavigation"
     ],
     "host_permissions": [
         "*://*/*"
     ],
     "background": {
-        "service-worker": "js/background/main-background.js"
+        "service_worker": "js/background/sw.js"
     },
     "icons": {
         "48": "images/icon48.png",
@@ -41,9 +42,10 @@
     ],
     "matches": [
         "http://*/*", 
-        "https://*/*"
+        "https://*/*",
+        "file://*/*"
     ],
-    "exclude_globs": ["*://www.google.com/search?*"]
+    "exclude_globs": ["*://www.google.com/search?*", "*://google.com/search?*", "*://scholar.google.com/scholar?*", "*://www.scholar.google.com/scholar?*"]
     }]
 
 }
