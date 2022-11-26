@@ -11,8 +11,6 @@ const OneLineModule = () => {
 
     const start = () => {
 
-        // ToDo: Make sure that the necessary functions run when start() is called for a second time on the same page
-
         if (!oneLineHasStarted) {
 
             paragraphController.populateRelevantParagraphArray();
@@ -29,7 +27,6 @@ const OneLineModule = () => {
 
     const stop = () => {
 
-        //ToDo: write functions/find functions to stop the program
         paragraphController.removeHighlightFromParagraphs()
 
     }

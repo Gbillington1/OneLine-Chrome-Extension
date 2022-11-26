@@ -1,6 +1,10 @@
 # Changelog
 All changes made after 05/30/2020 will be documented in this file.
 
+## [11/15/2022]
+# Added
+- heading tags into the search of viable elements to be highlighted
+
 ## [11/11/2022]
 # Changed
 - icon settings in `manifest.json` to resolve errors
@@ -273,7 +277,8 @@ All changes made after 05/30/2020 will be documented in this file.
 ## [Before]
 Changes before 05/30/2020 are not logged in this changelog, but you can press [before] to see the commit history.
 
-[12/4/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/bb23d0f..HEAD
+[11/11/2022]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/c9db8bc..e26d6f6
+[12/4/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/bb23d0f..d3b7ec4
 [12/4/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/e6711b2..ef7294a
 [11/19/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/da15d89..9e104d0
 [10/8/2021]: https://github.com/Gbillington1/OneLine-Chrome-Extension/compare/6784b39..02d0ea0
