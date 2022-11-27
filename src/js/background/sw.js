@@ -44,7 +44,6 @@ chrome.runtime.onInstalled.addListener(function(details) {
 })
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    console.log(request.pdf)
     if (request.pdf) {
         chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${request.pdf}`) })
     }

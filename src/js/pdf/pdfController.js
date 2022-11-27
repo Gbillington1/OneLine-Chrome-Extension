@@ -57,6 +57,7 @@ function renderPage(num) {
             textLayer.style.height = canvas.offsetHeight + 'px';
             textLayer.style.width = canvas.offsetWidth + 'px';
 
+
             // Pass the data to the method for rendering of text over the pdf canvas.
             pdfjsLib.renderTextLayer({
                 textContent: textContent,
@@ -64,6 +65,11 @@ function renderPage(num) {
                 viewport: viewport,
                 textDivs: []
             });
+        }).then(function() {
+            // send message to start oneline, this is when the text layer is rendered
+            
+           let child = $(".textLayer span")[2]
+           child.style.backgroundColor = "red";
         });
     });
 
@@ -116,4 +122,4 @@ pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
 
     // Initial/first page rendering
     renderPage(pageNum);
-});
+})

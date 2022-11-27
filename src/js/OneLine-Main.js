@@ -24,7 +24,7 @@ window.onload = async function () {
 
     // rough UI for pdf reader (will be replaced with a better one)
     if (window.location.href.includes('.pdf')) {
-        let openPDF = window.confirm('Would you like to read this PDF with OneLine?');
+        let openPDF = confirm('Would you like to read this PDF with OneLine?');
         if (openPDF) {
             chrome.runtime.sendMessage({ pdf: window.location.href });
         }
