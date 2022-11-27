@@ -5,8 +5,7 @@
     "description": "Strengthen your reading OneLine at a time.",    
     "permissions": [
         "activeTab",
-        "storage",
-        "webNavigation"
+        "storage"
     ],
     "host_permissions": [
         "*://*/*"

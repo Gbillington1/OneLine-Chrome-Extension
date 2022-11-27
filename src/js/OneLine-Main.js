@@ -22,85 +22,92 @@ const updateLineColor = (OneLine, color) => {
 
 window.onload = async function () {
 
-    // creaate the OneLine instance
-    const OneLine = OneLineModule();
+    // rough UI for pdf reader (will be replaced with a better one)
+    if (window.location.href.includes('.pdf')) {
+        let openPDF = window.confirm('Would you like to read this PDF with OneLine?');
+        if (openPDF) {
+            chrome.runtime.sendMessage({ pdf: window.location.href });
+        }
+    } else {
 
-    let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-    let activeColor = await getValueFromStorage("activeColor");
+        // creaate the OneLine instance
+        const OneLine = OneLineModule();
 
-    // start OneLine if switch is set to true
-    if (onOffSwitchState) {
-        updateLineColor(OneLine, activeColor);
-    }
+        let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+        let activeColor = await getValueFromStorage("activeColor");
 
-    // listen for changes in the switch state
-    // TODO: make sure all message passing is working with manifest v3
-    chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
-
-        switch (message.msg) {
-
-            case "on/off switch changed to true":
-
-                onOffSwitchState = true;
-                updateLineColor(OneLine, activeColor);
-                sendResponse({ resp: "on/off switch changed to true" });
-
-                break;
-            case "on/off switch changed to false":
-
-                onOffSwitchState = false;
-                OneLine.stop();
-                sendResponse({ resp: "on/off switch changed to false" });
-
-                break;
-            case "active color changed":
-
-                activeColor = await getValueFromStorage("activeColor");
-                updateLineColor(OneLine, activeColor);
-                sendResponse({ resp: "active color changed" });
-
-                break;
-            default:
-                break;
-
-            /* 
-            TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here
-            
-            for TTS, listen for "tts start", "tts pause/play", and "tts stop" in here
-                case "tts start":
-                    OneLine.startTTS(); // starts on current line, feeds utterance instance a line array (see project in documents folder)
-                    break;
-                case "tts pause/play":
-                    OneLine.togglePauseTTS(); // pauses/plays current utterance instance
-                    break;
-                case "tts stop":
-                    OneLine.stopTTS(); // stops and clears current utterance instance
-
-            */
-
+        // start OneLine if switch is set to true
+        if (onOffSwitchState) {
+            updateLineColor(OneLine, activeColor);
         }
 
-    })
+        // listen for changes in the switch state
+        // TODO: make sure all message passing is working with manifest v3
+        chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
 
-    $(document).keydown((e) => {
-        // don't move line when user is editing text in <input> or <textarea> 
-        if (!$(e.target).is("input, textarea") && onOffSwitchState) {
+            switch (message.msg) {
 
-            // w or up arrow pressed
-            if (e.keyCode == 87 || e.keyCode == 38) {
+                case "on/off switch changed to true":
 
-                e.preventDefault();
-                OneLine.moveLine("up");
+                    onOffSwitchState = true;
+                    updateLineColor(OneLine, activeColor);
 
-            // s or down arrow pressed
-            } else if (e.keyCode == 83 || e.keyCode == 40) {
+                    break;
+                case "on/off switch changed to false":
 
-                e.preventDefault();
-                OneLine.moveLine("down");
+                    onOffSwitchState = false;
+                    OneLine.stop();
+
+                    break;
+                case "active color changed":
+
+                    activeColor = await getValueFromStorage("activeColor");
+                    updateLineColor(OneLine, activeColor);
+
+                    break;
+                default:
+                    break;
+
+                /* 
+                TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here
+                
+                for TTS, listen for "tts start", "tts pause/play", and "tts stop" in here
+                    case "tts start":
+                        OneLine.startTTS(); // starts on current line, feeds utterance instance a line array (see project in documents folder)
+                        break;
+                    case "tts pause/play":
+                        OneLine.togglePauseTTS(); // pauses/plays current utterance instance
+                        break;
+                    case "tts stop":
+                        OneLine.stopTTS(); // stops and clears current utterance instance
+    
+                */
 
             }
 
-        }
-    });
+        })
+
+        $(document).keydown((e) => {
+            // don't move line when user is editing text in <input> or <textarea> 
+            if (!$(e.target).is("input, textarea") && onOffSwitchState) {
+
+                // w or up arrow pressed
+                if (e.keyCode == 87 || e.keyCode == 38) {
+
+                    e.preventDefault();
+                    OneLine.moveLine("up");
+
+                    // s or down arrow pressed
+                } else if (e.keyCode == 83 || e.keyCode == 40) {
+
+                    e.preventDefault();
+                    OneLine.moveLine("down");
+
+                }
+
+            }
+        });
+
+    }
 
 }

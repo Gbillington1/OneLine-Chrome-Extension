@@ -16,10 +16,10 @@ const getValueFromStorage = async (key) => {
     })
 }
 
-// load default states to storage (not working) 
+// load default states to storage 
 chrome.runtime.onInstalled.addListener(function(details) {
 
-    // if (details.reason == "install") {
+    if (details.reason == "install") {
 
         // get the swtich state, set it to true if it's not set, tell CS to start oneline
         chrome.storage.sync.get("onOffSwitchState", function(result) {
@@ -39,15 +39,13 @@ chrome.runtime.onInstalled.addListener(function(details) {
             } 
         })
 
-    // }
+    }
 
 })
 
-chrome.webNavigation.onCompleted.addListener((details) => {
-    if(details.url.includes('.pdf')) {
-        // chrome.tabs.executeScript(details.tabId, {file: "js/content/pdf.js"});
-        // open new tab of html file that has pdf.js imported
-        // somehow pass the url of the pdf to that html file, and in the script tag of that html file convert the pddf to html
-        chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${details.url}`) })
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    console.log(request.pdf)
+    if (request.pdf) {
+        chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${request.pdf}`) })
     }
 })
