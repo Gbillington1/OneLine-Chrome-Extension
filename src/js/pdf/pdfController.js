@@ -11,22 +11,25 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('/js/libraries/pd
 let pdfDoc = null,
     currPage = 1, //pages start at 1
     numPages = 0,
-    scale = 1
+    scale = 1,
+    container = document.getElementById('content')
 
 function handlePages(page) {
     // get viewport of page at given scale
     let viewport = page.getViewport({ scale: scale });
+    $("#zoom-value").text(`${Math.round(scale * 100)}%`)
 
     // create canvas to render page to
+    let pageContainer = document.createElement('div');
+    $(pageContainer).addClass('page py-2');
+    pageContainer.id = `page-${currPage}`;
+
     let canvas = document.createElement('canvas');
-    canvas.style.display = 'block';
-    canvas.className='pdf-canvas';
-    canvas.id = 'page-' + currPage;
+    $(canvas).addClass('pdf-canvas block');
 
     // create textLayer to render text content to
     let textLayer = document.createElement('div');
-    textLayer.className = 'textLayer';
-    textLayer.id = 'textLayer-' + currPage;
+    $(textLayer).addClass('textLayer');
 
     // set the canvas height and width to that of the page
     canvas.height = viewport.height;
@@ -41,8 +44,9 @@ function handlePages(page) {
     page.render(renderContext)
 
     // add page and textLayer to DOM
-    document.body.appendChild(canvas);
-    document.body.appendChild(textLayer);
+    pageContainer.appendChild(canvas);
+    pageContainer.appendChild(textLayer);
+    container.appendChild(pageContainer);
 
     // get text content and render it to the textLayer
     page.getTextContent().then(function (textContent) {
@@ -60,12 +64,12 @@ function handlePages(page) {
         });
     }).then(function () {
         let child = $(textLayer).find('span')[2]
-        console.log(child)
         child.style.backgroundColor = "red";
 
         // fires when the page is rendered
-        if (textLayer.id.includes(numPages)) {
+        if (pageContainer.id.includes(numPages)) {
             // send message to extension to start OneLine on the PDF
+            console.log(pdfDoc)
         }
     })
 
@@ -81,5 +85,19 @@ function handlePages(page) {
 pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
     pdfDoc = pdfDoc_;
     numPages = pdfDoc.numPages;
+    pdfDoc.getPage(1).then(handlePages)
+})
+
+// very inefficient, but it works for now
+$("#zoom-in").click(function() {
+    scale += 0.1;
+    container.innerHTML = '';
+    currPage = 1;
+    pdfDoc.getPage(1).then(handlePages)
+})
+$("#zoom-out").click(function() {
+    scale -= 0.1;
+    container.innerHTML = '';
+    currPage = 1;
     pdfDoc.getPage(1).then(handlePages)
 })

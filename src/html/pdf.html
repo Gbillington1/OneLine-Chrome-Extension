@@ -4,7 +4,7 @@
 <head>
     <script src="../js/libraries/jquery-3.4.1.min.js"></script>
     <script src="../js/libraries/pdf.js"></script>
-    <!-- <link rel="stylesheet" href="../js/libraries/pdfJS/web/viewer.css" /> -->
+    <link rel="stylesheet" href="../css/tailwind/out.css" />
     <style>
         .textLayer {
             position: absolute;
@@ -104,6 +104,49 @@
 </head>
 
 <body>
+
+    <!-- tool bar -->
+    <div class="h-12 w-screen bg-gray-500 flex space-between border-b-2 border-gray-700">
+
+        <div class="basis-1/3 flex items-center justify-start">
+          test
+        </div>
+
+        <!-- zoom controls -->
+        <div class="basis-1/3 flex items-center justify-center">
+          <div class="flex flex-row">
+            <!-- zoom out -->
+            <div>
+              <button id="zoom-out" class="bg-gray-700 text-white text-xl rounded-l-md h-8 w-8 flex items-center justify-center border-2 border-gray-800 hover:bg-gray-800">
+                <span>-</span>
+              </button>
+            </div>
+
+            <div class="bg-gray-700 text-white text-md h-8 w-12 border-y-2 border-gray-800 flex items-center justify-center">
+              <span id="zoom-value">100%</span>
+            </div>
+
+            <!-- zoom in -->
+            <div>
+              <button id="zoom-in" class="bg-gray-700 text-white text-xl rounded-r-md h-8 w-8 flex items-center justify-center border-2 border-gray-800 hover:bg-gray-800">
+                <span>+</span>  
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="basis-1/3 flex items-center justify-end">
+          123
+        </div>
+    </div>
+
+    <!-- background/container for pdf -->
+    <div id="pdfContainer" class="h-full w-screen bg-gray-600">
+      <!-- pdf pages appended to this div -->
+      <div id="content" class="w-fit m-auto"></div>
+    </div>
+
     <script src="../js/pdf/pdfController.js"></script>
 </body>
 
