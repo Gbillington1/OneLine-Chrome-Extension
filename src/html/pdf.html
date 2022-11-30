@@ -2,9 +2,14 @@
 <html>
 
 <head>
-    <script src="../js/libraries/jquery-3.4.1.min.js"></script>
-    <script src="../js/libraries/pdf.js"></script>
+    <!--- icons -->
+    <link rel="stylesheet" href="../css/fontawesome.min.css" />
+    <link rel="stylesheet" href="../css/solid.min.css" />
+
+    <!-- css -->
     <link rel="stylesheet" href="../css/tailwind/out.css" />
+
+    <!-- textLayer css -->
     <style>
         .textLayer {
             position: absolute;
@@ -101,44 +106,53 @@
             top: 0;
           }
     </style>
+
+    <!-- js -->
+    <script src="../js/libraries/jquery-3.4.1.min.js"></script>
+    <script src="../js/libraries/pdf.js"></script>
+    <script type='module' src='../js/popup/util-functions.js'></script>
 </head>
 
 <body>
 
     <!-- tool bar -->
-    <div class="h-12 w-screen bg-gray-500 flex space-between border-b-2 border-gray-700">
-
-        <div class="basis-1/3 flex items-center justify-start">
-          test
-        </div>
-
-        <!-- zoom controls -->
-        <div class="basis-1/3 flex items-center justify-center">
-          <div class="flex flex-row">
-            <!-- zoom out -->
-            <div>
-              <button id="zoom-out" class="bg-gray-700 text-white text-xl rounded-l-md h-8 w-8 flex items-center justify-center border-2 border-gray-800 hover:bg-gray-800">
-                <span>-</span>
-              </button>
-            </div>
-
-            <div class="bg-gray-700 text-white text-md h-8 w-12 border-y-2 border-gray-800 flex items-center justify-center">
-              <span id="zoom-value">100%</span>
-            </div>
-
-            <!-- zoom in -->
-            <div>
-              <button id="zoom-in" class="bg-gray-700 text-white text-xl rounded-r-md h-8 w-8 flex items-center justify-center border-2 border-gray-800 hover:bg-gray-800">
-                <span>+</span>  
-              </button>
-            </div>
+    <div class="sticky top-0 z-50">
+      <div class="h-12 w-screen bg-gray-500 flex space-between border-b-2 border-gray-700">
+  
+        <!-- left side -->
+          <div class="basis-1/3 flex items-center justify-start">
 
           </div>
-        </div>
-
-        <div class="basis-1/3 flex items-center justify-end">
-          123
-        </div>
+  
+          <!-- zoom controls -->
+          <div class="basis-1/3 flex items-center justify-center">
+            <div class="flex flex-row text-white">
+              <!-- zoom out -->
+              <div>
+                <button id="zoom-out" class="h-8 w-8 text-xl bg-gray-700 rounded-l-md flex items-center justify-center border-2 border-gray-900 hover:bg-gray-800">
+                  <i class="fa-solid fa-minus text-sm"></i>
+                </button>
+              </div>
+  
+              <div class="bg-gray-700 text-white text-md h-8 w-12 border-y-2 border-gray-900 flex items-center justify-center">
+                <span id="zoom-value">100%</span>
+              </div>
+  
+              <!-- zoom in -->
+              <div>
+                <button id="zoom-in" class="h-8 w-8 bg-gray-700 text-white text-xl rounded-r-md flex items-center justify-center border-2 border-gray-900 hover:bg-gray-800">
+                  <i class="fa-solid fa-plus text-sm"></i>
+                </button>
+              </div>
+  
+            </div>
+          </div>
+  
+          <!-- right side -->
+          <div class="basis-1/3 flex items-center justify-end">
+          
+          </div>
+      </div>
     </div>
 
     <!-- background/container for pdf -->
@@ -147,7 +161,7 @@
       <div id="content" class="w-fit m-auto"></div>
     </div>
 
-    <script src="../js/pdf/pdfController.js"></script>
+    <script type="module" src="../js/pdf/pdfController.js"></script>
 </body>
 
 </html>
