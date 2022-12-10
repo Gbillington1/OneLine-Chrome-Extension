@@ -25,10 +25,20 @@ const OneLineModule = () => {
 
     }
 
+    // need solution for turning off the highlighting when user switches tabs
     const stop = () => {
+        if (oneLineHasStarted) {
+            paragraphController.removeHighlightFromParagraphs();
+            oneLineHasStarted = false;
+        }
 
-        paragraphController.removeHighlightFromParagraphs()
+    }
 
+    const refresh = () => {
+        paragraphController.resetController();
+        paragraphController.populateRelevantParagraphArray();
+        paragraphController.createOneLineParagraph();
+        oneLineHasStarted = true;
     }
 
     const moveLine = (direction) => {
@@ -65,6 +75,7 @@ const OneLineModule = () => {
 
         start,
         stop,
+        refresh,
         moveLine
 
     }
