@@ -12,10 +12,8 @@ const getValueFromStorage = async (key) => {
 }
 
 // updates the css varible that holds the line color,
-// also starts OneLine
-const updateLineColor = (OneLine, color) => {
+const updateLineColor = (color) => {
     document.documentElement.style.setProperty("--active-color", color);
-    OneLine.start()
 };
 
 // loads a button to open PDF with OneLine reader
@@ -45,14 +43,15 @@ const loadOneLinePDFWidget = () => {
 
 // PROGRAM LOGIC STARTS HERE
 
-window.onload = async function () {
+window.addEventListener('load', async function () {
+    console.log('loadededed')
 
     // detect PDF and load widget into page
     if (!window.location.href.startsWith('chrome-extension://') && window.location.href.includes('.pdf')) {
         loadOneLinePDFWidget();
     }
 
-    // creaate the OneLine instance
+    // create the OneLine instance
     const OneLine = OneLineModule();
 
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
@@ -60,7 +59,8 @@ window.onload = async function () {
 
     // start OneLine if switch is set to true
     if (onOffSwitchState) {
-        updateLineColor(OneLine, activeColor);
+        updateLineColor(activeColor);
+        OneLine.start();
     }
 
     // listen for changes in the switch state
@@ -69,10 +69,15 @@ window.onload = async function () {
 
         switch (message.msg) {
 
+            case "tab changed":
+                console.log('tab changed')
+                // OneLine.start();
+
             case "on/off switch changed to true":
 
                 onOffSwitchState = true;
-                updateLineColor(OneLine, activeColor);
+                updateLineColor(activeColor);
+                OneLine.start()
 
                 break;
             case "on/off switch changed to false":
@@ -84,7 +89,8 @@ window.onload = async function () {
             case "active color changed":
 
                 activeColor = await getValueFromStorage("activeColor");
-                updateLineColor(OneLine, activeColor);
+                updateLineColor(activeColor);
+                OneLine.start()
 
                 break;
             default:
@@ -129,4 +135,4 @@ window.onload = async function () {
     
         }
     });
-}
+});
