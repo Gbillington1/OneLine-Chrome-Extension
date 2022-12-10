@@ -94,10 +94,10 @@ const ParagraphControllerModule = () => {
 
         let potentialParagraphs = [];
         relevantParagraphs = [];
-        if ($("main").length > 0) {
-            potentialParagraphs = $("main").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
-        } else if ($("article").length > 0) {
+        if ($("article").length > 0) {
             potentialParagraphs = $("article").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        } else if ($("main").length > 0) {
+            potentialParagraphs = $("main").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
         } else {
             potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
         }
