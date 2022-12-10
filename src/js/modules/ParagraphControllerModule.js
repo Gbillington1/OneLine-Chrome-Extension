@@ -30,34 +30,20 @@ const ParagraphControllerModule = () => {
     */
     let currentLineTracker = 0;
 
-    /* Checks if the given paragraph is valid by checking the number of spaces and the number of periods */
+    // keeping it simple for now, just making sure paragraphs have text in them
     const isValidParagraph = (paragraph) => {
 
-        let paragraphText = paragraph.innerText;
-
+        let paragraphText = $(paragraph).text();
         if (paragraphText && paragraphText.length > 0) {
+            return true;
+        } 
 
-            // sometimes the regex returns null, ?? [] is a workaround for that
-            let numberOfSpaces = (paragraphText.match(/\s/g) ?? []).length;
-
-            // selects punctuation that comes after a word
-            let numberOfPunctuations = (paragraphText.match(/(?<=\w)[^\w\s]/g) ?? []).length;
-
-            if (numberOfSpaces >= 5 || numberOfPunctuations >= 1) {
-                return true;
-            } else {
-                return false;
-            }
-
-        }
-
-
+        return false;
     }
 
     /* 
      - Handles logic to only add relevant paragraphs to paragraphs array
-     - it works for now, but it would be nice if it could be enhanced more
-        - Highlight ordered and unordered lists that are in the article (not on the sidebar or anything) 
+     - checks for <main> or <article> and searches in those for text elements, then checks if they are valid
     */
     const populateRelevantParagraphArray = () => {
 
@@ -95,12 +81,7 @@ const ParagraphControllerModule = () => {
         */
 
 
-            
-
-        // not a bad query if you want more elements, can be tricky with the ols and uls tho
-        // console.log($("article").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
-        // console.log($("main").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
-
+        
         // rough psudo for getting more than paragraphs
         // look for <article> tag
             // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
@@ -110,48 +91,25 @@ const ParagraphControllerModule = () => {
             // parse all tags and attempt to split them into lines (or sentences for another mode)
         // if not found get all <p> tags
             // apply current paragraph filter to the <p> tags
-        
-        let potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
-        // let potentialParagraphs = $("article").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+
+        let potentialParagraphs = [];
+        relevantParagraphs = [];
+        if ($("main").length > 0) {
+            potentialParagraphs = $("main").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        } else if ($("article").length > 0) {
+            potentialParagraphs = $("article").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        } else {
+            potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        }
 
         potentialParagraphs.each((i, elem) => {
 
-            // check if paragraph a valid piece of text
-            // this requires a # of spaces and # of punctuation threshhold - is it worth it? 
+            // checks if the paragraph has text
             if (isValidParagraph(elem)) {
                 relevantParagraphs.push(elem);
             }
 
         })
-
-        // let bodyChildren = $("body").children().not("header, footer, script, noscript");
-        // // console.log(bodyChildren);
-
-        // let longestChildLength = 0;
-        // let longestChild;
-
-        // // search for child with most text inside of it 
-        // bodyChildren.each((i, elem) => {
-
-        //     let childLength = elem.innerText.length;
-
-        //     if (childLength > longestChildLength) {
-        //         longestChildLength = childLength;
-        //         longestChild = elem;
-        //     }
-
-        // })
-
-        // console.log(longestChildLength, longestChild);
-
-        // let mainContentContainer;
-        // if ($("main").length > 0) {
-        //     mainContentContainer = $("main");
-        // } else if ($("article").length > 0) {
-        //     mainContentContainer = $("article");
-        // }
-        // console.log(mainContentContainer)
-
     }
 
     /* 
@@ -254,6 +212,14 @@ const ParagraphControllerModule = () => {
         paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
     }
 
+    const resetController = () => {
+        paragraphs = [];
+        relevantParagraphs = [];
+        currentParagraphTracker = 0;
+        mostRecentParagraphTracker = 0;
+        currentLineTracker = 0;
+    }
+
     return {
 
         populateRelevantParagraphArray,
@@ -261,7 +227,8 @@ const ParagraphControllerModule = () => {
         beginHighlighting,
         removeHighlightFromParagraphs,
         moveLineUp,
-        moveLineDown
+        moveLineDown,
+        resetController
 
     }
 
