@@ -1,19 +1,8 @@
-const sendMsgToCS = (message) => {
+function sendMsgToCS(message) {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, { msg: message });
     });
-}
-
-const getValueFromStorage = async (key) => {
-    return new Promise((resolve) => {
-
-        chrome.storage.sync.get([key], (data) => {
-
-            resolve(data[key]); 
-
-        })
-
-    })
+    console.log('message sent to CS', message)
 }
 
 // load default states to storage 
@@ -43,8 +32,15 @@ chrome.runtime.onInstalled.addListener(function(details) {
 
 })
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.pdf) {
-        chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${request.pdf}`) })
+// load pdf reader
+chrome.runtime.onMessage.addListener((msg, callback) => {
+    if (msg.pdf) {
+        chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${msg.pdf}`) })
     }
+
 })
+
+// // fire tab change event
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    sendMsgToCS("tab changed")
+});

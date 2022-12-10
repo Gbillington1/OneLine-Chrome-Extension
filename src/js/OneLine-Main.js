@@ -43,7 +43,7 @@ const loadOneLinePDFWidget = () => {
 
 // PROGRAM LOGIC STARTS HERE
 
-window.addEventListener('load', async function () {
+window.onload = async function () {
     console.log('loadededed')
 
     // detect PDF and load widget into page
@@ -69,20 +69,32 @@ window.addEventListener('load', async function () {
 
         switch (message.msg) {
 
+            // needs work
+            // issue is that when tab is changed, we still have the OneLine from the tab that we switched from, not the OneLine of the active tab, so stopping the highlighting doesn't work
             case "tab changed":
                 console.log('tab changed')
-                // OneLine.start();
+                onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+                if (onOffSwitchState) {
+                    activeColor = await getValueFromStorage("activeColor");
+                    updateLineColor(activeColor);
+                    // OneLine.start();
+                } else {
+                    // $(document).off('keydown')
+                    // OneLine.refresh();
+                    OneLine.stop();
+                }
+    
 
             case "on/off switch changed to true":
 
-                onOffSwitchState = true;
+                onOffSwitchState = await getValueFromStorage("onOffSwitchState");
                 updateLineColor(activeColor);
                 OneLine.start()
 
                 break;
             case "on/off switch changed to false":
 
-                onOffSwitchState = false;
+                onOffSwitchState = await getValueFromStorage("onOffSwitchState");
                 OneLine.stop();
 
                 break;
@@ -135,4 +147,4 @@ window.addEventListener('load', async function () {
     
         }
     });
-});
+}
