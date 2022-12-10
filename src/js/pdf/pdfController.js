@@ -1,5 +1,9 @@
 // TODO: add checks/error handling for PDFs that don't have the option for a textLayer
 
+import {
+    sendMsgToCS,
+} from '../popup/util-functions.js';
+
 let url = window.location.href.split('=')[1];
 
 // Loaded via <script> tag, create shortcut to access PDF.js exports.
@@ -13,6 +17,15 @@ let pdfDoc = null,
     numPages = 0,
     scale = 1,
     container = document.getElementById('content')
+
+function startOneLinePDF() {
+    $('.textLayer span:visible').each(function(i, elem) {
+        // if (isElementInViewport(elem)) {
+        //     console.log(elem)
+        // }
+    })
+
+}
 
 function handlePages(page) {
     // get viewport of page at given scale
@@ -66,10 +79,9 @@ function handlePages(page) {
         let child = $(textLayer).find('span')[2]
         child.style.backgroundColor = "red";
 
-        // fires when the page is rendered
+        // fires when the after the last page is rendered
         if (pageContainer.id.includes(numPages)) {
-            // send message to extension to start OneLine on the PDF
-            console.log(pdfDoc)
+            startOneLinePDF();
         }
     })
 
@@ -88,14 +100,17 @@ pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
     pdfDoc.getPage(1).then(handlePages)
 })
 
+
+
 // very inefficient, but it works for now
-$("#zoom-in").click(function() {
+$("#zoom-in").click(function () {
     scale += 0.1;
     container.innerHTML = '';
     currPage = 1;
     pdfDoc.getPage(1).then(handlePages)
 })
-$("#zoom-out").click(function() {
+
+$("#zoom-out").click(function () {
     scale -= 0.1;
     container.innerHTML = '';
     currPage = 1;
