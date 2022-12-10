@@ -27,14 +27,14 @@
     },
     "content_scripts":[{
     "js": [
-        "js/OneLine-Main.js",
-        "js/modules/OneLineModule.js",
-        "js/modules/ParagraphControllerModule.js",
-        "js/modules/ParagraphModule.js",
-        "js/modules/LineModule.js",
         "js/libraries/Readability.js",
         "js/libraries/splitting.min.js", 
-        "js/libraries/jquery-3.4.1.min.js"
+        "js/libraries/jquery-3.4.1.min.js",
+        "js/modules/LineModule.js",
+        "js/modules/ParagraphModule.js",
+        "js/modules/ParagraphControllerModule.js",
+        "js/modules/OneLineModule.js",
+        "js/OneLine-Main.js"
     ],
     "css": [
         "css/style.css"
