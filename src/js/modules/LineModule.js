@@ -48,6 +48,7 @@ const LineModule = (spansInLine) => {
             colorsOfWords.push($(spansInLine[i]).css("color"));
             // change the color of the text of each word in the line
             $(spansInLine[i]).css("color", optimalWordColor);
+            $(spansInLine[i]).attr("ol-data-color", $(spansInLine[i]).css("color"));
 
         }    
     }
