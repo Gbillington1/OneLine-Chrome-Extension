@@ -7,17 +7,17 @@
 const OneLineModule = () => {
 
     const paragraphController = ParagraphControllerModule();
-    let oneLineHasStarted = false;
+    let running = false;
 
     const start = () => {
 
-        if (!oneLineHasStarted) {
+        if (!running) {
 
             paragraphController.populateRelevantParagraphArray();
 
             paragraphController.createOneLineParagraph();
 
-            oneLineHasStarted = true;
+            running = true;
 
         }
 
@@ -25,20 +25,11 @@ const OneLineModule = () => {
 
     }
 
-    // need solution for turning off the highlighting when user switches tabs
     const stop = () => {
-        if (oneLineHasStarted) {
+        if (running) {
             paragraphController.removeHighlightFromParagraphs();
-            oneLineHasStarted = false;
         }
-
-    }
-
-    const refresh = () => {
-        paragraphController.resetController();
-        paragraphController.populateRelevantParagraphArray();
-        paragraphController.createOneLineParagraph();
-        oneLineHasStarted = true;
+        running = false;
     }
 
     const moveLine = (direction) => {
@@ -75,7 +66,6 @@ const OneLineModule = () => {
 
         start,
         stop,
-        refresh,
         moveLine
 
     }

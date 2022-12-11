@@ -137,6 +137,10 @@ const ParagraphControllerModule = () => {
 
     }
 
+    const removeHighlightFromParagraphs = () => {
+        paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
+    }
+
 
     // line movement functions
     // TODO: Allow users to bind the line moving keys to anyone they want
@@ -206,10 +210,6 @@ const ParagraphControllerModule = () => {
 
         }
 
-    }
-
-    const removeHighlightFromParagraphs = () => {
-        paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
     }
 
     const resetController = () => {

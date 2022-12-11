@@ -54,11 +54,11 @@ const LineModule = (spansInLine) => {
     }
 
     const removeHighlightFromLine = () => {
-
+        
         for (let i = 0; i < spansInLine.length; i++) {
             // revert the value of the word back to the original color
             $(spansInLine[i]).css("color", colorsOfWords[i]);
-            spansInLine[i].classList.remove("highlighted");
+            $(spansInLine[i]).removeClass('highlighted');
         }
     }
 

@@ -138,16 +138,11 @@ const ParagraphModule = (paragraph) => {
 
     // make change this function to access the line module? The problem might stem from the `moveParagraph()` funciton
     const removeAllHighlights = (currentLineTracker) => {
-
         linesInParagraph[currentLineTracker].removeHighlightFromLine();
-        // $(paragraph).find("span.word.highlighted, span.whitespace.highlighted").removeClass("highlighted");
-
     }
 
     const getNumberOfLines = () => {
-
         return linesInParagraph.length - 1;
-
     }
 
     // export functions that we want available

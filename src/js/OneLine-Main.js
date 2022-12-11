@@ -69,20 +69,17 @@ window.onload = async function () {
 
         switch (message.msg) {
 
-            // needs work
-            // issue is that when tab is changed, we still have the OneLine from the tab that we switched from, not the OneLine of the active tab, so stopping the highlighting doesn't work
             case "tab changed":
-                console.log('tab changed')
                 onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-                if (onOffSwitchState) {
+
+                if (onOffSwitchState === true) {
                     activeColor = await getValueFromStorage("activeColor");
                     updateLineColor(activeColor);
-                    // OneLine.start();
-                } else {
-                    // $(document).off('keydown')
-                    // OneLine.refresh();
+                    OneLine.start();
+                } else if (onOffSwitchState === false) {
                     OneLine.stop();
                 }
+            break;
     
 
             case "on/off switch changed to true":
