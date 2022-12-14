@@ -16,39 +16,32 @@ const updateLineColor = (color) => {
     document.documentElement.style.setProperty("--active-color", color);
 };
 
-// loads a button to open PDF with OneLine reader
-const loadOneLinePDFWidget = () => {
-    const widget = document.createElement('div');
-    widget.id = 'oneline-pdf-widget';
-    widget.style = 'position: absolute; top: 0px; right: 0px';
-
-    const root = document.createElement('div');
-    root.id = 'oneline-pdf-widget-root';
-    root.style = 'position: fixed; z-index: 2247483645; bottom: 50px; right: 32px;';
-    widget.appendChild(root);
-
-    const openBtn = document.createElement('button');
-    openBtn.id = 'oneline-pdf-widget-open-btn';
-    openBtn.style = 'background-color: #2a7861; border: 2px solid #f6f4f7; border-radius: 5px; box-shadow: 2px 2x 10px black; padding: 5px 10px; font-size: 16px; font-weight: bold; cursor: pointer; color: #f6f4f7;';
-    openBtn.innerHTML = 'Open in OneLine';
-
-    openBtn.onclick = () => {
-        chrome.runtime.sendMessage({ pdf: window.location.href });
-    }
-
-    root.appendChild(openBtn);
-
-    document.body.appendChild(widget);
+function forwardRequest(message) {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(message, (response) => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(response);
+            }
+        })
+    })
 }
 
 // PROGRAM LOGIC STARTS HERE
 
 window.onload = async function () {
-    console.log('loadededed')
+    const href = window.location.href;
+    // check if page is PDF
+    if (!href.startsWith('chrome-extension://') && href.includes('.pdf')) {
+        // request html blob from service worker
+        const res = await forwardRequest({ blob: chrome.runtime.getURL('html/blobs/openPDF.html')})
 
-    // detect PDF and load widget into page
-    if (!window.location.href.startsWith('chrome-extension://') && window.location.href.includes('.pdf')) {
-        loadOneLinePDFWidget();
+        // if blob is returned, insert it into the page
+        if (res.html) {
+            document.body.insertAdjacentHTML('beforeend', res.html);
+            $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: href }));
+        }
     }
 
     // create the OneLine instance
@@ -79,7 +72,7 @@ window.onload = async function () {
                 } else if (onOffSwitchState === false) {
                     OneLine.stop();
                 }
-            break;
+                break;
     
 
             case "on/off switch changed to true":
@@ -121,7 +114,7 @@ window.onload = async function () {
             */
 
         }
-
+        return true;
     })
     
     $(document).keydown(function (e) {
