@@ -66,6 +66,7 @@ const ParagraphModule = (paragraph) => {
                 Math.round(currentSpanOffsetTop - previousSpanOffsetTop)
             );
         }
+        console.log(topOfSpanDifferences)
 
     }
 
@@ -79,14 +80,16 @@ const ParagraphModule = (paragraph) => {
 
         let startOfLineIdx = 0; // used to keep track of the first word in a line
         let lineHeightOfPreviousWord = 0;
+        let distanceFromLineHeight;
 
         // use differences array to find all of the lines in the paragraph
         for (let i = 1; i < topOfSpanDifferences.length; i++) {
 
             lineHeightOfPreviousWord = $(spansInParagraph[i - 1]).outerHeight();
+            distanceFromLineHeight = Math.abs(topOfSpanDifferences[i] - lineHeightOfPreviousWord);
 
             // if there is a difference that is >= the lineHeight, that means there is a break in the lines - pushes all elements inbetween startOfLineIdx and the linebreak (the line) 
-            if (topOfSpanDifferences[i] >= lineHeightOfPreviousWord) {
+            if (topOfSpanDifferences[i] >= lineHeightOfPreviousWord || distanceFromLineHeight <= 5) {
 
                 linesInParagraph.push(
                     LineModule(spansInParagraph.slice(startOfLineIdx, i))
