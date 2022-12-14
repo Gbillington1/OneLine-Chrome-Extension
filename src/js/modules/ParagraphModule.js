@@ -66,8 +66,6 @@ const ParagraphModule = (paragraph) => {
                 Math.round(currentSpanOffsetTop - previousSpanOffsetTop)
             );
         }
-        console.log(topOfSpanDifferences)
-
     }
 
     /*
@@ -130,8 +128,6 @@ const ParagraphModule = (paragraph) => {
     const updateHighlight = (currentLineTracker) => {
 
         removeAllHighlights(currentLineTracker);
-
-        // console.log(currentLineTracker, linesInParagraph[currentLineTracker])
 
         linesInParagraph[currentLineTracker].highlightLine();
         currentLineIdx = currentLineTracker
