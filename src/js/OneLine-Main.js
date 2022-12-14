@@ -30,6 +30,9 @@ function forwardRequest(message) {
 
 // PROGRAM LOGIC STARTS HERE
 
+// TODO: Design and implement better auto scroll UI/UX
+// TODO: add error handling UX for when oneline finds no text/paragraphs
+// TODO: double check everything for Mv3
 window.onload = async function () {
     const href = window.location.href;
     // check if page is PDF
