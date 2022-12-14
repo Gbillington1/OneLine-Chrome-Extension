@@ -37,14 +37,18 @@
         "js/OneLine-Main.js"
     ],
     "css": [
-        "css/style.css"
+        "css/style.css",
+        "css/tailwind/out.css"
+    ],
+    "web_accessible_resources": [
+        "html/blobs/openPDF.html"
     ],
     "matches": [
         "http://*/*", 
         "https://*/*",
         "file://*/*"
     ],
-    "exclude_globs": ["*://www.google.com/search?*", "*://google.com/search?*", "*://scholar.google.com/scholar?*", "*://www.scholar.google.com/scholar?*"]
+    "exclude_globs": ["*://*.google.com/search?*", "*://*.google.com/scholar?*"]
     }]
 
 }
