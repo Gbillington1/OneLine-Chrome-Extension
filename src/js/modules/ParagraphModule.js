@@ -27,9 +27,11 @@ const ParagraphModule = (paragraph) => {
 
     const splitIntoSpans = () => {
 
-        Splitting({ target: paragraph, by: "paragraphSplitPlugin" })
-        // copy all "spannified" words into array
-        spansInParagraph = $(paragraph).find("span.word, span.whitespace");
+        if (spansInParagraph === undefined) {
+            Splitting({ target: paragraph, by: "paragraphSplitPlugin" })
+            // copy all "spannified" words into array
+            spansInParagraph = $(paragraph).find("span.word, span.whitespace");
+        }
 
     }
 
@@ -37,6 +39,10 @@ const ParagraphModule = (paragraph) => {
      - Calls the necessary functions to break a paragraph into LineModules
     */
     const calculateLines = () => {
+
+        topOfSpanDifferences = [0]
+        linesInParagraph = [];
+        currentLineIdx = 0;
 
         populateDifferencesArray();
 
@@ -104,7 +110,7 @@ const ParagraphModule = (paragraph) => {
 
         const topOfViewport = $(window).scrollTop();
         const bottomOfViewport = $(window).scrollTop() + window.innerHeight;
-        const line = $("span.highlighted");
+        const line = $("span.highlighted");        
         const topOfLine = line.offset().top;
         const bottomOfLine = line.offset().top + line.outerHeight();
     

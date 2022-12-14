@@ -13,7 +13,11 @@ const OneLineModule = () => {
 
         if (!running) {
 
-            paragraphController.populateRelevantParagraphArray();
+            let result = paragraphController.populateRelevantParagraphArray();
+
+            // if result is -1, then there are no paragraphs on the page
+            // notify user
+            if (result === -1) return;
 
             paragraphController.createOneLineParagraph();
 
@@ -30,6 +34,12 @@ const OneLineModule = () => {
             paragraphController.removeHighlightFromParagraphs();
         }
         running = false;
+    }
+
+    const resize = () => {
+        paragraphController.removeHighlightFromParagraphs();
+        paragraphController.refreshLines();
+        paragraphController.beginHighlighting();
     }
 
     const moveLine = (direction) => {
@@ -66,6 +76,7 @@ const OneLineModule = () => {
 
         start,
         stop,
+        resize,
         moveLine
 
     }

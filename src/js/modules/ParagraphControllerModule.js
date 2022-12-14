@@ -102,6 +102,12 @@ const ParagraphControllerModule = () => {
             potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
         }
 
+        // if no paragraphs found, return -1
+        // find way to handle this error, maybe display a message to the user
+        if (potentialParagraphs.length === 0) {
+            return -1;
+        }
+
         potentialParagraphs.each((i, elem) => {
 
             // checks if the paragraph has text
@@ -110,6 +116,7 @@ const ParagraphControllerModule = () => {
             }
 
         })
+        return 1;
     }
 
     /* 
@@ -126,6 +133,10 @@ const ParagraphControllerModule = () => {
         currentParagraph.splitIntoSpans();
         currentParagraph.calculateLines();
 
+    }
+
+    const refreshLines = () => {
+        paragraphs[currentParagraphTracker].calculateLines();
     }
 
     /*
@@ -224,6 +235,7 @@ const ParagraphControllerModule = () => {
 
         populateRelevantParagraphArray,
         createOneLineParagraph,
+        refreshLines, 
         beginHighlighting,
         removeHighlightFromParagraphs,
         moveLineUp,

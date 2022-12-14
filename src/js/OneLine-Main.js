@@ -116,6 +116,10 @@ window.onload = async function () {
         }
         return true;
     })
+
+    $(window).resize(function(e) {
+        OneLine.resize();
+    })
     
     $(document).keydown(function (e) {
         // don't move line when user is editing text in <input> or <textarea> 
