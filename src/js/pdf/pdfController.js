@@ -20,9 +20,6 @@ let pdfDoc = null,
 
 function startOneLinePDF() {
     $('.textLayer span:visible').each(function(i, elem) {
-        // if (isElementInViewport(elem)) {
-        //     console.log(elem)
-        // }
     })
 
 }
