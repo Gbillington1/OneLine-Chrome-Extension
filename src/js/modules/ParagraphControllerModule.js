@@ -34,7 +34,7 @@ const ParagraphControllerModule = () => {
     const isValidParagraph = (paragraph) => {
 
         let paragraphText = $(paragraph).text();
-        if (paragraphText && paragraphText.length > 0) {
+        if (paragraphText && paragraphText.length > 1) {
             return true;
         } 
 
