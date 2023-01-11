@@ -3,7 +3,7 @@
  - Controls the highlighting of the line
  - Will be used to add more features that are line specific in the future
 */
-const LineModule = (spansInLine) => {
+const Line = (spansInLine) => {
 
     // array of original color of each span in the line
     let colorsOfWords = [];
@@ -42,22 +42,22 @@ const LineModule = (spansInLine) => {
         let backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--active-color');
         let optimalWordColor = calculateWordColorWithYIQ(backgroundColor);
         for (let i = 0; i < spansInLine.length; i++) {
-
             spansInLine[i].classList.add("highlighted");
             // save the color of the text of each word in the line (to an array?)
             colorsOfWords.push($(spansInLine[i]).css("color"));
             // change the color of the text of each word in the line
             $(spansInLine[i]).css("color", optimalWordColor);
+            $(spansInLine[i]).attr("ol-data-color", $(spansInLine[i]).css("color"));
 
         }    
     }
 
     const removeHighlightFromLine = () => {
-
+        
         for (let i = 0; i < spansInLine.length; i++) {
             // revert the value of the word back to the original color
             $(spansInLine[i]).css("color", colorsOfWords[i]);
-            spansInLine[i].classList.remove("highlighted");
+            $(spansInLine[i]).removeClass('highlighted');
         }
     }
 

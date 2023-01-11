@@ -1,8 +1,8 @@
 /*
- - Manages all paragraphs (ParagraphModules) on a the webpage
+ - Manages all paragraphs (Paragraphs) on a the webpage
  - Retrieves and navigates through all relevant paragraphs
 */
-const ParagraphControllerModule = () => {
+const ParagraphController = () => {
 
     /* Global Variables */
 
@@ -10,7 +10,7 @@ const ParagraphControllerModule = () => {
     // Array of jQuery paragraph objects that pass the isValidParagraph function 
     let relevantParagraphs = [];
 
-    /* Array of Paragraph modules that are able to be highlighted */
+    /* Array of Paragraph s that are able to be highlighted */
     let paragraphs = [];
 
     /* Indices */
@@ -30,34 +30,26 @@ const ParagraphControllerModule = () => {
     */
     let currentLineTracker = 0;
 
-    /* Checks if the given paragraph is valid by checking the number of spaces and the number of periods */
+    // keeping it simple for now, just making sure paragraphs have text in them
     const isValidParagraph = (paragraph) => {
+        let elem = $(paragraph);
 
-        let paragraphText = paragraph.innerText;
-
-        if (paragraphText && paragraphText.length > 0) {
-
-            // sometimes the regex returns null, ?? [] is a workaround for that
-            let numberOfSpaces = (paragraphText.match(/\s/g) ?? []).length;
-
-            // selects punctuation that comes after a word
-            let numberOfPunctuations = (paragraphText.match(/(?<=\w)[^\w\s]/g) ?? []).length;
-
-            if (numberOfSpaces >= 5 || numberOfPunctuations >= 1) {
-                return true;
-            } else {
-                return false;
-            }
-
+        // fail on any style or script tags
+        if (elem.find('style').length > 0 || elem.find('script').length > 0) {
+            return false
         }
+        
+        let paragraphText = elem.text();
+        if (paragraphText && paragraphText.length > 1) {
+            return true;
+        } 
 
-
+        return false;
     }
 
     /* 
      - Handles logic to only add relevant paragraphs to paragraphs array
-     - it works for now, but it would be nice if it could be enhanced more
-        - Highlight ordered and unordered lists that are in the article (not on the sidebar or anything) 
+     - checks for <main> or <article> and searches in those for text elements, then checks if they are valid
     */
     const populateRelevantParagraphArray = () => {
 
@@ -95,12 +87,7 @@ const ParagraphControllerModule = () => {
         */
 
 
-            
-
-        // not a bad query if you want more elements, can be tricky with the ols and uls tho
-        // console.log($("article").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
-        // console.log($("main").find("p:visible, ul:visible, ol:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p"));
-
+        
         // rough psudo for getting more than paragraphs
         // look for <article> tag
             // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
@@ -110,64 +97,53 @@ const ParagraphControllerModule = () => {
             // parse all tags and attempt to split them into lines (or sentences for another mode)
         // if not found get all <p> tags
             // apply current paragraph filter to the <p> tags
-        
-        let potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
-        // let potentialParagraphs = $("article").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+
+        let potentialParagraphs = [];
+        relevantParagraphs = [];
+        if ($("article").length > 0) {
+            potentialParagraphs = $("article").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        } else if ($("main").length > 0) {
+            potentialParagraphs = $("main").find("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        } else {
+            potentialParagraphs = $("p:visible, h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible").not("header p, footer p");
+        }
+
+        // if no paragraphs found, return -1
+        // find way to handle this error, maybe display a message to the user
+        if (potentialParagraphs.length === 0) {
+            return -1;
+        }
 
         potentialParagraphs.each((i, elem) => {
 
-            // check if paragraph a valid piece of text
-            // this requires a # of spaces and # of punctuation threshhold - is it worth it? 
+            
+            // checks if the paragraph has text
             if (isValidParagraph(elem)) {
                 relevantParagraphs.push(elem);
             }
 
         })
-
-        // let bodyChildren = $("body").children().not("header, footer, script, noscript");
-        // // console.log(bodyChildren);
-
-        // let longestChildLength = 0;
-        // let longestChild;
-
-        // // search for child with most text inside of it 
-        // bodyChildren.each((i, elem) => {
-
-        //     let childLength = elem.innerText.length;
-
-        //     if (childLength > longestChildLength) {
-        //         longestChildLength = childLength;
-        //         longestChild = elem;
-        //     }
-
-        // })
-
-        // console.log(longestChildLength, longestChild);
-
-        // let mainContentContainer;
-        // if ($("main").length > 0) {
-        //     mainContentContainer = $("main");
-        // } else if ($("article").length > 0) {
-        //     mainContentContainer = $("article");
-        // }
-        // console.log(mainContentContainer)
-
+        return 1;
     }
 
     /* 
-     - Creates a new Paragraph module, and adds it to paragraphs.
+     - Creates a new Paragraph , and adds it to paragraphs.
      - Splits paragraph into lines after it's added
     */
     const createOneLineParagraph = () => {
 
-        // add new paragraph module to array
-        const currentParagraph = ParagraphModule(relevantParagraphs[mostRecentParagraphTracker]);
+        // add new paragraph  to array
+        const currentParagraph = Paragraph(relevantParagraphs[mostRecentParagraphTracker]);
 
         paragraphs.push(currentParagraph);
 
         currentParagraph.splitIntoSpans();
         currentParagraph.calculateLines();
 
+    }
+
+    const refreshLines = () => {
+        paragraphs[currentParagraphTracker].calculateLines();
     }
 
     /*
@@ -177,6 +153,10 @@ const ParagraphControllerModule = () => {
 
         paragraphs[currentParagraphTracker].updateHighlight(currentLineTracker);
 
+    }
+
+    const removeHighlightFromParagraphs = () => {
+        paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
     }
 
 
@@ -250,18 +230,46 @@ const ParagraphControllerModule = () => {
 
     }
 
-    const removeHighlightFromParagraphs = () => {
-        paragraphs[currentParagraphTracker].removeAllHighlights(currentLineTracker);
+    const resetController = () => {
+        paragraphs = [];
+        relevantParagraphs = [];
+        currentParagraphTracker = 0;
+        mostRecentParagraphTracker = 0;
+        currentLineTracker = 0;
+    }
+
+    // checks if the line is within the center 2/4 of the viewport, if its not, return false
+    // my attempt at an ascii visual, line stays within center 2/4 (the lines with =, not #)
+    // ############# top of viewport, 1/4
+    // ============= middle of viewport, 2/4
+    // ============= middle of viewport, 3/4
+    // ############# bottom of viewport, 4/4
+    const isLineVisibleInViewport = () => {
+        const topOfViewport = $(window).scrollTop();
+        const bottomOfViewport = $(window).scrollTop() + window.innerHeight;
+        const fourthOfViewport = (bottomOfViewport - topOfViewport) / 4
+        const line = $("span.highlighted");        
+        const topOfLine = line.offset().top;
+        const bottomOfLine = line.offset().top + line.outerHeight();
+    
+        if (topOfLine < (topOfViewport + fourthOfViewport) || bottomOfLine > (bottomOfViewport - fourthOfViewport)) {
+            return false; 
+        }
+    
+        return true; 
     }
 
     return {
 
         populateRelevantParagraphArray,
         createOneLineParagraph,
+        refreshLines, 
         beginHighlighting,
         removeHighlightFromParagraphs,
         moveLineUp,
-        moveLineDown
+        moveLineDown,
+        resetController,
+        isLineVisibleInViewport
 
     }
 

@@ -1,22 +1,22 @@
 {
-    "manifest_version": 3,
+    "manifest_version": 2,
     "name": "OneLine",
     "version": "2.0",
 
     "description": "OneLine highlights a single line to focus your reading.",
     "icons": {
-        "128": "images/icon128.png",
-        "48": "images/icon48.png"
+        "128": "working-version/images/icon128.png",
+        "48": "working-version/images/icon48.png"
     },
 
     "background": {
-        "scripts": ["js/background.js"],
+        "scripts": ["working-version/js/background.js"],
         "persistent": false
     },
 
     "permissions": [
         "activeTab",
-        "storge",  
+        "storage",  
         "identity", 
         "identity.email"
     ],
@@ -25,11 +25,11 @@
     ],
 
     "content_scripts":[{
-        "css": ["css/style.css"],
+        "css": ["working-version/css/style.css"],
         "js": [
-            "js/jquery-3.4.1.min.js", 
-            "js/splitting.min.js", 
-            "js/textReader.js"
+            "working-version/js/jquery-3.4.1.min.js", 
+            "working-version/js/splitting.min.js", 
+            "working-version/js/textReader.js"
         ],
         "matches": [
             "http://*/*", 
@@ -39,7 +39,7 @@
     }],
     "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
     "browser_action": {
-        "default_popup": "html/defaultPopup.html",
+        "default_popup": "working-version/html/defaultPopup.html",
         "default_title": "OneLine"
     },
     "oauth2": {

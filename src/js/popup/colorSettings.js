@@ -39,7 +39,7 @@ $(document).ready(async () => {
     colorPicker.on("input:end", (color) => {
 
         // update the color in the chrome sync storage
-        chrome.storage.sync.set({ "activeColor": color.hexString }, sendMsgToCS("active color changed"));
+        chrome.storage.sync.set({ "activeColor": color.hexString }, sendMsgToCS({ activeColor: color.hexString }));
         activeColor = color.hexString;
 
     });
@@ -60,7 +60,7 @@ $(document).ready(async () => {
     $(".recommendedBtn, .favoritesColorBtn").click(function () {
 
         activeColor = $(this).css("background-color");
-        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS("active color changed"));
+        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: activeColor }));
         colorPicker.color.set(activeColor);
         $("#active-color").css("background-color", activeColor);
 
