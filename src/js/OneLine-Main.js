@@ -1,11 +1,14 @@
 // UTIL FUNCTIONS
 const getValueFromStorage = async (key) => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
 
         chrome.storage.sync.get([key], (data) => {
 
-            resolve(data[key]);
-
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(data[key]);
+            }
         })
 
     })
@@ -28,120 +31,146 @@ function forwardRequest(message) {
     })
 }
 
+// async function to update line color & start oneline if switch is set to true, else stops oneline 
+// returns the current state of the switch so it can be set in the message event listener 
+async function handleTabChange(onOffSwitchState, activeColor, ol) {
+    onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+
+    if (onOffSwitchState === true) {
+        activeColor = await getValueFromStorage("activeColor");
+        updateLineColor(activeColor);
+        ol.start();
+    } else if (onOffSwitchState === false) {
+        ol.stop();
+    }
+
+    return onOffSwitchState; // return current state of switch
+}
 // PROGRAM LOGIC STARTS HERE
 
 // TODO: Design and implement better auto scroll UI/UX
 // TODO: add error handling UX for when oneline finds no text/paragraphs
 // TODO: double check everything for Mv3
+// OPTIONAL: selection feature for p, headers, code, lists, etc
 window.onload = async function () {
-    const href = window.location.href;
-    // check if page is PDF
-    if (!href.startsWith('chrome-extension://') && href.includes('.pdf')) {
-        // request html blob from service worker
-        const res = await forwardRequest({ blob: chrome.runtime.getURL('html/blobs/openPDF.html')})
-
-        // if blob is returned, insert it into the page
-        if (res.html) {
-            document.body.insertAdjacentHTML('beforeend', res.html);
-            $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: href }));
-        }
-    }
 
     // create the OneLine instance
-    const OneLine = OneLineModule();
+    const ol = OneLine();
+    let onOffSwitchState;
+    let activeColor;
 
-    let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-    let activeColor = await getValueFromStorage("activeColor");
+    if (!window.location.href.includes('.pdf')) {
 
-    // start OneLine if switch is set to true
-    if (onOffSwitchState) {
-        updateLineColor(activeColor);
-        OneLine.start();
+        onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+        activeColor = await getValueFromStorage("activeColor");
+    
+        // start OneLine if switch is set to true
+        // maybe add a check here to see if the current page is valid for OneLine
+        if (onOffSwitchState) {
+            updateLineColor(activeColor);
+            ol.start();
+        }
     }
 
     // listen for changes in the switch state
     // TODO: make sure all message passing is working with manifest v3
-    chrome.runtime.onMessage.addListener(async function (message, sender, sendResponse) {
+    chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
 
-        switch (message.msg) {
-
-            case "tab changed":
-                onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-
-                if (onOffSwitchState === true) {
-                    activeColor = await getValueFromStorage("activeColor");
-                    updateLineColor(activeColor);
-                    OneLine.start();
-                } else if (onOffSwitchState === false) {
-                    OneLine.stop();
-                }
-                break;
-    
-
-            case "on/off switch changed to true":
-
-                onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-                updateLineColor(activeColor);
-                OneLine.start()
-
-                break;
-            case "on/off switch changed to false":
-
-                onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-                OneLine.stop();
-
-                break;
-            case "active color changed":
-
-                activeColor = await getValueFromStorage("activeColor");
-                updateLineColor(activeColor);
-                OneLine.start()
-
-                break;
-            default:
-                break;
-
-            /* 
-            TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here
-            
-            for TTS, listen for "tts start", "tts pause/play", and "tts stop" in here
-                case "tts start":
-                    OneLine.startTTS(); // starts on current line, feeds utterance instance a line array (see project in documents folder)
-                    break;
-                case "tts pause/play":
-                    OneLine.togglePauseTTS(); // pauses/plays current utterance instance
-                    break;
-                case "tts stop":
-                    OneLine.stopTTS(); // stops and clears current utterance instance
- 
-            */
-
+        if (msg.tabChanged) {
+            handleTabChange(onOffSwitchState, activeColor, ol).then((result) => {
+                onOffSwitchState = result; // refresh the state of the switch on tab change
+                sendResponse({ tabChanged: msg.tabChanged, status: 200 })
+            })
         }
-        return true;
+
+        if (msg.switchState) {
+            onOffSwitchState = msg.switchState
+            updateLineColor(activeColor);
+            ol.start()
+            sendResponse({ switchState: msg.switchState, status: 200 })
+        }
+
+        if (!msg.switchState) {
+            onOffSwitchState = msg.switchState
+            ol.stop();
+            sendResponse({ switchState: msg.switchState, status: 200 })
+        }
+
+        if (msg.activeColor) {
+            activeColor = msg.activeColor
+            updateLineColor(activeColor);
+            ol.start()
+            sendResponse({ activeColor: msg.activeColor, status: 200 })
+        }
+
+        // insert pdf coming soon html into default chrome pdf viewer
+        if (msg.html) {
+            ol.stop()
+            document.body.insertAdjacentHTML('beforeend', msg.html);
+            // forward request to background script to send user to mailing list sign up (and mark that they signed up)
+            $("#ol-signUp").click(() => forwardRequest({ signUp: true }))
+
+            // close the coming soon modal
+            $("#ol-dismiss").click(() => {
+                $('#oneline-pdf-coming-soon').remove();
+            })
+
+            // $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: window.location.href }));
+            sendResponse({ htmlInserted: true, status: 200 })
+        }
+
+        // listen for user to sign up for mailing list, then take note that this user has signed up so popups don't show up anymore
+        if (msg.listenForSubscription) {
+            $("#mc-embedded-subscribe").click(() => {
+                if ($("#mce-EMAIL").val() !== "") {
+                    chrome.storage.sync.set({ "emailSignUp": true })
+                    sendResponse({ listenForSubscription: true, status: 200 })
+                }
+            })
+        }
+
+        /* 
+        TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here
+        
+        for TTS, listen for "tts start", "tts pause/play", and "tts stop" in here
+            case "tts start":
+                ol.startTTS(); // starts on current line, feeds utterance instance a line array (see project in documents folder)
+                break;
+            case "tts pause/play":
+                ol.togglePauseTTS(); // pauses/plays current utterance instance
+                break;
+            case "tts stop":
+                ol.stopTTS(); // stops and clears current utterance instance
+ 
+        */
+
+        // indicate that response will be sent asynchronously
+        return true
     })
 
-    $(window).resize(function(e) {
-        OneLine.resize();
-    })
-    
+    // resize lines
+    $(window).resize(() => {
+        ol.resize();
+    });
+
     $(document).keydown(function (e) {
         // don't move line when user is editing text in <input> or <textarea> 
         if (!$(e.target).is("input, textarea") && onOffSwitchState) {
-    
+
             // w or up arrow pressed
             if (e.keyCode == 87 || e.keyCode == 38) {
-    
+
                 e.preventDefault();
-                OneLine.moveLine("up");
-    
+                ol.moveLine("up");
+
                 // s or down arrow pressed
             } else if (e.keyCode == 83 || e.keyCode == 40) {
-    
+
                 e.preventDefault();
-                OneLine.moveLine("down");
-    
+                ol.moveLine("down");
+
             }
-    
+
         }
     });
 }

@@ -4,20 +4,21 @@
  - Controls TTS?
 */
 
-const OneLineModule = () => {
+const OneLine = () => {
 
-    const paragraphController = ParagraphControllerModule();
+    const paragraphController = ParagraphController();
     let running = false;
 
     const start = () => {
-
-        if (!running) {
+        if ($('span.word span.whitespace').length === 0) {
 
             let result = paragraphController.populateRelevantParagraphArray();
 
             // if result is -1, then there are no paragraphs on the page
             // notify user
-            if (result === -1) return;
+            if (result === -1) {
+                // ideally show a popup that allows users to input if this is a mistake, or if there is an issue with this page (sort of like a report bug button)
+            };
 
             paragraphController.createOneLineParagraph();
 
@@ -54,6 +55,12 @@ const OneLineModule = () => {
 
             paragraphController.moveLineDown();
 
+        }
+
+        // if line is not in viewport, scroll to line
+        // want to control scrolling from here, so that auto scroll kicks in when user gives an input, NOT when the page loads (causing unwanted scrolling)
+        if (!paragraphController.isLineVisibleInViewport()) {
+            $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" })
         }
 
     }

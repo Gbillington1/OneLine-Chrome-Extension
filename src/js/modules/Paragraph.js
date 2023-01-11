@@ -4,7 +4,7 @@
  - Highlights all span elements
 */
 
-const ParagraphModule = (paragraph) => {
+const Paragraph = (paragraph) => {
 
     /* Global Variables */
 
@@ -18,12 +18,12 @@ const ParagraphModule = (paragraph) => {
     */
     let topOfSpanDifferences = [0];
 
-    /* array of Line modules (eventually), currently its a 2d array of span elems */ 
+    /* array of Line s (eventually), currently its a 2d array of span elems */ 
     let linesInParagraph = [];
 
     let currentLineIdx = 0;
 
-    /* Module fucntions */
+    /*  fucntions */
 
     const splitIntoSpans = () => {
 
@@ -36,7 +36,7 @@ const ParagraphModule = (paragraph) => {
     }
 
     /*
-     - Calls the necessary functions to break a paragraph into LineModules
+     - Calls the necessary functions to break a paragraph into Lines
     */
     const calculateLines = () => {
 
@@ -46,7 +46,7 @@ const ParagraphModule = (paragraph) => {
 
         populateDifferencesArray();
 
-        populateLineModuleArray();
+        populateLineArray();
 
     }
 
@@ -72,9 +72,9 @@ const ParagraphModule = (paragraph) => {
      - Uses the differences array to check for line breaks
      - There is a line break if the difference is >= the line height
      - Using startOfLineIdx to track the first word in every line, all elements between that index, and the index where the line breaks, is a line
-     - Creates a LineModule for each line, and adds it to linesInParagraph
+     - Creates a Line for each line, and adds it to linesInParagraph
     */
-    const populateLineModuleArray = () => {
+    const populateLineArray = () => {
 
         let startOfLineIdx = 0; // used to keep track of the first word in a line
         let lineHeightOfPreviousWord = 0;
@@ -90,7 +90,7 @@ const ParagraphModule = (paragraph) => {
             if (topOfSpanDifferences[i] >= lineHeightOfPreviousWord || distanceFromLineHeight <= 5) {
 
                 linesInParagraph.push(
-                    LineModule(spansInParagraph.slice(startOfLineIdx, i))
+                    Line(spansInParagraph.slice(startOfLineIdx, i))
                 );
 
                 startOfLineIdx = i;
@@ -101,47 +101,21 @@ const ParagraphModule = (paragraph) => {
 
         // account for the last line in the paragraph
         linesInParagraph.push(
-            LineModule(spansInParagraph.slice(startOfLineIdx, topOfSpanDifferences.length))
+            Line(spansInParagraph.slice(startOfLineIdx, topOfSpanDifferences.length))
         );
 
     }
 
-    // checks if the highlighted line lies (fully) in the viewport of the user
-    const isLineInViewport = () => {
-
-        const topOfViewport = $(window).scrollTop();
-        const bottomOfViewport = $(window).scrollTop() + window.innerHeight;
-        const line = $("span.highlighted");        
-        const topOfLine = line.offset().top;
-        const bottomOfLine = line.offset().top + line.outerHeight();
-    
-        if (topOfLine < topOfViewport || bottomOfLine > bottomOfViewport) {
-            return false; 
-        }
-    
-        return true; 
-    } 
-
-    // there's a problem with giving the words their original color back. 
-    // This uses removeAllHighlights, which doesn't have access to the 
-    // original colors of the words, so we can't revert them.
     const updateHighlight = (currentLineTracker) => {
 
         removeAllHighlights(currentLineTracker);
 
         linesInParagraph[currentLineTracker].highlightLine();
         currentLineIdx = currentLineTracker
-
-        // scroll option 1
-        if (!isLineInViewport()) {
-            $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" })
-        }
-
-        // scroll option 2
-        // $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" }) 
+        
     }
 
-    // make change this function to access the line module? The problem might stem from the `moveParagraph()` funciton
+    // make change this function to access the line ? The problem might stem from the `moveParagraph()` funciton
     const removeAllHighlights = (currentLineTracker) => {
         linesInParagraph[currentLineTracker].removeHighlightFromLine();
     }

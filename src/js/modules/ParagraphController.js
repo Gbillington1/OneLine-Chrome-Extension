@@ -1,8 +1,8 @@
 /*
- - Manages all paragraphs (ParagraphModules) on a the webpage
+ - Manages all paragraphs (Paragraphs) on a the webpage
  - Retrieves and navigates through all relevant paragraphs
 */
-const ParagraphControllerModule = () => {
+const ParagraphController = () => {
 
     /* Global Variables */
 
@@ -10,7 +10,7 @@ const ParagraphControllerModule = () => {
     // Array of jQuery paragraph objects that pass the isValidParagraph function 
     let relevantParagraphs = [];
 
-    /* Array of Paragraph modules that are able to be highlighted */
+    /* Array of Paragraph s that are able to be highlighted */
     let paragraphs = [];
 
     /* Indices */
@@ -32,8 +32,14 @@ const ParagraphControllerModule = () => {
 
     // keeping it simple for now, just making sure paragraphs have text in them
     const isValidParagraph = (paragraph) => {
+        let elem = $(paragraph);
 
-        let paragraphText = $(paragraph).text();
+        // fail on any style or script tags
+        if (elem.find('style').length > 0 || elem.find('script').length > 0) {
+            return false
+        }
+        
+        let paragraphText = elem.text();
         if (paragraphText && paragraphText.length > 1) {
             return true;
         } 
@@ -110,6 +116,7 @@ const ParagraphControllerModule = () => {
 
         potentialParagraphs.each((i, elem) => {
 
+            
             // checks if the paragraph has text
             if (isValidParagraph(elem)) {
                 relevantParagraphs.push(elem);
@@ -120,13 +127,13 @@ const ParagraphControllerModule = () => {
     }
 
     /* 
-     - Creates a new Paragraph module, and adds it to paragraphs.
+     - Creates a new Paragraph , and adds it to paragraphs.
      - Splits paragraph into lines after it's added
     */
     const createOneLineParagraph = () => {
 
-        // add new paragraph module to array
-        const currentParagraph = ParagraphModule(relevantParagraphs[mostRecentParagraphTracker]);
+        // add new paragraph  to array
+        const currentParagraph = Paragraph(relevantParagraphs[mostRecentParagraphTracker]);
 
         paragraphs.push(currentParagraph);
 
@@ -231,6 +238,27 @@ const ParagraphControllerModule = () => {
         currentLineTracker = 0;
     }
 
+    // checks if the line is within the center 2/4 of the viewport, if its not, return false
+    // my attempt at an ascii visual, line stays within center 2/4 (the lines with =, not #)
+    // ############# top of viewport, 1/4
+    // ============= middle of viewport, 2/4
+    // ============= middle of viewport, 3/4
+    // ############# bottom of viewport, 4/4
+    const isLineVisibleInViewport = () => {
+        const topOfViewport = $(window).scrollTop();
+        const bottomOfViewport = $(window).scrollTop() + window.innerHeight;
+        const fourthOfViewport = (bottomOfViewport - topOfViewport) / 4
+        const line = $("span.highlighted");        
+        const topOfLine = line.offset().top;
+        const bottomOfLine = line.offset().top + line.outerHeight();
+    
+        if (topOfLine < (topOfViewport + fourthOfViewport) || bottomOfLine > (bottomOfViewport - fourthOfViewport)) {
+            return false; 
+        }
+    
+        return true; 
+    }
+
     return {
 
         populateRelevantParagraphArray,
@@ -240,7 +268,8 @@ const ParagraphControllerModule = () => {
         removeHighlightFromParagraphs,
         moveLineUp,
         moveLineDown,
-        resetController
+        resetController,
+        isLineVisibleInViewport
 
     }
 

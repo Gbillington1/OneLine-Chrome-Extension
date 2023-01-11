@@ -24,7 +24,7 @@ $(document).ready(() => {
 
         const stateOfSwitch = e.currentTarget.checked; 
         chrome.storage.sync.set({ "onOffSwitchState": stateOfSwitch })
-        sendMsgToCS("on/off switch changed to " + stateOfSwitch);
+        sendMsgToCS({ switchState: stateOfSwitch })
 
     })
 

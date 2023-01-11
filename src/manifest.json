@@ -30,10 +30,10 @@
         "js/libraries/Readability.js",
         "js/libraries/splitting.min.js", 
         "js/libraries/jquery-3.4.1.min.js",
-        "js/modules/LineModule.js",
-        "js/modules/ParagraphModule.js",
-        "js/modules/ParagraphControllerModule.js",
-        "js/modules/OneLineModule.js",
+        "js/modules/Line.js",
+        "js/modules/Paragraph.js",
+        "js/modules/ParagraphController.js",
+        "js/modules/OneLine.js",
         "js/OneLine-Main.js"
     ],
     "css": [
@@ -41,7 +41,7 @@
         "css/tailwind/out.css"
     ],
     "web_accessible_resources": [
-        "html/blobs/openPDF.html"
+        "html/blobs/*.html"
     ],
     "matches": [
         "http://*/*", 
