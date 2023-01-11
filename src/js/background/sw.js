@@ -74,7 +74,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status == "complete" && tab.url) {
 
-        if (!tab.url.startsWith('chrome-extension://') && tab.url.includes('.pdf')) {
+        if (!tab.url.startsWith('chrome-extension://') && tab.url.endsWith('.pdf')) {
             // fetch(chrome.runtime.getURL('html/blobs/openPDF.html')).then(data => data.text()).then(html => {
             //     sendMsgToCS(tab.id, { html: html })
             // });

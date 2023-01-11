@@ -611,14 +611,6 @@ video {
   margin-top: 0.5rem;
 }
 
-.-ml-0\.5 {
-  margin-left: -0.125rem;
-}
-
-.-ml-0 {
-  margin-left: -0px;
-}
-
 .block {
   display: block;
 }
@@ -651,10 +643,6 @@ video {
   height: 1.25rem;
 }
 
-.h-4 {
-  height: 1rem;
-}
-
 .w-screen {
   width: 100vw;
 }
@@ -672,40 +660,12 @@ video {
   width: fit-content;
 }
 
-.w-5 {
-  width: 1.25rem;
-}
-
-.w-4 {
-  width: 1rem;
-}
-
-.w-1 {
-  width: 0.25rem;
-}
-
-.w-24 {
-  width: 6rem;
-}
-
-.w-20 {
-  width: 5rem;
-}
-
-.w-48 {
-  width: 12rem;
-}
-
-.w-64 {
-  width: 16rem;
-}
-
-.w-72 {
-  width: 18rem;
-}
-
 .w-80 {
   width: 20rem;
+}
+
+.w-5 {
+  width: 1.25rem;
 }
 
 .basis-1\/3 {
@@ -734,10 +694,6 @@ video {
 
 .justify-center {
   justify-content: center;
-}
-
-.justify-between {
-  justify-content: space-between;
 }
 
 .rounded-lg {
@@ -944,51 +900,4 @@ video {
 .focus\:ring-green-300:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(134 239 172 / var(--tw-ring-opacity));
-}
-
-@media (prefers-color-scheme: dark) {
-  .dark\:border-green-800 {
-    --tw-border-opacity: 1;
-    border-color: rgb(22 101 52 / var(--tw-border-opacity));
-  }
-
-  .dark\:border-green-500 {
-    --tw-border-opacity: 1;
-    border-color: rgb(34 197 94 / var(--tw-border-opacity));
-  }
-
-  .dark\:bg-gray-800 {
-    --tw-bg-opacity: 1;
-    background-color: rgb(31 41 55 / var(--tw-bg-opacity));
-  }
-
-  .dark\:bg-green-600 {
-    --tw-bg-opacity: 1;
-    background-color: rgb(22 163 74 / var(--tw-bg-opacity));
-  }
-
-  .dark\:text-green-400 {
-    --tw-text-opacity: 1;
-    color: rgb(74 222 128 / var(--tw-text-opacity));
-  }
-
-  .dark\:hover\:bg-green-700:hover {
-    --tw-bg-opacity: 1;
-    background-color: rgb(21 128 61 / var(--tw-bg-opacity));
-  }
-
-  .dark\:hover\:bg-green-500:hover {
-    --tw-bg-opacity: 1;
-    background-color: rgb(34 197 94 / var(--tw-bg-opacity));
-  }
-
-  .dark\:hover\:text-white:hover {
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity));
-  }
-
-  .dark\:focus\:ring-green-800:focus {
-    --tw-ring-opacity: 1;
-    --tw-ring-color: rgb(22 101 52 / var(--tw-ring-opacity));
-  }
 }
