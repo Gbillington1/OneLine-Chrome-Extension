@@ -55,15 +55,13 @@ async function handleTabChange(onOffSwitchState, activeColor, ol) {
 window.onload = async function () {
 
     // create the OneLine instance
-    const ol = OneLine();
-    let onOffSwitchState;
-    let activeColor;
+    let ol = OneLine()
+    let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+    let activeColor = await getValueFromStorage("activeColor");
 
+    // don't start OneLine on pdf pages
     if (!window.location.href.includes('.pdf')) {
-
-        onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-        activeColor = await getValueFromStorage("activeColor");
-    
+        
         // start OneLine if switch is set to true
         // maybe add a check here to see if the current page is valid for OneLine
         if (onOffSwitchState) {
@@ -124,9 +122,9 @@ window.onload = async function () {
             $("#mc-embedded-subscribe").click(() => {
                 if ($("#mce-EMAIL").val() !== "") {
                     chrome.storage.sync.set({ "emailSignUp": true })
-                    sendResponse({ listenForSubscription: true, status: 200 })
                 }
             })
+            sendResponse({ listenForSubscription: true, status: 200 })
         }
 
         /* 
@@ -150,7 +148,9 @@ window.onload = async function () {
 
     // resize lines
     $(window).resize(() => {
-        ol.resize();
+        if (onOffSwitchState) {
+            ol.resize();
+        }
     });
 
     $(document).keydown(function (e) {

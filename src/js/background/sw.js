@@ -67,21 +67,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 })
 
 // fire tab change event
+// happens before the page is loaded, so it throws an error in the service worker
 chrome.tabs.onActivated.addListener((activeInfo) => {
-    sendMsgToCS(activeInfo.tabId, { tabChanged: true }) // does this happen before page is loaded?
+    sendMsgToCS(activeInfo.tabId, { tabChanged: true }) 
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status == "complete" && tab.url) {
 
         if (!tab.url.startsWith('chrome-extension://') && tab.url.endsWith('.pdf')) {
-            // fetch(chrome.runtime.getURL('html/blobs/openPDF.html')).then(data => data.text()).then(html => {
-            //     sendMsgToCS(tab.id, { html: html })
-            // });
             chrome.storage.sync.get('emailSignUp').then((res) => {
+                console.log(`emailSignUp: ${res.emailSignUp}`)
                 if (!res.emailSignUp) {
                     fetch(chrome.runtime.getURL('html/blobs/PDFsComingSoon.html')).then(data => data.text()).then(html => {
+
+                        // add tailwind css to the page (this way we don't have to add it to the manifest.json, in turn adding it to every page like a content script. that causes css conflicts)
+                        chrome.scripting.insertCSS({
+                            target: { tabId: tab.id }, 
+                            files: ['css/tailwind/out.css']
+                        })
                         sendMsgToCS(tab.id, { html: html })
+
                     });
                 }
             })
