@@ -5,7 +5,8 @@
     "description": "Strengthen your reading OneLine at a time.",    
     "permissions": [
         "activeTab",
-        "storage"
+        "storage",
+        "scripting"
     ],
     "host_permissions": [
         "*://*/*"
@@ -27,7 +28,6 @@
     },
     "content_scripts":[{
     "js": [
-        "js/libraries/Readability.js",
         "js/libraries/splitting.min.js", 
         "js/libraries/jquery-3.4.1.min.js",
         "js/modules/Line.js",
@@ -37,11 +37,7 @@
         "js/OneLine-Main.js"
     ],
     "css": [
-        "css/style.css",
-        "css/tailwind/out.css"
-    ],
-    "web_accessible_resources": [
-        "html/blobs/*.html"
+        "css/style.css"
     ],
     "matches": [
         "http://*/*", 
