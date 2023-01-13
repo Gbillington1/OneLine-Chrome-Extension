@@ -11,19 +11,18 @@ const OneLine = () => {
 
     const start = () => {
         if ($('span.word span.whitespace').length === 0) {
-
             let result = paragraphController.populateRelevantParagraphArray();
-
+            
             // if result is -1, then there are no paragraphs on the page
             // notify user
             if (result === -1) {
                 // ideally show a popup that allows users to input if this is a mistake, or if there is an issue with this page (sort of like a report bug button)
             };
-
+            
             paragraphController.createOneLineParagraph();
-
+            
             running = true;
-
+            
         }
 
         paragraphController.beginHighlighting();
