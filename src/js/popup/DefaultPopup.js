@@ -1,4 +1,4 @@
-import { sendMsgToCS, loadActivePage, loadOnOffSwitch } from './util-functions.js';
+import { sendMsgToCS, forwardRequest, loadActivePage, loadOnOffSwitch } from './util-functions.js';
 
 loadActivePage();
 
@@ -13,10 +13,9 @@ $(document).ready(() => {
     
     })
 
-    $('#tts').click(() => {
+    $('#emailList').click(() => {
     
-        chrome.storage.sync.set({ "activePage": "textToSpeech.html" })
-        window.location.href = "textToSpeech.html"
+        forwardRequest({ popupEmailList: true })
     
     })
 
