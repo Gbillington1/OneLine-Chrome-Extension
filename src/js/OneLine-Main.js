@@ -1,16 +1,13 @@
 // UTIL FUNCTIONS
 const getValueFromStorage = async (key) => {
     return new Promise((resolve, reject) => {
-
         chrome.storage.sync.get([key], (data) => {
-
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else {
                 resolve(data[key]);
             }
         })
-
     })
 }
 
@@ -115,16 +112,6 @@ window.onload = async function () {
 
             // $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: window.location.href }));
             sendResponse({ htmlInserted: true, status: 200 })
-        }
-
-        // listen for user to sign up for mailing list, then take note that this user has signed up so popups don't show up anymore
-        if (msg.listenForSubscription) {
-            $("#mc-embedded-subscribe").click(() => {
-                if ($("#mce-EMAIL").val() !== "") {
-                    chrome.storage.sync.set({ "emailSignUp": true })
-                }
-            })
-            sendResponse({ listenForSubscription: true, status: 200 })
         }
 
         /* 

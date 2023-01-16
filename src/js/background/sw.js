@@ -60,19 +60,24 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 
     if (msg.signUp) {
-        chrome.tabs.create({ url: "https://useoneline.com/email_list" })
+        chrome.tabs.create({ url: "https://useoneline.com/email/pdf_form" })
         sendResponse({ signUp: true, status: 200 })
     }
-    return true;
+
+    if (msg.popupEmailList) {
+        chrome.tabs.create({ url: "https://useoneline.com/email/popup_form" })
+        sendResponse({ popupEmailList: true, status: 200 })
+    }
 })
 
 // fire tab change event
-// happens before the page is loaded, so it throws an error in the service worker
+// sending message before content scripts are loaded, so it throws an error. 
 chrome.tabs.onActivated.addListener((activeInfo) => {
     sendMsgToCS(activeInfo.tabId, { tabChanged: true }) 
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+
     if (changeInfo.status == "complete" && tab.url) {
 
         if (!tab.url.startsWith('chrome-extension://') && tab.url.endsWith('.pdf')) {
@@ -82,6 +87,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                     fetch(chrome.runtime.getURL('html/blobs/PDFsComingSoon.html')).then(data => data.text()).then(html => {
 
                         // add tailwind css to the page (this way we don't have to add it to the manifest.json, in turn adding it to every page like a content script. that causes css conflicts)
+                        // would like to note that this could cause issues in the future if more blobs are written in tailwind, bc out.css would contain all the tailwind classes for every blob
                         chrome.scripting.insertCSS({
                             target: { tabId: tab.id }, 
                             files: ['css/tailwind/out.css']
@@ -93,8 +99,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             })
         }
 
-        if (tab.url == "https://useoneline.com/email_list") {
-            sendMsgToCS(tab.id, { listenForSubscription: true })
+        // load JS to listen for subscription
+        if (tab.url.startsWith("https://useoneline.com/email")) {
+            chrome.scripting.executeScript({ 
+                target: { tabId: tab.id },
+                files: ['js/scripts/listenForSubscription.js']
+             })
         }
         // TODO: Handle modern web apps that don't reload the page when new content is loaded (think nextJS & react apps)
         // The issue is that the highlighted content gets lost when new content is loaded, and the line needs to be refreshed to highlight the start of the new content (issue stems from the fact that most code runs when page loads, but new webapps seldom reload page)
