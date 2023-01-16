@@ -5,6 +5,19 @@ export const sendMsgToCS = (message) => {
     });
 }
 
+// forwards message to sw.js
+export const forwardRequest = (message) => {
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(message, (response) => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(response);
+            }
+        })
+    })
+}
+
 export const getValueFromStorage = async (key) => {
     return new Promise((resolve) => {
 
