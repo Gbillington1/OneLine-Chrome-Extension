@@ -1,9 +1,9 @@
 /* define the css var and the default color */
 :root {
-    --active-color: #f8fd89; 
+    --oneline-active-color: #f8fd89; 
 }
 
 /* load the css var into the highlighted class */
 .highlighted {
-    background-color: var(--active-color) !important; 
+    background-color: var(--oneline-active-color) !important; 
 }
