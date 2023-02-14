@@ -30,7 +30,7 @@ const Paragraph = (paragraph) => {
         if (spansInParagraph === undefined) {
             Splitting({ target: paragraph, by: "paragraphSplitPlugin" })
             // copy all "spannified" words into array
-            spansInParagraph = $(paragraph).find("span.word, span.whitespace");
+            spansInParagraph = $(paragraph).find("span.word:not(style *), span.whitespace:not(style *)");
         }
 
     }
