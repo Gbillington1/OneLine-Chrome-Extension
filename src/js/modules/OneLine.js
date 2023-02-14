@@ -10,13 +10,15 @@ const OneLine = () => {
     let running = false;
 
     const start = () => {
-        if ($('span.word span.whitespace').length === 0) {
+        if ($("span.word:not(style *), span.whitespace:not(style *)").length === 0) {
             let result = paragraphController.populateRelevantParagraphArray();
             
             // if result is -1, then there are no paragraphs on the page
             // notify user
             if (result === -1) {
                 // ideally show a popup that allows users to input if this is a mistake, or if there is an issue with this page (sort of like a report bug button)
+                // and stop execution of the program
+                // maybe have this check in move line so the popup doesnt come up every time the page loads? Think about when you want the user to be shown the popup
             };
             
             paragraphController.createOneLineParagraph();
@@ -43,26 +45,31 @@ const OneLine = () => {
     }
 
     const moveLine = (direction) => {
-
-        // w or up arrow pressed
-        if (direction == 'up') {
-
-            paragraphController.moveLineUp();
-
-        // s or down arrow pressed
-        } else if (direction == 'down') {
-
-            paragraphController.moveLineDown();
-
+        
+        if ($("span.word:not(style *), span.whitespace:not(style *)").length === 0) {
+            // cleaner alert to user (html popup/injection)
+            alert("There is no text to move.");
+        } else {
+            switch (direction) {
+                case "up":
+                    paragraphController.moveLineUp();
+                    break;
+                case "down":
+                    paragraphController.moveLineDown();
+                    break;
+                default:
+                    console.warn(`Invalid direction "${direction}" provided.`);
+            }
+            
+            let highlighted = $('span.highlighted');
+            if (!paragraphController.isLineVisibleInViewport() && highlighted.length > 0) {
+                highlighted[0].scrollIntoView({ behavior: "smooth", block: "center" });
+            }
         }
-
-        // if line is not in viewport, scroll to line
-        // want to control scrolling from here, so that auto scroll kicks in when user gives an input, NOT when the page loads (causing unwanted scrolling)
-        if (!paragraphController.isLineVisibleInViewport()) {
-            $("span.highlighted")[0].scrollIntoView({ behavior: "smooth", block: "center" })
-        }
-
     }
+
+    
+    
 
     /*
     TODO: Should I add some type of TTS controller that can do all of this? Think about the best way to implement this feature.
