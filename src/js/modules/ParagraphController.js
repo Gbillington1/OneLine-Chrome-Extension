@@ -32,25 +32,18 @@ const ParagraphController = () => {
 
     // keeping it simple for now, just making sure paragraphs have text in them
     const isValidParagraph = (paragraph) => {
-        let elem = $(paragraph);
+        const $elem = $(paragraph);
+        const paragraphText = $elem.text();
 
-        // fail on any style or script tags
-        if (elem.find('style').length > 0 || elem.find('script').length > 0) {
-            return false
-        }
-        
-        let paragraphText = elem.text();
-        if (paragraphText && paragraphText.length > 1) {
-            return true;
-        } 
-
-        return false;
+        // reject any element that is in an aside, nav, header, footer, script or style tag
+        return !($elem.parents().is('aside, nav, header, footer, script, style')) && paragraphText && paragraphText.length > 1;
     }
 
     /* 
      - Handles logic to only add relevant paragraphs to paragraphs array
      - checks for <main> or <article> and searches in those for text elements, then checks if they are valid
     */
+   // maybe add a way to monitor changes to the main and artcile elements to check if content is changing
     const populateRelevantParagraphArray = () => {
 
         /* Get the element that contains all of the main content
@@ -87,16 +80,16 @@ const ParagraphController = () => {
         */
 
 
-        
+
         // rough psudo for getting more than paragraphs
         // look for <article> tag
-            // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
-            // parse all tags and attempt to split them into lines (or sentences for another mode)
+        // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
+        // parse all tags and attempt to split them into lines (or sentences for another mode)
         // if not found, search for <main> tag
-            // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
-            // parse all tags and attempt to split them into lines (or sentences for another mode)
+        // if found search for all <p>, <ul>, <ol>, <h1>, <h2>, <h3>, <h4>, <h5>, <h6> tags (maybe more??)
+        // parse all tags and attempt to split them into lines (or sentences for another mode)
         // if not found get all <p> tags
-            // apply current paragraph filter to the <p> tags
+        // apply current paragraph filter to the <p> tags
 
         let potentialParagraphs = [];
         relevantParagraphs = [];
@@ -116,13 +109,14 @@ const ParagraphController = () => {
 
         potentialParagraphs.each((i, elem) => {
 
-            
+
             // checks if the paragraph has text
             if (isValidParagraph(elem)) {
                 relevantParagraphs.push(elem);
             }
 
         })
+
         return 1;
     }
 
@@ -248,22 +242,22 @@ const ParagraphController = () => {
         const topOfViewport = $(window).scrollTop();
         const bottomOfViewport = $(window).scrollTop() + window.innerHeight;
         const fourthOfViewport = (bottomOfViewport - topOfViewport) / 4
-        const line = $("span.highlighted");        
+        const line = $("span.highlighted");
         const topOfLine = line.offset().top;
         const bottomOfLine = line.offset().top + line.outerHeight();
-    
+
         if (topOfLine < (topOfViewport + fourthOfViewport) || bottomOfLine > (bottomOfViewport - fourthOfViewport)) {
-            return false; 
+            return false;
         }
-    
-        return true; 
+
+        return true;
     }
 
     return {
 
         populateRelevantParagraphArray,
         createOneLineParagraph,
-        refreshLines, 
+        refreshLines,
         beginHighlighting,
         removeHighlightFromParagraphs,
         moveLineUp,
