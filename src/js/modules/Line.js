@@ -13,7 +13,6 @@ const Line = (spansInLine) => {
         // returns true if the string is a hex color, false otherwise
         const regex = new RegExp("^#(?:[0-9a-fA-F]{3}){1,2}$")
         let r, g, b; 
-
         // is hex
         if (regex.test(colorString)) {
             r = parseInt(colorString.slice(1, 3), 16)
@@ -39,7 +38,7 @@ const Line = (spansInLine) => {
 
     const highlightLine = () => {
 
-        let backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--active-color');
+        let backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--oneline-active-color');
         let optimalWordColor = calculateWordColorWithYIQ(backgroundColor);
         for (let i = 0; i < spansInLine.length; i++) {
             spansInLine[i].classList.add("highlighted");
