@@ -13,7 +13,7 @@ const getValueFromStorage = async (key) => {
 
 // updates the css varible that holds the line color,
 const updateLineColor = (color) => {
-    document.documentElement.style.setProperty("--active-color", color);
+    document.documentElement.style.setProperty("--oneline-active-color", color);
 };
 
 function forwardRequest(message) {
@@ -33,7 +33,7 @@ function forwardRequest(message) {
 async function handleTabChange(onOffSwitchState, activeColor, ol) {
     onOffSwitchState = await getValueFromStorage("onOffSwitchState");
 
-    if (onOffSwitchState === true) {
+    if (onOffSwitchState === true && !location.href.endsWith('.pdf')) {
         activeColor = await getValueFromStorage("activeColor");
         updateLineColor(activeColor);
         ol.start();
@@ -57,11 +57,11 @@ window.onload = async function () {
     let activeColor = await getValueFromStorage("activeColor");
 
     // don't start OneLine on pdf pages
-    if (!window.location.href.includes('.pdf')) {
+    if (!location.href.endsWith('.pdf')) {
         
         // start OneLine if switch is set to true
         // maybe add a check here to see if the current page is valid for OneLine
-        if (onOffSwitchState) {
+        if (onOffSwitchState === true) {
             updateLineColor(activeColor);
             ol.start();
         }
@@ -71,27 +71,27 @@ window.onload = async function () {
     // TODO: make sure all message passing is working with manifest v3
     chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
 
-        if (msg.tabChanged) {
+        if (msg.tabChanged === true) {
             handleTabChange(onOffSwitchState, activeColor, ol).then((result) => {
                 onOffSwitchState = result; // refresh the state of the switch on tab change
                 sendResponse({ tabChanged: msg.tabChanged, status: 200 })
             })
         }
 
-        if (msg.switchState) {
+        if (msg.switchState === true) {
             onOffSwitchState = msg.switchState
             updateLineColor(activeColor);
             ol.start()
             sendResponse({ switchState: msg.switchState, status: 200 })
         }
 
-        if (!msg.switchState) {
+        if (msg.switchState === false) {
             onOffSwitchState = msg.switchState
             ol.stop();
             sendResponse({ switchState: msg.switchState, status: 200 })
         }
 
-        if (msg.activeColor) {
+        if (msg.activeColor && msg.activeColor.includes('#')) {
             activeColor = msg.activeColor
             updateLineColor(activeColor);
             ol.start()
@@ -134,24 +134,26 @@ window.onload = async function () {
     })
 
     // resize lines
+    // this fires on pdf pages and throws an error because we don't have pdf support yet
     $(window).resize(() => {
-        if (onOffSwitchState) {
+        if (onOffSwitchState === true && !location.href.endsWith('.pdf')) {
             ol.resize();
         }
     });
 
+    // todo: add more methods for moving the line (scroll, mouse, clicking on lines/paragraphs)
     $(document).keydown(function (e) {
         // don't move line when user is editing text in <input> or <textarea> 
         if (!$(e.target).is("input, textarea") && onOffSwitchState) {
 
-            // w or up arrow pressed
-            if (e.keyCode == 87 || e.keyCode == 38) {
+            // up arrow pressed
+            if (e.keyCode == 38) {
 
                 e.preventDefault();
                 ol.moveLine("up");
 
-                // s or down arrow pressed
-            } else if (e.keyCode == 83 || e.keyCode == 40) {
+                // down arrow pressed
+            } else if (e.keyCode == 40) {
 
                 e.preventDefault();
                 ol.moveLine("down");
