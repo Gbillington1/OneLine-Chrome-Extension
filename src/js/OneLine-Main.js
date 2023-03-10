@@ -58,7 +58,7 @@ window.onload = async function () {
 
     // don't start OneLine on pdf pages
     if (!location.href.endsWith('.pdf')) {
-        
+
         // start OneLine if switch is set to true
         // maybe add a check here to see if the current page is valid for OneLine
         if (onOffSwitchState === true) {
@@ -72,9 +72,9 @@ window.onload = async function () {
     chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
 
         if (msg.tabChanged === true) {
+            sendResponse({ tabChanged: msg.tabChanged, status: 200 }) // do this first to avoid port does not exist error (async/promise issue in sw.js)
             handleTabChange(onOffSwitchState, activeColor, ol).then((result) => {
                 onOffSwitchState = result; // refresh the state of the switch on tab change
-                sendResponse({ tabChanged: msg.tabChanged, status: 200 })
             })
         }
 
