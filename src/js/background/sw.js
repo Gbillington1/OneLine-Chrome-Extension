@@ -23,15 +23,15 @@ function sendMsgToTab(id, message) {
 }
 
 async function sendMsgToCS(message, id = undefined) {
-    if (id === undefined) {
-        try {
+    try {
+        if (id === undefined) {
             const tab = await getCurrentTab();
             id = tab.id;
-        } catch(e) {
-            console.error(e)
         }
+        res = await sendMsgToTab(id, message)
+    } catch(e) {
+        console.error(e)
     }
-    return sendMsgToTab(id, message)
 }
 
 // load default states to storage 
