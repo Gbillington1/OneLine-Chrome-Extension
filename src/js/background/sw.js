@@ -24,34 +24,15 @@ function sendMsgToTab(id, message) {
 
 async function sendMsgToCS(message, id = undefined) {
     if (id === undefined) {
-        const tab = await getCurrentTab();
-        id = tab.id;
+        try {
+            const tab = await getCurrentTab();
+            id = tab.id;
+        } catch(e) {
+            console.error(e)
+        }
     }
-    return sendMsgToTab(id, message);
+    return sendMsgToTab(id, message)
 }
-
-
-// message: { key: value }
-// function sendMsgToCS(message, id = undefined) {
-//     // jank ass if statement
-//     if (id == undefined) {
-//         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-//             id = tabs[0].id;
-//             chrome.tabs.sendMessage(id, message, function (response) {
-//                 if (chrome.runtime.lastError) {
-//                     console.error(chrome.runtime.lastError.message)
-//                 }
-//             });
-//         });
-//     } else {
-//         chrome.tabs.sendMessage(id, message, function (response) {
-//             if (chrome.runtime.lastError) {
-//                 console.error(chrome.runtime.lastError.message)
-//             }
-//         });
-//     }
-
-// }
 
 // load default states to storage 
 chrome.runtime.onInstalled.addListener(function (details) {
