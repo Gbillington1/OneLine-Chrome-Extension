@@ -44,7 +44,9 @@ chrome.runtime.onInstalled.addListener(function (details) {
             let onOffSwitchState = result.onOffSwitchState;
 
             if (onOffSwitchState == undefined) {
-                chrome.storage.sync.set({ "onOffSwitchState": true }, sendMsgToCS({ switchState: true }));
+                chrome.storage.sync.set({ "onOffSwitchState": true }, function() {
+                    sendMsgToCS({ switchState: true })
+                });
             }
         })
 
@@ -54,14 +56,16 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
             if (activeColor == undefined) {
                 activeColor = "#f8fd89";
-                chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: activeColor }));
+                chrome.storage.sync.set({ "activeColor": activeColor }, function() {
+                    sendMsgToCS({ activeColor: activeColor })
+                });
             }
         })
 
-        // set the email sign up to false
-        chrome.storage.sync.get("emailSignUp", function (result) {
-            if (result.emailSignUp == undefined) {
-                chrome.storage.sync.set({ "emailSignUp": false })
+        // set initially to true
+        chrome.storage.sync.get("showPDFPopup", function (result) {
+            if (result.showPDFPopup == undefined) {
+                chrome.storage.sync.set({ "showPDFPopup": true })
             }
         })
 
@@ -77,14 +81,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 
     if (msg.signUp) {
-        chrome.tabs.create({ url: "https://useoneline.com/email/pdf_form" })
+        chrome.tabs.create({ url: "https://useoneline.com/newsletter/signup?source=pdf" })
         sendResponse({ signUp: true, status: 200 })
     }
 
     if (msg.popupEmailList) {
-        chrome.tabs.create({ url: "https://useoneline.com/email/popup_form" })
+        chrome.tabs.create({ url: "https://useoneline.com/newsletter/signup?source=popup" })
         sendResponse({ popupEmailList: true, status: 200 })
     }
+
+    if (!msg.showPDFPopup) {
+        chrome.storage.sync.set({ "showPDFPopup": false })
+        sendResponse({ showPDFPopup: false, status: 200 })
+    }
+
 })
 
 // fire tab change event
@@ -98,9 +108,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (changeInfo.status == "complete" && tab.url) {
 
         if (!tab.url.startsWith('chrome-extension://') && tab.url.endsWith('.pdf')) {
-            chrome.storage.sync.get('emailSignUp').then((res) => {
-                console.log(`emailSignUp: ${res.emailSignUp}`)
-                if (!res.emailSignUp) {
+
+            chrome.storage.sync.get('showPDFPopup').then((res) => {
+
+                if (res.showPDFPopup) {
                     fetch(chrome.runtime.getURL('html/blobs/PDFsComingSoon.html')).then(data => data.text()).then(html => {
 
                         chrome.scripting.insertCSS({
@@ -115,12 +126,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         }
 
         // load JS to listen for subscription
-        if (tab.url.startsWith("https://useoneline.com/email")) {
-            chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                files: ['js/scripts/listenForSubscription.js']
-            })
-        }
+        // if (tab.url.startsWith("https://useoneline.com/email")) {
+        //     chrome.scripting.executeScript({
+        //         target: { tabId: tab.id },
+        //         files: ['js/scripts/listenForSubscription.js']
+        //     })
+        // }
         // TODO: Handle modern web apps that don't reload the page when new content is loaded (think nextJS & react apps)
         // The issue is that the highlighted content gets lost when new content is loaded, and the line needs to be refreshed to highlight the start of the new content (issue stems from the fact that most code runs when page loads, but new webapps seldom reload page)
         // This should be able to be fixed with a MutationObserver object, listening for changes in the dom, at every change (or some other condition), search the page for more paragraphs and add them into the paragraphs array (will be a tough one to figure out as you have to maintain order of the paragraphs in the array)

@@ -102,12 +102,18 @@ window.onload = async function () {
         if (msg.html) {
             ol.stop()
             document.body.insertAdjacentHTML('beforeend', msg.html);
-            // forward request to background script to send user to mailing list sign up (and mark that they signed up)
+            // forward request to background script to send user to mailing list sign up
             $("#ol-signUp").click(() => forwardRequest({ signUp: true }))
 
             // close the coming soon modal
             $("#ol-dismiss").click(() => {
                 $('#oneline-pdf-coming-soon').remove();
+            })
+
+            // close the coming soon modal and never show it again
+            $("#ol-dismiss-forever").click(() => {
+                $('#oneline-pdf-coming-soon').remove();
+                forwardRequest({ showPDFPopup: false })
             })
 
             // $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: window.location.href }));
