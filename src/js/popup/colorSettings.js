@@ -4,7 +4,8 @@ import {
     goToDefaultPage,
     loadFavoritesFromStorage,
     saveFavoritesToStorage,
-    calculateWordColorWithYIQ
+    calculateWordColorWithYIQ,
+    rgba2hex
 } from './util-functions.js';
 
 
@@ -60,7 +61,7 @@ $(document).ready(async () => {
     $(".recommendedBtn, .favoritesColorBtn").click(function () {
 
         activeColor = $(this).css("background-color");
-        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: activeColor }));
+        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: rgba2hex(activeColor) }));
         colorPicker.color.set(activeColor);
         $("#active-color").css("background-color", activeColor);
 

@@ -123,6 +123,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         }
         // TODO: Handle modern web apps that don't reload the page when new content is loaded (think nextJS & react apps)
         // The issue is that the highlighted content gets lost when new content is loaded, and the line needs to be refreshed to highlight the start of the new content (issue stems from the fact that most code runs when page loads, but new webapps seldom reload page)
+        // This should be able to be fixed with a MutationObserver object, listening for changes in the dom, at every change (or some other condition), search the page for more paragraphs and add them into the paragraphs array (will be a tough one to figure out as you have to maintain order of the paragraphs in the array)
 
     }
 });
