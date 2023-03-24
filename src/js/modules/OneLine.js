@@ -22,11 +22,10 @@ const OneLine = () => {
             };
             
             paragraphController.createOneLineParagraph();
-            
-            running = true;
-            
+        
         }
 
+        running = true;
         paragraphController.beginHighlighting();
 
     }

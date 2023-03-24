@@ -80,6 +80,7 @@ window.onload = async function () {
 
         if (msg.switchState === true) {
             onOffSwitchState = msg.switchState
+            activeColor = await getValueFromStorage("activeColor");
             updateLineColor(activeColor);
             ol.start()
             sendResponse({ switchState: msg.switchState, status: 200 })
@@ -94,7 +95,9 @@ window.onload = async function () {
         if (msg.activeColor && msg.activeColor.includes('#')) {
             activeColor = msg.activeColor
             updateLineColor(activeColor);
-            ol.start()
+            if (onOffSwitchState === true) {
+                ol.start()
+            }
             sendResponse({ activeColor: msg.activeColor, status: 200 })
         }
 

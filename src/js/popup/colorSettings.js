@@ -40,8 +40,8 @@ $(document).ready(async () => {
     colorPicker.on("input:end", (color) => {
 
         // update the color in the chrome sync storage
-        chrome.storage.sync.set({ "activeColor": color.hexString }, sendMsgToCS({ activeColor: color.hexString }));
         activeColor = color.hexString;
+        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: activeColor }));
 
     });
 
