@@ -123,6 +123,14 @@ window.onload = async function () {
             sendResponse({ htmlInserted: true, status: 200 })
         }
 
+        // load popup that prompts user to reload pages to start OneLine
+        if (msg.installPopup) {
+            document.body.insertAdjacentHTML('beforeend', msg.installPopup);
+            $('#ol-reload-btn').click(() => forwardRequest({ reload: true }));
+            $('#ol-close-btn').click(() => $('#ol-reload-page-prompt').remove());
+            sendResponse({ installPopup: true, status: 200 })
+        }
+
         /* 
         TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here
         

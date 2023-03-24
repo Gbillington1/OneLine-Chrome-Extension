@@ -29,7 +29,7 @@ async function sendMsgToCS(message, id = undefined) {
             id = tab.id;
         }
         res = await sendMsgToTab(id, message)
-    } catch(e) {
+    } catch (e) {
         console.error(e)
     }
 }
@@ -37,40 +37,46 @@ async function sendMsgToCS(message, id = undefined) {
 // load default states to storage 
 chrome.runtime.onInstalled.addListener(function (details) {
 
+    // get the swtich state, set it to true if it's not set, tell CS to start oneline
+    chrome.storage.sync.get("onOffSwitchState", function (result) {
+        let onOffSwitchState = result.onOffSwitchState;
+
+        if (onOffSwitchState == undefined) {
+            chrome.storage.sync.set({ "onOffSwitchState": true }, function () {
+                sendMsgToCS({ switchState: true })
+            });
+        }
+    })
+
+    // get the active color, set it to default if there isn't one in storage, tell CS to change the color
+    chrome.storage.sync.get("activeColor", function (result) {
+        let activeColor = result.activeColor;
+
+        if (activeColor == undefined) {
+            activeColor = "#f8fd89";
+            chrome.storage.sync.set({ "activeColor": activeColor }, function () {
+                sendMsgToCS({ activeColor: activeColor })
+            });
+        }
+    })
+
+    // set initially to true
+    chrome.storage.sync.get("showPDFPopup", function (result) {
+        if (result.showPDFPopup == undefined) {
+            chrome.storage.sync.set({ "showPDFPopup": true })
+        }
+    })
+
     if (details.reason == "install") {
-
-        // get the swtich state, set it to true if it's not set, tell CS to start oneline
-        chrome.storage.sync.get("onOffSwitchState", function (result) {
-            let onOffSwitchState = result.onOffSwitchState;
-
-            if (onOffSwitchState == undefined) {
-                chrome.storage.sync.set({ "onOffSwitchState": true }, function() {
-                    sendMsgToCS({ switchState: true })
-                });
-            }
-        })
-
-        // get the active color, set it to default if there isn't one in storage, tell CS to change the color
-        chrome.storage.sync.get("activeColor", function (result) {
-            let activeColor = result.activeColor;
-
-            if (activeColor == undefined) {
-                activeColor = "#f8fd89";
-                chrome.storage.sync.set({ "activeColor": activeColor }, function() {
-                    sendMsgToCS({ activeColor: activeColor })
-                });
-            }
-        })
-
-        // set initially to true
-        chrome.storage.sync.get("showPDFPopup", function (result) {
-            if (result.showPDFPopup == undefined) {
-                chrome.storage.sync.set({ "showPDFPopup": true })
-            }
-        })
-
+        chrome.tabs.create({ url: "https://useoneline.com/thankyou/", active: true }, function (tab) {
+            // save this specific ID so we can detect in in the onUpdated listener
+            // avoids firing the onUpdated listener when the user goes to thank you on their own (ID will be different)
+            chrome.storage.local.set({ "thankyouTabId": tab.id })
+        });
     }
-
+    else if (details.reason == "update") {
+        chrome.tabs.create({ url: "https://useoneline.com/updates/v2" })
+    }
 })
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -95,6 +101,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ showPDFPopup: false, status: 200 })
     }
 
+    // reload all pages
+    if (msg.reload) {
+        chrome.tabs.query({ status: 'complete' }, (tabs) => {
+            tabs.forEach((tab) => {
+                if (tab.url) {
+                    chrome.tabs.update(tab.id, { url: tab.url });
+                }
+            });
+        });
+    }
+
 })
 
 // fire tab change event
@@ -106,6 +123,22 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     if (changeInfo.status == "complete" && tab.url) {
+
+        // check if we're on the thank you page => show the reload popup
+        chrome.storage.local.get("thankyouTabId", function (data) {
+            if (data.thankyouTabId == tabId) {
+                fetch(chrome.runtime.getURL('html/blobs/pageReloadPrompt.html')).then(data => data.text()).then(html => {
+
+                    chrome.scripting.insertCSS({
+                        target: { tabId: tab.id },
+                        files: ['css/tailwind/out.css']
+                    })
+                    sendMsgToCS({ "installPopup": html }, tab.id)
+                    chrome.storage.local.set({ "thankyouTabId": null }) // make sure we don't fire this popup again
+                });
+
+            }
+        })
 
         if (!tab.url.startsWith('chrome-extension://') && tab.url.endsWith('.pdf')) {
 

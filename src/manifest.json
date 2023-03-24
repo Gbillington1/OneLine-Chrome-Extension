@@ -1,12 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "OneLine v2",
+    "name": "OneLine",
     "version": "2.0",
-    "description": "Strengthen your reading OneLine at a time.",    
+    "description": "Focus on the words that matter.",    
     "permissions": [
         "activeTab",
         "storage",
-        "scripting"
+        "scripting",
+        "notifications"
     ],
     "host_permissions": [
         "*://*/*"
@@ -37,7 +38,7 @@
         "js/OneLine-Main.js"
     ],
     "css": [
-        "css/style.css"
+        "./css/style.css"
     ],
     "matches": [
         "http://*/*", 
