@@ -10,28 +10,20 @@ function getCurrentTab() {
     });
 }
 
-function sendMsgToTab(id, message) {
-    return new Promise((resolve, reject) => {
+async function sendMsgToCS(message, id = undefined) {
+    if (id === undefined) {
+        const tab = await getCurrentTab();
+        id = tab.id;
+    }
+    return new Promise((resolve,reject) => {
         chrome.tabs.sendMessage(id, message, function (response) {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else {
                 resolve(response);
             }
-        });
-    });
-}
-
-async function sendMsgToCS(message, id = undefined) {
-    try {
-        if (id === undefined) {
-            const tab = await getCurrentTab();
-            id = tab.id;
-        }
-        res = await sendMsgToTab(id, message)
-    } catch (e) {
-        console.error(e)
-    }
+        })
+    })
 }
 
 // load default states to storage 
@@ -43,7 +35,9 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
         if (onOffSwitchState == undefined) {
             chrome.storage.sync.set({ "onOffSwitchState": true }, function () {
-                sendMsgToCS({ switchState: true })
+                sendMsgToCS({ onOffSwitchState: true }).then((response) => {
+                    // do something with response
+                }).catch((err) => { console.error(err) })
             });
         }
     })
@@ -55,7 +49,9 @@ chrome.runtime.onInstalled.addListener(function (details) {
         if (activeColor == undefined) {
             activeColor = "#f8fd89";
             chrome.storage.sync.set({ "activeColor": activeColor }, function () {
-                sendMsgToCS({ activeColor: activeColor })
+                sendMsgToCS({ activeColor: activeColor }).then((response) => {
+                    // do something with response
+                }).catch((err) => { console.error(err) })
             });
         }
     })
@@ -74,12 +70,27 @@ chrome.runtime.onInstalled.addListener(function (details) {
             chrome.storage.local.set({ "thankyouTabId": tab.id })
         });
     }
-    else if (details.reason == "update") {
-        chrome.tabs.create({ url: "https://useoneline.com/updates/v2" })
-    }
+    // else if (details.reason == "update") {
+    //     chrome.tabs.create({ url: "https://useoneline.com/updates/v2" })
+    // }
 })
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+
+    // fetch user from flask app, null if not authenticated
+    if (msg.getUser) {
+        fetch('http://127.0.0.1:5000/userinfo').then(res => res.json()).then(data => {
+            if (data.user) {
+                console.log(data.user)
+                // chrome.storage.sync.set({ "user": data.user })
+            } else {
+                console.log("no user")
+                // chrome.storage.sync.set({ "user": null })
+                // user needs to log in to use app
+            }
+        })
+    }
+
     // load pdf reader
     if (msg.pdf) {
         chrome.tabs.create({ url: chrome.runtime.getURL(`../../html/pdf.html?pdf_url=${msg.pdf}`) })
@@ -110,14 +121,36 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
                 }
             });
         });
+        sendResponse({ reload: true, status: 200 })
     }
 
 })
 
-// fire tab change event
-// sending message before content scripts are loaded, so it throws an error. 
-chrome.tabs.onActivated.addListener((activeInfo) => {
-    sendMsgToCS({ tabChanged: true }, activeInfo.tabId)
+// Tab change: Fire when tab changes, make sure to wait for content script to load before sending message
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+    tab = await chrome.tabs.get(activeInfo.tabId)
+    // this fires when the user goes to a tab that was already loaded
+    if (tab.url) {
+        sendMsgToCS({ tabChanged: true }, activeInfo.tabId)
+            .then(res => {
+                // do something with res
+            })
+            .catch(err => console.error(err))
+    // this fires when the user goes to a tab that hasn't been loaded yet (no URL set on tab)
+    } else {
+        // wait for content script to send loaded message
+        chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
+            if (msg.pageLoaded === true) {
+                sendMsgToCS({ tabChanged: true }, activeInfo.tabId)
+                    .then(res => {
+                        // do something with res
+                    }).catch(err => {
+                        console.error(err)
+                    })
+                sendResponse({ pageLoaded: true, status: 200 })
+            }
+        })
+    }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -133,7 +166,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                         target: { tabId: tab.id },
                         files: ['css/tailwind/out.css']
                     })
-                    sendMsgToCS({ "installPopup": html }, tab.id)
+                    sendMsgToCS({ "installPopup": html }, tab.id).then((res) => {
+                        // do something with res
+                    }).catch((err) => { console.error(err) })
                     chrome.storage.local.set({ "thankyouTabId": null }) // make sure we don't fire this popup again
                 });
 
@@ -151,7 +186,9 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                             target: { tabId: tab.id },
                             files: ['css/tailwind/out.css']
                         })
-                        sendMsgToCS({ html: html }, tab.id)
+                        sendMsgToCS({ html: html }, tab.id).then((res) => {
+                            // do something with res
+                        }).catch((err) => { console.error(err) })
 
                     });
                 }
