@@ -6,7 +6,8 @@
     "permissions": [
         "activeTab",
         "storage",
-        "scripting"
+        "scripting",
+        "cookies"
     ],
     "host_permissions": [
         "*://*/*"
@@ -29,6 +30,7 @@
     "content_scripts":[{
     "js": [
         "js/libraries/splitting.min.js", 
+        "js/libraries/textVide.js", 
         "js/libraries/jquery-3.4.1.min.js",
         "js/modules/Line.js",
         "js/modules/Paragraph.js",
