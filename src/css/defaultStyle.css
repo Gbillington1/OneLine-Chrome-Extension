@@ -168,17 +168,17 @@ label:active:after {
 }
 
 /* switch alignment and positioning */
-#switchWrapper {
+.switchWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-#switchHeaderContainer {
+.switchHeaderContainer {
   padding-right: 4px;
 }
 
-#switchBodyContainer {
+.switchBodyContainer {
   padding-left: 4px;
 }
 
