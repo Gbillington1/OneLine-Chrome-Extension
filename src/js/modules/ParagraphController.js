@@ -253,6 +253,47 @@ const ParagraphController = () => {
         return true;
     }
 
+    const toggleAbionic = () => {
+        // loop through all paragraphs that are relevant and convert them to abionic
+        // if the paragraph is already abionic, do nothing
+        for (let i = 0; i < relevantParagraphs.length; i++) {
+            let p = $(relevantParagraphs[i]);
+
+            if (p.hasClass("abionic") === false) {
+                p.addClass("abionic");
+                p.html(textVide.textVide(p.html(), { sep: ['<b data-ol-abionic="true">', '</b>']}, { ignoreHtmlTag: true }))
+
+            } else if (p.hasClass("abionic") === true) {
+
+                // remove all <b> tags that have -data-ol-abionic="true" from p
+                p.find('[data-ol-abionic="true"]').each((i, elem) => {
+                    // preserve text
+                    $(elem).replaceWith($(elem).text());
+                })
+
+                p.removeClass("abionic");
+            }
+        }
+    } 
+
+    const getRelevantParagraphCount = () => {
+        return relevantParagraphs.length;
+    }
+
+    const clearParagraphs = () => {
+        // loop through all split paragraphs
+        for (let i = 0; i < paragraphs.length; i++) {
+            // remove all spans
+            paragraphs[i].clear();
+        }
+        // clear paragraphs array, clearning from memory
+        paragraphs = [];
+        relevantParagraphs = [];
+        currentParagraphTracker = 0;
+        mostRecentParagraphTracker = 0;
+        currentLineTracker = 0;
+    }
+
     return {
 
         populateRelevantParagraphArray,
@@ -263,7 +304,10 @@ const ParagraphController = () => {
         moveLineUp,
         moveLineDown,
         resetController,
-        isLineVisibleInViewport
+        isLineVisibleInViewport,
+        toggleAbionic,
+        getRelevantParagraphCount,
+        clearParagraphs
 
     }
 

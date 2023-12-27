@@ -28,9 +28,13 @@ const Paragraph = (paragraph) => {
     const splitIntoSpans = () => {
 
         if (spansInParagraph === undefined) {
+            console.log(paragraph)
             Splitting({ target: paragraph, by: "paragraphSplitPlugin" })
+            console.log(paragraph)
+        
             // copy all "spannified" words into array
             spansInParagraph = $(paragraph).find("span.word:not(style *), span.whitespace:not(style *)");
+            console.log(spansInParagraph)
         }
 
     }
@@ -44,6 +48,9 @@ const Paragraph = (paragraph) => {
         linesInParagraph = [];
         currentLineIdx = 0;
 
+        // if turning abionic off, remove all spans and resplit into spans (removing <b> tags messes with span formatting)
+        spansInParagraph = $(paragraph).find("span.word:not(style *), span.whitespace:not(style *)");
+
         populateDifferencesArray();
 
         populateLineArray();
@@ -56,7 +63,7 @@ const Paragraph = (paragraph) => {
      - topOfSpanDifferences starts at idx 1 because the loop needs to start at 1 to get the offset top of the previous span (can't get previous element when at idx 0), and the arr needs to be the same length as spansInParagraph
     */
     const populateDifferencesArray = () => {
-
+        
         for (let i = 1; i < spansInParagraph.length; i++) {
 
             let currentSpanOffsetTop = $(spansInParagraph[i]).offset().top;
@@ -124,6 +131,48 @@ const Paragraph = (paragraph) => {
         return linesInParagraph.length - 1;
     }
 
+    const clear = () => {
+
+        // clear paragraph classes and styles from splitting plugin
+        // $(paragraph).removeClass("paragraphSplitPlugin splitting")
+        // if ($(paragraph).classList === undefined || $(paragraph).classList.length === 0) {
+        //     $(paragraph).removeAttr("class");
+        // }
+
+        // let styleString = $(paragraph).attr("style");
+        // let preIndex = styleString.indexOf("--word-total:");
+        // let searchIndex = preIndex + styleString.substring(preIndex).indexOf(";");
+        // let newStyleString = styleString.substring(0, preIndex) + styleString.substring(searchIndex + 1);
+        // $(paragraph).attr("style", newStyleString);
+        // if (newStyleString.length > 0) {
+        // } else {
+        //     $(paragraph).removeAttr("style");
+        // }
+
+        // remove all spans
+        for (let i = 0; i < spansInParagraph.length; i++) { 
+            let s = $(spansInParagraph[i]);           
+            s.replaceWith(s.text());
+        }
+
+        // merge all text nodes into one
+        let mergedText = "";
+        paragraph.childNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+                mergedText += node.textContent;
+            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                mergedText += node.outerHTML;
+            }
+        })
+        paragraph.innerHTML = mergedText;
+
+        // reset variables
+        spansInParagraph = undefined;
+        topOfSpanDifferences = [0];
+        linesInParagraph = [];
+        currentLineIdx = 0;
+    }
+
     // export functions that we want available
     return {
 
@@ -134,7 +183,8 @@ const Paragraph = (paragraph) => {
         calculateLines,
         updateHighlight,
         removeAllHighlights,
-        getNumberOfLines
+        getNumberOfLines,
+        clear
 
     }
 

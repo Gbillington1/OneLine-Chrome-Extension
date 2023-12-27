@@ -29,8 +29,8 @@ function forwardRequest(message) {
 }
 
 // async function to update line color & start oneline if switch is set to true, else stops oneline 
-// returns the current state of the switch so it can be set in the message event listener 
 async function handleTabChange(onOffSwitchState, activeColor, ol) {
+// returns the current state of the switch so it can be set in the message event listener 
     onOffSwitchState = await getValueFromStorage("onOffSwitchState");
 
     if (onOffSwitchState === true && !location.href.endsWith('.pdf')) {
@@ -51,19 +51,30 @@ async function handleTabChange(onOffSwitchState, activeColor, ol) {
 // OPTIONAL: selection feature for p, headers, code, lists, etc
 window.onload = async function () {
 
+    // forwardRequest({ getUser: true })
+
     // create the OneLine instance
-    let ol = OneLine()
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+    let ol = OneLine(onOffSwitchState)
+    let abionicSwtichState = await getValueFromStorage("abionicSwitchState");
     let activeColor = await getValueFromStorage("activeColor");
 
     // don't start OneLine on pdf pages
     if (!location.href.endsWith('.pdf')) {
 
         // start OneLine if switch is set to true
-        // maybe add a check here to see if the current page is valid for OneLine
+        // maybe add a check here to see if the current page is valid for OneLin
+
         if (onOffSwitchState === true) {
             updateLineColor(activeColor);
             ol.start();
+        }
+
+        if (abionicSwtichState === true) {
+            ol.toggleAbionic();
+            if (onOffSwitchState === true) {
+                ol.resize();
+            }
         }
     }
 
@@ -71,25 +82,61 @@ window.onload = async function () {
     // TODO: make sure all message passing is working with manifest v3
     chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
 
+        if (chrome.runtime.lastError) {
+            console.log(chrome.runtime.lastError);
+        }
+
         if (msg.tabChanged === true) {
-            sendResponse({ tabChanged: msg.tabChanged, status: 200 }) // do this first to avoid port does not exist error (async/promise issue in sw.js)
             handleTabChange(onOffSwitchState, activeColor, ol).then((result) => {
                 onOffSwitchState = result; // refresh the state of the switch on tab change
             })
+            sendResponse({ complete: true, status: 200 }) // this line can't be in the .then() block or else it wont send a reponse back to the service worker
         }
 
-        if (msg.switchState === true) {
-            onOffSwitchState = msg.switchState
+        if (msg.onOffSwitchState === true) {
+            onOffSwitchState = msg.onOffSwitchState
             activeColor = await getValueFromStorage("activeColor");
             updateLineColor(activeColor);
             ol.start()
-            sendResponse({ switchState: msg.switchState, status: 200 })
+            sendResponse({ complete: true, status: 200 })
         }
 
-        if (msg.switchState === false) {
-            onOffSwitchState = msg.switchState
+        if (msg.onOffSwitchState === false) {
+            onOffSwitchState = msg.onOffSwitchState
             ol.stop();
-            sendResponse({ switchState: msg.switchState, status: 200 })
+            sendResponse({ complete: true, status: 200 })
+        }
+
+        if (msg.abionicSwitchState === true) {
+            abionicSwtichState = msg.abionicSwitchState
+            onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+            if (onOffSwitchState === true) {
+                activeColor = await getValueFromStorage("activeColor");
+                updateLineColor(activeColor)
+                ol.clearPage();
+                ol.start()
+                ol.toggleAbionic()
+                ol.resize()
+            } else if (onOffSwitchState === false) {
+                ol.toggleAbionic()
+            }
+            sendResponse({ complete: true, status: 200 })
+        }
+
+        if (msg.abionicSwitchState === false) {
+            abionicSwtichState = msg.abionicSwitchState
+            onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+            if (onOffSwitchState === true) {
+                activeColor = await getValueFromStorage("activeColor");
+                updateLineColor(activeColor)
+                ol.clearPage();
+                ol.toggleAbionic()
+                ol.start()
+                // ol.resize()
+            } else if (onOffSwitchState === false) {
+                ol.toggleAbionic()
+            }
+            sendResponse({ complete: true, status: 200 })
         }
 
         if (msg.activeColor && msg.activeColor.includes('#')) {
@@ -98,7 +145,7 @@ window.onload = async function () {
             if (onOffSwitchState === true) {
                 ol.start()
             }
-            sendResponse({ activeColor: msg.activeColor, status: 200 })
+            sendResponse({ complete: true, status: 200 })
         }
 
         // insert pdf coming soon html into default chrome pdf viewer
@@ -120,7 +167,7 @@ window.onload = async function () {
             })
 
             // $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: window.location.href }));
-            sendResponse({ htmlInserted: true, status: 200 })
+            sendResponse({ complete: true, status: 200 })
         }
 
         // load popup that prompts user to reload pages to start OneLine
@@ -128,7 +175,7 @@ window.onload = async function () {
             document.body.insertAdjacentHTML('beforeend', msg.installPopup);
             $('#ol-reload-btn').click(() => forwardRequest({ reload: true }));
             $('#ol-close-btn').click(() => $('#ol-reload-page-prompt').remove());
-            sendResponse({ installPopup: true, status: 200 })
+            sendResponse({ complete: true, status: 200 })
         }
 
         /* 
@@ -179,4 +226,6 @@ window.onload = async function () {
 
         }
     });
+
+    forwardRequest({ pageLoaded: true })
 }

@@ -1,10 +1,11 @@
-import { sendMsgToCS, forwardRequest, loadActivePage, loadOnOffSwitch } from './util-functions.js';
+import { sendMsgToCS, forwardRequest, loadActivePage, loadOnOffSwitch, loadAbionicSwitch } from './util-functions.js';
 
 loadActivePage();
 
 $(document).ready(() => {
 
     loadOnOffSwitch();
+    loadAbionicSwitch();
 
     $('#colorSettings').click(() => {
 
@@ -23,8 +24,18 @@ $(document).ready(() => {
 
         const stateOfSwitch = e.currentTarget.checked; 
         chrome.storage.sync.set({ "onOffSwitchState": stateOfSwitch })
-        sendMsgToCS({ switchState: stateOfSwitch })
+        sendMsgToCS({ onOffSwitchState: stateOfSwitch })
 
     })
+
+    $('#abionicSwitch').change((e) => {
+
+        const stateOfSwitch = e.currentTarget.checked; 
+        chrome.storage.sync.set({ "abionicSwitchState": stateOfSwitch })
+        sendMsgToCS({ abionicSwitchState: stateOfSwitch })
+
+    })
+
+    $
 
 })
