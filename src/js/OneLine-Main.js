@@ -76,6 +76,11 @@ window.onload = async function () {
                 ol.resize();
             }
         }
+    } else {
+        openPDFView = confirm("Open PDF in OneLine?")
+        if (openPDFView) {
+            forwardRequest({ pdf: window.location.href })
+        }
     }
 
     // listen for changes in the switch state
