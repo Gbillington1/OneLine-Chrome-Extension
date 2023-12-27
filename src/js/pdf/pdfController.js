@@ -19,10 +19,84 @@ let pdfDoc = null,
     container = document.getElementById('content')
 
 function startOneLinePDF() {
-    $('.textLayer span:visible').each(function(i, elem) {
+
+    let lineIdToSpans = buildSpansMap($('span'))
+
+    let prevTarget = null;
+    $("#content").mousemove(function(e) {
+
+        let target = e.target
+        // check for line id on target
+        let lineId = target.getAttribute('ol-line-id')
+
+        if (lineId === null) {
+            return;
+        }
+
+        // use map to get spans from line id
+        let spans = lineIdToSpans.get(lineId)
+        // background red
+        spans.forEach(span => {
+            span.style.backgroundColor = "red"
+        })
+
+        // remove background red from prevTarget
+        if (prevTarget !== null && prevTarget.getAttribute('ol-line-id') !== lineId) {
+            let prevSpans = lineIdToSpans.get(prevTarget.getAttribute('ol-line-id'))
+            prevSpans.forEach(span => {
+                span.style.backgroundColor = ""
+            })
+        }
+
+        prevTarget = target
+
     })
 
 }
+
+/**
+ * Builds a map to match each span with a line id that corresponds to the line it is on.
+ * This gives us a way to get all spans on a line given a specific line ID
+ * @param {Array[HTMLElement]} spans, array of all spans on the page
+ * @returns {Map} map of line ids to spans
+ */
+function buildSpansMap(spans) {
+    let map = new Map();
+    let currLine = [];
+    let prevTop = null;
+    let currTop = 0;
+
+    // loop through all spans and group them by line
+    $(spans).each(function(i, span) {
+
+        // if spans on same line, assign id and add to currLine
+        currTop = $(span).css('top').slice(0, -2);
+    
+        if (currTop === prevTop) {
+            $(span).attr('ol-line-id', "ol-" + map.size)
+            currLine.push(span);
+
+        // if spans on different line, add currLine to map and start new line
+        } else {
+
+            if (currLine.length > 0)
+                map.set("ol-" + map.size, currLine);
+
+            currLine = [];
+            $(span).attr('ol-line-id', "ol-" + map.size)
+            currLine.push(span);
+        }
+        prevTop = currTop;
+    });
+
+    // Add the last line to the map
+    if (currLine.length > 0) {
+        map.set("ol-" + map.size, currLine);
+    }
+
+    return map;
+}
+
 
 function handlePages(page) {
     // get viewport of page at given scale
@@ -73,12 +147,12 @@ function handlePages(page) {
             textDivs: []
         });
     }).then(function () {
-        let child = $(textLayer).find('span')[2]
-        child.style.backgroundColor = "red";
 
         // fires when the after the last page is rendered
         if (pageContainer.id.includes(numPages)) {
+            console.log("done rendering")
             startOneLinePDF();
+
         }
     })
 
