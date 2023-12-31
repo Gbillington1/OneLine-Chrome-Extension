@@ -6,7 +6,7 @@
 import $ from 'jquery';
 import Line from './Line';
 import Splitting from "splitting";
-import { splitText } from '../utils/splittingUtils';
+import { splitText } from '../utils/splitting';
 
 const Paragraph = function Paragraph(paragraph) {
 

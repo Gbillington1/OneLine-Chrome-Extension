@@ -1,4 +1,4 @@
-import {sendMsgToCS} from "./globalUtils";
+import {sendMsgToCS} from "./global";
 
 /**
  * Initializes the onOffSwitchState variable in sync storage when the extension is installed

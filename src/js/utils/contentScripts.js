@@ -1,4 +1,4 @@
-import { getValueFromStorage } from "./globalUtils";
+import { getValueFromStorage } from "./global";
 
 /**
  * updates the global css style with the new color

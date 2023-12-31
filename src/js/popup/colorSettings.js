@@ -4,8 +4,8 @@ import {
     saveFavoritesToStorage,
     calculateWordColorWithYIQ,
     rgba2hex
-} from './../utils/popupUtils';
-import { getValueFromStorage, sendMsgToCS } from './../utils/globalUtils';
+} from '../utils/popup';
+import { getValueFromStorage, sendMsgToCS } from '../utils/global';
 import iro from '@jaames/iro';
 import $ from 'jquery';
 

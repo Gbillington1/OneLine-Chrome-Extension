@@ -1,6 +1,6 @@
-import { updateLineColor, handleTabChange } from './utils/csUtils';
-import { getValueFromStorage, forwardRequest } from './utils/globalUtils'
-import {restartOneLinePDF, startOneLinePDF} from './utils/pdfUtils'
+import { updateLineColor, handleTabChange } from './utils/contentScripts';
+import { getValueFromStorage, forwardRequest } from './utils/global'
+import {restartOneLinePDF, startOneLinePDF} from './utils/pdf'
 import $ from 'jquery';
 import OneLine from './modules/OneLine';
 

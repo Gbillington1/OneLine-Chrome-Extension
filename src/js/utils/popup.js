@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { getValueFromStorage } from "./globalUtils";
+import { getValueFromStorage } from "./global";
 
 /**
  * Loads the active page to display in the popup from storage and redirects to that page
