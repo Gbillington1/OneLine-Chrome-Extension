@@ -60,9 +60,11 @@ function startOneLinePDF() {
         // important to do this before returning if no lineId to clear background on all elements
         if (prevTarget !== null && prevTarget.getAttribute('ol-line-id') !== lineId) {
             let prevSpans = lineIdToSpans.get(prevTarget.getAttribute('ol-line-id'))
-            prevSpans.forEach(span => {
-                span.style.backgroundColor = ""
-            })
+            if (prevSpans !== undefined) {
+                prevSpans.forEach(span => {
+                    span.style.backgroundColor = ""
+                })
+            }
         }
 
         // if line is not target, return
@@ -185,7 +187,6 @@ window.onload = async function () {
         // if we are on the OneLine PDF viewer page
         if (location.href.includes("/view_pdf?file")) {
             startOneLinePDF()
-            console.log("VIEWING PDF WOO")
         } else {
             openPDFView = confirm("Open PDF in OneLine?")
             if (openPDFView) {
