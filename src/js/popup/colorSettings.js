@@ -32,7 +32,7 @@ $(document).ready(async () => {
     // load favorites from storage when popup opens
     $(".favoritesColorBtn").each(async (i, elem) => {
 
-        loadFavoritesFromStorage(elem)
+        await loadFavoritesFromStorage(elem)
 
     })
 
@@ -41,7 +41,7 @@ $(document).ready(async () => {
 
         // update the color in the chrome sync storage
         activeColor = color.hexString;
-        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: activeColor }));
+        chrome.storage.sync.set({ "activeColor": activeColor }).then(sendMsgToCS({ activeColor: activeColor }));
 
     });
 
@@ -61,7 +61,7 @@ $(document).ready(async () => {
     $(".recommendedBtn, .favoritesColorBtn").click(function () {
 
         activeColor = $(this).css("background-color");
-        chrome.storage.sync.set({ "activeColor": activeColor }, sendMsgToCS({ activeColor: rgba2hex(activeColor) }));
+        chrome.storage.sync.set({ "activeColor": activeColor }).then(sendMsgToCS({ activeColor: rgba2hex(activeColor) }));
         colorPicker.color.set(activeColor);
         $("#active-color").css("background-color", activeColor);
 

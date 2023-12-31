@@ -1,5 +1,5 @@
 import { sendMsgToCS } from "../utils/globalUtils";
-import {initActiveColor, initOnOffSwitchState, handleReason, fetchUser, handleOnActivated} from "../utils/swUtils";
+import { initActiveColor, initOnOffSwitchState, handleReason, fetchUser } from "../utils/swUtils";
 
 // load default states to storage 
 chrome.runtime.onInstalled.addListener(function (details) {
