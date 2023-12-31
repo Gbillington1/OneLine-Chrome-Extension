@@ -1,12 +1,11 @@
 import {
-    sendMsgToCS,
-    getValueFromStorage,
     goToDefaultPage,
     loadFavoritesFromStorage,
     saveFavoritesToStorage,
     calculateWordColorWithYIQ,
     rgba2hex
 } from './../utils/popupUtils';
+import { getValueFromStorage, sendMsgToCS } from './../utils/globalUtils';
 import iro from '@jaames/iro';
 import $ from 'jquery';
 

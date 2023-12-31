@@ -1,33 +1,13 @@
 import $ from 'jquery';
 
-export async function getValueFromStorage(key) {
-    return new Promise((resolve, reject) => {
-        chrome.storage.sync.get([key], (data) => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(data[key]);
-            }
-        })
-    })
-}
+
 
 // updates the css varible that holds the line color,
 export function updateLineColor(color) {
     document.documentElement.style.setProperty("--oneline-active-color", color);
 };
 
-export function forwardRequest(message) {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(message, (response) => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(response);
-            }
-        })
-    })
-}
+
 
 // async function to update line color & start oneline if switch is set to true, else stops oneline
 export async function handleTabChange(onOffSwitchState, activeColor, ol) {

@@ -1,37 +1,5 @@
 import $ from 'jquery';
 
-// message: { key: value }
-export const sendMsgToCS = (message) => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, message);
-    });
-}
-
-// forwards message to sw.js
-export const forwardRequest = (message) => {
-    return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage(message, (response) => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(response);
-            }
-        })
-    })
-}
-
-export const getValueFromStorage = async (key) => {
-    return new Promise((resolve) => {
-
-        chrome.storage.sync.get([key], (data) => {
-
-            resolve(data[key]);
-
-        })
-
-    })
-}
-
 export const loadActivePage = async () => {
 
     getValueFromStorage("activePage").then((activePage) => {
