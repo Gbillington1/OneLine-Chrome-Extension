@@ -188,10 +188,10 @@ window.onload = async function () {
         if (location.href.includes("/view_pdf?file")) {
             startOneLinePDF()
         } else {
-            openPDFView = confirm("Open PDF in OneLine?")
-            if (openPDFView) {
-                forwardRequest({ pdf: window.location.href })
-            }
+            // openPDFView = confirm("Open PDF in OneLine?")
+            // if (openPDFView) {
+            //     forwardRequest({ pdf: window.location.href })
+            // }
         }
     }
 
@@ -265,25 +265,18 @@ window.onload = async function () {
             sendResponse({ complete: true, status: 200 })
         }
 
-        // insert pdf coming soon html into default chrome pdf viewer
-        if (msg.html) {
+        // insert open pdf in oneline html into default pdf viewer
+        if (msg.openPDFPopupHtml) {
+            // stop OneLine & insert html
             ol.stop()
-            document.body.insertAdjacentHTML('beforeend', msg.html);
-            // forward request to background script to send user to mailing list sign up
-            $("#ol-signUp").click(() => forwardRequest({ signUp: true }))
+            document.body.insertAdjacentHTML('beforeend', msg.openPDFPopupHtml);
+
+            // forward request to background script to open OneLine PDF Viewer with pdf URL
+            $("#ol-openPDF").click(() => forwardRequest({ pdf: window.location.href }))
 
             // close the coming soon modal
-            $("#ol-dismiss").click(() => {
-                $('#oneline-pdf-coming-soon').remove();
-            })
+            $("#ol-dismissPDF").click(() => $('#ol-open-pdf-popup').remove())
 
-            // close the coming soon modal and never show it again
-            $("#ol-dismiss-forever").click(() => {
-                $('#oneline-pdf-coming-soon').remove();
-                forwardRequest({ showPDFPopup: false })
-            })
-
-            // $('#oneline-open-pdf-btn').click(() => chrome.runtime.sendMessage({ pdf: window.location.href }));
             sendResponse({ complete: true, status: 200 })
         }
 

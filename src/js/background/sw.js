@@ -35,9 +35,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
         if (onOffSwitchState == undefined) {
             chrome.storage.sync.set({ "onOffSwitchState": true }, function () {
-                sendMsgToCS({ onOffSwitchState: true }).then((response) => {
-                    // do something with response
-                }).catch((err) => { console.error(err) })
+                sendMsgToCS({ onOffSwitchState: true }).catch((err) => { console.error(err) })
             });
         }
     })
@@ -49,17 +47,8 @@ chrome.runtime.onInstalled.addListener(function (details) {
         if (activeColor == undefined) {
             activeColor = "#f8fd89";
             chrome.storage.sync.set({ "activeColor": activeColor }, function () {
-                sendMsgToCS({ activeColor: activeColor }).then((response) => {
-                    // do something with response
-                }).catch((err) => { console.error(err) })
+                sendMsgToCS({ activeColor: activeColor }).catch((err) => { console.error(err) })
             });
-        }
-    })
-
-    // set initially to true
-    chrome.storage.sync.get("showPDFPopup", function (result) {
-        if (result.showPDFPopup == undefined) {
-            chrome.storage.sync.set({ "showPDFPopup": true })
         }
     })
 
@@ -93,6 +82,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // load pdf reader
     if (msg.pdf) {
+        // TODO: Update to prod URL
         chrome.tabs.create({ url: `http://127.0.0.1:5000/view_pdf?file=${encodeURIComponent(msg.pdf)}` })
         sendResponse({ openPDF: true, status: 200 })
     }
@@ -105,11 +95,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.popupEmailList) {
         chrome.tabs.create({ url: "https://useoneline.com/newsletter/signup?source=popup" })
         sendResponse({ popupEmailList: true, status: 200 })
-    }
-
-    if (!msg.showPDFPopup) {
-        chrome.storage.sync.set({ "showPDFPopup": false })
-        sendResponse({ showPDFPopup: false, status: 200 })
     }
 
     // reload all pages
@@ -131,20 +116,13 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     tab = await chrome.tabs.get(activeInfo.tabId)
     // this fires when the user goes to a tab that was already loaded
     if (tab.url) {
-        sendMsgToCS({ tabChanged: true }, activeInfo.tabId)
-            .then(res => {
-                // do something with res
-            })
-            .catch(err => console.error(err))
+        sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => console.error(err))
     // this fires when the user goes to a tab that hasn't been loaded yet (no URL set on tab)
     } else {
         // wait for content script to send loaded message
         chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
             if (msg.pageLoaded === true) {
-                sendMsgToCS({ tabChanged: true }, activeInfo.tabId)
-                    .then(res => {
-                        // do something with res
-                    }).catch(err => {
+                sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => {
                         console.error(err)
                     })
                 sendResponse({ pageLoaded: true, status: 200 })
@@ -166,33 +144,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                         target: { tabId: tab.id },
                         files: ['css/tailwind/out.css']
                     })
-                    sendMsgToCS({ "installPopup": html }, tab.id).then((res) => {
-                        // do something with res
-                    }).catch((err) => { console.error(err) })
+                    sendMsgToCS({ "installPopup": html }, tab.id).catch((err) => { console.error(err) })
                     chrome.storage.local.set({ "thankyouTabId": null }) // make sure we don't fire this popup again
                 });
 
             }
         })
 
-        if (!tab.url.startsWith('chrome-extension://') && tab.url.endsWith('.pdf')) {
-
-            chrome.storage.sync.get('showPDFPopup').then((res) => {
-
-                if (res.showPDFPopup) {
-                    fetch(chrome.runtime.getURL('html/blobs/PDFsComingSoon.html')).then(data => data.text()).then(html => {
-
-                        chrome.scripting.insertCSS({
-                            target: { tabId: tab.id },
-                            files: ['css/tailwind/out.css']
-                        })
-                        sendMsgToCS({ html: html }, tab.id).then((res) => {
-                            // do something with res
-                        }).catch((err) => { console.error(err) })
-
-                    });
-                }
-            })
+        // TODO: Update to prod URL
+        if (!tab.url.includes('127.0.0.1:5000/view_pdf?file=') && tab.url.endsWith('.pdf')) {
+            fetch(chrome.runtime.getURL('html/blobs/openPDFInOneLinePopup.html')).then(data => data.text()).then(html => {
+                chrome.scripting.insertCSS({
+                    target: { tabId: tab.id },
+                    files: ['css/tailwind/out.css']
+                })
+                sendMsgToCS({ openPDFPopupHtml: html }, tab.id).catch((err) => { console.error(err) })
+            });
         }
 
         // TODO: Handle modern web apps that don't reload the page when new content is loaded (think nextJS & react apps)
