@@ -13,22 +13,22 @@
         "*://*/*"
     ],
     "background": {
-        "service_worker": "./dist/background.bundle.js"
+        "service_worker": "./dist/js/background.bundle.js"
     },
     "icons": {
-        "48": "./src/images/icon48.png",
-        "128": "./src/images/icon128.png"
+        "48": "./dist/images/icon48.png",
+        "128": "./dist/images/icon128.png"
     },
     "action": {
         "default_title": "OneLine",
         "default_popup": "./dist/html/defaultPopup.html",
         "default_icon": {
-            "48": "./src/images/icon48.png",
-            "128": "./src/images/icon128.png"
+            "48": "./dist/images/icon48.png",
+            "128": "./dist/images/icon128.png"
         }
     },
     "content_scripts":[{
-        "js": ["./dist/contentScript.bundle.js"],
+        "js": ["./dist/js/contentScript.bundle.js"],
         "css": ["./dist/css/style.css"],
         "matches": [
             "http://*/*",
