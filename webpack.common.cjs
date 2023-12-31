@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
     entry: {
         contentScript: './src/js/OneLine-Main.js',
         background: './src/js/background/sw.js',
