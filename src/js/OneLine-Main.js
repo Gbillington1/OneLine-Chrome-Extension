@@ -187,11 +187,6 @@ window.onload = async function () {
         // if we are on the OneLine PDF viewer page
         if (location.href.includes("/view_pdf?file")) {
             startOneLinePDF()
-        } else {
-            // openPDFView = confirm("Open PDF in OneLine?")
-            // if (openPDFView) {
-            //     forwardRequest({ pdf: window.location.href })
-            // }
         }
     }
 
