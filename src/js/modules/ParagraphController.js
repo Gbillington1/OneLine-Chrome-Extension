@@ -4,6 +4,7 @@
 */
 import $ from 'jquery';
 import Paragraph from './Paragraph';
+import { textVide } from 'text-vide';
 
 const ParagraphController = function ParagraphController() {
 
@@ -263,7 +264,7 @@ const ParagraphController = function ParagraphController() {
 
             if (p.hasClass("abionic") === false) {
                 p.addClass("abionic");
-                p.html(textVide.textVide(p.html(), { sep: ['<b data-ol-abionic="true">', '</b>']}, { ignoreHtmlTag: true }))
+                p.html(textVide(p.html(), { sep: ['<b data-ol-abionic="true">', '</b>']}, { ignoreHtmlTag: true }))
 
             } else if (p.hasClass("abionic") === true) {
 
