@@ -38,7 +38,7 @@ const Paragraph = function Paragraph(paragraph) {
                 key: "word",
                 depends: 0,
                 split: function(el) {
-                    return splitText(el, "word", /(\s|\-|\—)/g, 0, 1)
+                    return splitText(el, "word", /(\s|\-|\—)/g, 0, 0)
                 }
             })
             Splitting({ target: paragraph, by: "OneLineParagraphSplitPlugin" })

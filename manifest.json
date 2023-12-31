@@ -21,7 +21,7 @@
     },
     "action": {
         "default_title": "OneLine",
-        "default_popup": "./src/html/defaultPopup.html",
+        "default_popup": "./dist/html/defaultPopup.html",
         "default_icon": {
             "48": "./src/images/icon48.png",
             "128": "./src/images/icon128.png"
@@ -29,7 +29,7 @@
     },
     "content_scripts":[{
         "js": ["./dist/contentScript.bundle.js"],
-        "css": ["./src/css/style.css"],
+        "css": ["./dist/css/style.css"],
         "matches": [
             "http://*/*",
             "https://*/*",
