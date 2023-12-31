@@ -93,9 +93,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // load pdf reader
     if (msg.pdf) {
-        proxiedURL = encodeURIComponent(`http://127.0.0.1:5000/proxy/${msg.pdf}`)
-        chrome.tabs.create({ url: `http://127.0.0.1:5000/view_pdf?file=${proxiedURL}` })
-        // chrome.tabs.create({ url: chrome.runtime.getURL(`../../js/libraries/pdfJS/web/viewer.html?file=${encodeURIComponent(msg.pdf)}`) })
+        chrome.tabs.create({ url: `http://127.0.0.1:5000/view_pdf?file=${encodeURIComponent(msg.pdf)}` })
         sendResponse({ openPDF: true, status: 200 })
     }
 
