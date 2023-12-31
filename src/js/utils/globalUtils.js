@@ -39,7 +39,7 @@ function getCurrentTab() {
 /**
  * Forwards a message from a content script or popup script to the background script
  * @param message message to send to the background: message = { myKey: myValue }
- * @returns {Promise<unknown>} reponse to the message or error msg
+ * @returns {Promise<unknown>} response to the message or error msg
  */
 export function forwardRequest(message) {
     return new Promise((resolve, reject) => {

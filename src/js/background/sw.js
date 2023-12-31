@@ -1,30 +1,4 @@
-function getCurrentTab() {
-    return new Promise((resolve, reject) => {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(tabs[0]);
-            }
-        });
-    });
-}
-
-async function sendMsgToCS(message, id = undefined) {
-    if (id === undefined) {
-        const tab = await getCurrentTab();
-        id = tab.id;
-    }
-    return new Promise((resolve,reject) => {
-        chrome.tabs.sendMessage(id, message, function (response) {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            } else {
-                resolve(response);
-            }
-        })
-    })
-}
+import { sendMsgToCS } from "../utils/globalUtils";
 
 // load default states to storage 
 chrome.runtime.onInstalled.addListener(function (details) {
@@ -113,7 +87,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 // Tab change: Fire when tab changes, make sure to wait for content script to load before sending message
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
-    tab = await chrome.tabs.get(activeInfo.tabId)
+    let tab = await chrome.tabs.get(activeInfo.tabId)
     // this fires when the user goes to a tab that was already loaded
     if (tab.url) {
         sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => console.error(err))
