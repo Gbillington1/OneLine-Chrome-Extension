@@ -58,6 +58,13 @@ export const loadOnOffSwitch = async () => {
 
 }
 
+export const loadAbionicSwitch = async () => {
+    
+        const abionicSwitchState = await getValueFromStorage("abionicSwitchState");
+        $("#abionicSwitch").prop("checked", abionicSwitchState);
+    
+}
+
 // For colorSettings.js
 export const loadFavoritesFromStorage = async (elem) => {
 

@@ -9,6 +9,8 @@
             "request": "launch",
             "name": "Launch Chrome against Wikipedia",
             "url": "https://en.m.wikipedia.org/wiki/Router_(computing)",
+            "runtimeArgs": ["--load-extension=${workspaceFolder}/src"],
+            "sourceMaps": true,
             "webRoot": "${workspaceFolder}/src"
         }
     ]
