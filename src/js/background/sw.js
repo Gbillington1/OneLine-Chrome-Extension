@@ -1,56 +1,19 @@
 import { sendMsgToCS } from "../utils/globalUtils";
+import {initActiveColor, initOnOffSwitchState, handleReason, fetchUser, handleOnActivated} from "../utils/swUtils";
 
 // load default states to storage 
 chrome.runtime.onInstalled.addListener(function (details) {
-
-    // get the swtich state, set it to true if it's not set, tell CS to start oneline
-    chrome.storage.sync.get("onOffSwitchState", function (result) {
-        let onOffSwitchState = result.onOffSwitchState;
-
-        if (onOffSwitchState == undefined) {
-            chrome.storage.sync.set({ "onOffSwitchState": true }, function () {
-                sendMsgToCS({ onOffSwitchState: true }).catch((err) => { console.error(err) })
-            });
-        }
-    })
-
-    // get the active color, set it to default if there isn't one in storage, tell CS to change the color
-    chrome.storage.sync.get("activeColor", function (result) {
-        let activeColor = result.activeColor;
-
-        if (activeColor == undefined) {
-            activeColor = "#f8fd89";
-            chrome.storage.sync.set({ "activeColor": activeColor }, function () {
-                sendMsgToCS({ activeColor: activeColor }).catch((err) => { console.error(err) })
-            });
-        }
-    })
-
-    if (details.reason == "install") {
-        chrome.tabs.create({ url: "https://useoneline.com/thankyou/", active: true }, function (tab) {
-            // save this specific ID so we can detect in in the onUpdated listener
-            // avoids firing the onUpdated listener when the user goes to thank you on their own (ID will be different)
-            chrome.storage.local.set({ "thankyouTabId": tab.id })
-        });
-    }
-    // else if (details.reason == "update") {
-    //     chrome.tabs.create({ url: "https://useoneline.com/updates/v2" })
-    // }
+    initOnOffSwitchState();
+    initActiveColor();
+    handleReason(details.reason);
 })
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // fetch user from flask app, null if not authenticated
     if (msg.getUser) {
-        fetch('http://127.0.0.1:5000/userinfo').then(res => res.json()).then(data => {
-            if (data.user) {
-                console.log(data.user)
-                // chrome.storage.sync.set({ "user": data.user })
-            } else {
-                console.log("no user")
-                // chrome.storage.sync.set({ "user": null })
-                // user needs to log in to use app
-            }
+        fetchUser.then((user) => {
+            sendResponse({ getUser: user, status: 200})
         })
     }
 
@@ -91,14 +54,14 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     // this fires when the user goes to a tab that was already loaded
     if (tab.url) {
         sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => console.error(err))
-    // this fires when the user goes to a tab that hasn't been loaded yet (no URL set on tab)
+        // this fires when the user goes to a tab that hasn't been loaded yet (no URL set on tab)
     } else {
         // wait for content script to send loaded message
         chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
             if (msg.pageLoaded === true) {
                 sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => {
-                        console.error(err)
-                    })
+                    console.error(err)
+                })
                 sendResponse({ pageLoaded: true, status: 200 })
             }
         })

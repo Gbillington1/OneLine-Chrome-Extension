@@ -51,3 +51,23 @@ export function handleReason(reason) {
     //     chrome.tabs.create({ url: "https://useoneline.com/updates/v2" })
     // }
 }
+
+/**
+ * Fetches the app.useoneline.com API to get Auth0 user data
+ * @returns Promise<unknown> Auth0 user data or null
+ */
+export function fetchUser() {
+    return new Promise((resolve, reject) => {
+        fetch('http://127.0.0.1:5000/userinfo').then(res => res.json()).then(data => {
+            if (data.user) {
+                resolve(data.user)
+                // chrome.storage.sync.set({ "user": data.user })
+            } else {
+                resolve(null)
+                // chrome.storage.sync.set({ "user": null })
+                // user needs to log in to use app
+            }
+        })
+    })
+
+}
