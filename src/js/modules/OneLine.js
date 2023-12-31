@@ -12,6 +12,8 @@ const OneLine = function OneLine(onOffSwitchState) {
     let isOn = onOffSwitchState;
 
     const start = () => {
+
+        // TODO: Find better way to check if we have started because this doesn't always work (splitting.js.org breaks because it has span.word and whitespace)
         if ($('span.word:not(style *), span.whitespace:not(style *)').length === 0) {
             let result = paragraphController.populateRelevantParagraphArray();
             
