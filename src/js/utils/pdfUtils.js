@@ -6,7 +6,7 @@ import $ from "jquery";
  * When the user hovers over a line, the entire line will highlight
  * Arrow key/Moving line mechanics not yet built
  */
-export function startOneLinePDF() {
+export function startOneLinePDF(activeColor) {
     let prevTarget = null;
     $("#viewer").mousemove(function(e) {
 
@@ -39,12 +39,21 @@ export function startOneLinePDF() {
 
         // background red
         spans.forEach(span => {
-            span.style.backgroundColor = "red"
+            span.style.backgroundColor = activeColor;
         })
 
         prevTarget = target
 
     })
+}
+
+/**
+ * Function to unbind mousemove event and start OneLine PDF again with new color
+ * @param activeColor color of highlight
+ */
+export function restartOneLinePDF(activeColor) {
+    $("#viewer").unbind("mousemove")
+    startOneLinePDF(activeColor)
 }
 
 /**

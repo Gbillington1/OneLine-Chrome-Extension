@@ -1,6 +1,6 @@
 import { updateLineColor, handleTabChange } from './utils/csUtils';
 import { getValueFromStorage, forwardRequest } from './utils/globalUtils'
-import { startOneLinePDF } from './utils/pdfUtils'
+import {restartOneLinePDF, startOneLinePDF} from './utils/pdfUtils'
 import $ from 'jquery';
 import OneLine from './modules/OneLine';
 
@@ -38,7 +38,7 @@ window.onload = async function () {
     } else {
         // if we are on the OneLine PDF viewer page
         if (location.href.includes("/view_pdf?file")) {
-            startOneLinePDF()
+            startOneLinePDF(activeColor)
         }
     }
 
@@ -108,6 +108,9 @@ window.onload = async function () {
             updateLineColor(activeColor);
             if (onOffSwitchState === true) {
                 ol.start()
+            }
+            if (window.location.href.includes("view_pdf?file=")) {
+                restartOneLinePDF(activeColor)
             }
             sendResponse({ complete: true, status: 200 })
         }

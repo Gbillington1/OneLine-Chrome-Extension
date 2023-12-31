@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // load pdf reader
     if (msg.pdf) {
         // TODO: Update to prod URL
-        chrome.tabs.create({ url: `http://127.0.0.1:5000/view_pdf?file=${encodeURIComponent(msg.pdf)}` })
+        chrome.tabs.create({ url: `http://127.0.0.1:5003/view_pdf?file=${encodeURIComponent(msg.pdf)}` })
         sendResponse({ openPDF: true, status: 200 })
     }
 
@@ -89,7 +89,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         })
 
         // TODO: Update to prod URL
-        if (!tab.url.includes('127.0.0.1:5000/view_pdf?file=') && tab.url.endsWith('.pdf')) {
+        if (!tab.url.includes('view_pdf?file=') && tab.url.endsWith('.pdf')) {
             fetch(chrome.runtime.getURL('dist/html/blobs/openPDFInOneLinePopup.html')).then(data => data.text()).then(html => {
                 chrome.scripting.insertCSS({
                     target: { tabId: tab.id },
