@@ -1,6 +1,5 @@
 **/.DS_Store
-src/node_modules/
-src/js/libraries/pdfJS/*
+node_modules/
 .idea
 .vscode
 .sfdx
