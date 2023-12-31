@@ -3,8 +3,12 @@
  - Splits paragraph into span elements
  - Highlights all span elements
 */
+import $ from 'jquery';
+import Line from './Line';
+import Splitting from "splitting";
+import { splitText } from '../utils/csUtils';
 
-const Paragraph = (paragraph) => {
+const Paragraph = function Paragraph(paragraph) {
 
     /* Global Variables */
 
@@ -28,13 +32,19 @@ const Paragraph = (paragraph) => {
     const splitIntoSpans = () => {
 
         if (spansInParagraph === undefined) {
-            console.log(paragraph)
-            Splitting({ target: paragraph, by: "paragraphSplitPlugin" })
-            console.log(paragraph)
-        
+            // add custom splitting plugin
+            Splitting.add({
+                by: "OneLineParagraphSplitPlugin",
+                key: "word",
+                depends: 0,
+                split: function(el) {
+                    return splitText(el, "word", /(\s|\-|\—)/g, 0, 0)
+                }
+            })
+            Splitting({ target: paragraph, by: "OneLineParagraphSplitPlugin" })
+
             // copy all "spannified" words into array
             spansInParagraph = $(paragraph).find("span.word:not(style *), span.whitespace:not(style *)");
-            console.log(spansInParagraph)
         }
 
     }
@@ -175,7 +185,6 @@ const Paragraph = (paragraph) => {
 
     // export functions that we want available
     return {
-
         paragraph,
         linesInParagraph,
         currentLineIdx,
@@ -185,7 +194,6 @@ const Paragraph = (paragraph) => {
         removeAllHighlights,
         getNumberOfLines,
         clear
-
     }
-
 }
+export default Paragraph;

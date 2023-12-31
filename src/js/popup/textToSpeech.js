@@ -1,4 +1,5 @@
-import { goToDefaultPage } from "./util-functions.js"
+import { goToDefaultPage } from './../utils/popupUtils'
+import $ from 'jquery';
 
 $(document).ready(() => {
 

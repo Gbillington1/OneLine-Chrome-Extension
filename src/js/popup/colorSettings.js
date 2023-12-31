@@ -6,8 +6,9 @@ import {
     saveFavoritesToStorage,
     calculateWordColorWithYIQ,
     rgba2hex
-} from './util-functions.js';
-
+} from './../utils/popupUtils';
+import iro from '@jaames/iro';
+import $ from 'jquery';
 
 $(document).ready(async () => {
 

@@ -3,7 +3,9 @@
  - Controls the highlighting of the line
  - Will be used to add more features that are line specific in the future
 */
-const Line = (spansInLine) => {
+import $ from 'jquery';
+
+const Line = function Line(spansInLine) {
 
     // array of original color of each span in the line
     let colorsOfWords = [];
@@ -61,10 +63,8 @@ const Line = (spansInLine) => {
     }
 
     return {
-
         highlightLine,
         removeHighlightFromLine
-
     }
-
 }
+export default Line;

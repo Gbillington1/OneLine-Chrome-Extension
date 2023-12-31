@@ -138,11 +138,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         // check if we're on the thank you page => show the reload popup
         chrome.storage.local.get("thankyouTabId", function (data) {
             if (data.thankyouTabId == tabId) {
-                fetch(chrome.runtime.getURL('html/blobs/pageReloadPrompt.html')).then(data => data.text()).then(html => {
+                fetch(chrome.runtime.getURL('dist/html/blobs/pageReloadPrompt.html')).then(data => data.text()).then(html => {
 
                     chrome.scripting.insertCSS({
                         target: { tabId: tab.id },
-                        files: ['css/tailwind/out.css']
+                        files: ['dist/css/tailwind/out.css']
                     })
                     sendMsgToCS({ "installPopup": html }, tab.id).catch((err) => { console.error(err) })
                     chrome.storage.local.set({ "thankyouTabId": null }) // make sure we don't fire this popup again
@@ -153,10 +153,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
         // TODO: Update to prod URL
         if (!tab.url.includes('127.0.0.1:5000/view_pdf?file=') && tab.url.endsWith('.pdf')) {
-            fetch(chrome.runtime.getURL('html/blobs/openPDFInOneLinePopup.html')).then(data => data.text()).then(html => {
+            fetch(chrome.runtime.getURL('dist/html/blobs/openPDFInOneLinePopup.html')).then(data => data.text()).then(html => {
                 chrome.scripting.insertCSS({
                     target: { tabId: tab.id },
-                    files: ['css/tailwind/out.css']
+                    files: ['dist/css/tailwind/out.css']
                 })
                 sendMsgToCS({ openPDFPopupHtml: html }, tab.id).catch((err) => { console.error(err) })
             });

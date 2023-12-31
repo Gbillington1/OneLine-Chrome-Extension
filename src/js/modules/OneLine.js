@@ -3,20 +3,20 @@
  - Can start and stop the highlighting of the program
  - Controls TTS?
 */
+import $ from 'jquery';
+import ParagraphController from './ParagraphController';
 
-const OneLine = (onOffSwitchState) => {
+const OneLine = function OneLine(onOffSwitchState) {
 
     const paragraphController = ParagraphController();
     let isOn = onOffSwitchState;
 
     const start = () => {
-
         if ($('span.word:not(style *), span.whitespace:not(style *)').length === 0) {
             let result = paragraphController.populateRelevantParagraphArray();
             
             // if result is -1, then there are no paragraphs on the page
             // notify user
-            console.log(result)
             if (result === -1) {
                 // ideally show a popup that allows users to input if this is a mistake, or if there is an issue with this page (sort of like a report bug button)
                 // and stop execution of the program
@@ -100,7 +100,6 @@ const OneLine = (onOffSwitchState) => {
     */
 
     return {
-
         start,
         stop,
         resize,
@@ -108,5 +107,5 @@ const OneLine = (onOffSwitchState) => {
         toggleAbionic,
         clearPage
     }
-
 }
+export default OneLine;

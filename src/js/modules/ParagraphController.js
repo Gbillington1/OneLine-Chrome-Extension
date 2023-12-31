@@ -2,7 +2,11 @@
  - Manages all paragraphs (Paragraphs) on a the webpage
  - Retrieves and navigates through all relevant paragraphs
 */
-const ParagraphController = () => {
+import $ from 'jquery';
+import Paragraph from './Paragraph';
+import { textVide } from 'text-vide';
+
+const ParagraphController = function ParagraphController() {
 
     /* Global Variables */
 
@@ -116,7 +120,6 @@ const ParagraphController = () => {
             }
 
         })
-
         return 1;
     }
 
@@ -261,7 +264,7 @@ const ParagraphController = () => {
 
             if (p.hasClass("abionic") === false) {
                 p.addClass("abionic");
-                p.html(textVide.textVide(p.html(), { sep: ['<b data-ol-abionic="true">', '</b>']}, { ignoreHtmlTag: true }))
+                p.html(textVide(p.html(), { sep: ['<b data-ol-abionic="true">', '</b>']}, { ignoreHtmlTag: true }))
 
             } else if (p.hasClass("abionic") === true) {
 
@@ -310,6 +313,5 @@ const ParagraphController = () => {
         clearParagraphs
 
     }
-
-
 }
+export default ParagraphController;
