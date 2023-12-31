@@ -1,0 +1,11 @@
+html, body {
+    scroll-behavior: smooth;
+}
+
+:root {
+    --background: #29ff4c;
+}
+
+.highlighted {
+    background-color: var(--background) !important;
+}
