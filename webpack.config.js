@@ -1,9 +1,7 @@
 const path = require("path")
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const tailwindcss = require('tailwindcss')
 
-// TODO: Finish webpack bundling of HTML, CSS, & Image assets
 module.exports = {
     mode: 'development',
     entry: {
