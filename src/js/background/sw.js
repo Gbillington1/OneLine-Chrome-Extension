@@ -1,11 +1,11 @@
 import { sendMsgToCS } from "../utils/global";
 import { initActiveColor, initOnOffSwitchState, handleReason, fetchUser } from "../utils/sw";
 
-// load default states to storage 
+// load default states to storage
 chrome.runtime.onInstalled.addListener(function (details) {
     initOnOffSwitchState();
     initActiveColor();
-    handleReason(details.reason);
+    handleReason(details);
 })
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // load pdf reader
     if (msg.pdf) {
         // TODO: Update to prod URL
-        chrome.tabs.create({ url: `http://127.0.0.1:5003/view_pdf?file=${encodeURIComponent(msg.pdf)}` })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/view_pdf?file=${encodeURIComponent(msg.pdf)}` })
         sendResponse({ openPDF: true, status: 200 })
     }
 
@@ -89,7 +89,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         })
 
         // TODO: Update to prod URL
-        if (!tab.url.includes('view_pdf?file=') && tab.url.endsWith('.pdf')) {
+        if (!tab.url.includes(`${process.env.API_HOST}/view_pdf?file=`) && tab.url.endsWith('.pdf')) {
             fetch(chrome.runtime.getURL('dist/html/blobs/openPDFInOneLinePopup.html')).then(data => data.text()).then(html => {
                 chrome.scripting.insertCSS({
                     target: { tabId: tab.id },

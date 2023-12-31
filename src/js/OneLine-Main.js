@@ -9,7 +9,6 @@ import OneLine from './modules/OneLine';
 // TODO: double check everything for Mv3
 // OPTIONAL: selection feature for p, headers, code, lists, etc
 window.onload = async function () {
-
     // forwardRequest({ getUser: true })
 
     // create the OneLine instance
@@ -37,7 +36,7 @@ window.onload = async function () {
         }
     } else {
         // if we are on the OneLine PDF viewer page
-        if (location.href.includes("/view_pdf?file")) {
+        if (location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
             startOneLinePDF(activeColor)
         }
     }

@@ -4,8 +4,8 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "npx webpack",
-    "watch": "npx webpack --watch",
+    "build": "npx webpack --config webpack.prod.cjs",
+    "watch": "npx webpack --config webpack.dev.cjs --watch",
     "tailwind-dev": "npx tailwindcss -i ./src/css/tailwind/in.css -o ./src/css/tailwind/out.css --watch",
     "tailwind-build": "npx tailwindcss -o ./src/css/tailwind/out.css",
     "zip": "sh ./zip.sh"
@@ -19,10 +19,12 @@
     "style-loader": "^3.3.3",
     "tailwindcss": "^3.2.4",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4"
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.10.0"
   },
   "dependencies": {
     "@jaames/iro": "^5.5.2",
+    "dotenv": "^16.3.1",
     "jquery": "^3.7.1",
     "splitting": "^1.0.6",
     "text-vide": "^1.8.1"

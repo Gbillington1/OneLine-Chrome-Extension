@@ -1,5 +1,6 @@
 import {sendMsgToCS} from "./global";
 
+
 /**
  * Initializes the onOffSwitchState variable in sync storage when the extension is installed
  * Set to true initially (means OneLine starts out of the box)
@@ -37,10 +38,14 @@ export function initActiveColor() {
 
 /**
  * Handles the flow for each reason in the onInstall handler in the background script
- * @param reason string reason representing the type of extension install (regular install, update, etc)
+ * @param details details object from chrome.runtime.onInstalled
  */
-export function handleReason(reason) {
-    if (details.reason == "install") {
+export function handleReason(details) {
+    if (details === undefined) {
+        return
+    }
+
+    if (details.reason === "install") {
         chrome.tabs.create({ url: "https://useoneline.com/thankyou/", active: true }, function (tab) {
             // save this specific ID so we can detect in in the onUpdated listener
             // avoids firing the onUpdated listener when the user goes to thank you on their own (ID will be different)
