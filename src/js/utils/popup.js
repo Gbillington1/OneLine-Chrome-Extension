@@ -11,6 +11,8 @@ export const loadActivePage = async () => {
             window.location.href = "colorSettings.html";
         } else if (activePage == "textToSpeech.html") {
             window.location.href = "textToSpeech.html";
+        } else if (activePage == "signUpBlocker.html") {
+            window.location.href = "signUpBlocker.html"
         }
     });
 }
