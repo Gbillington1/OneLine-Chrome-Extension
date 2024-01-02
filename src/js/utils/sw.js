@@ -131,29 +131,39 @@ export async function loadHTMLBlob(blobPath, tabID, htmlPurpose) {
 export function setupUniqueThankyouLink() {
     const thankyouTimeId = Date.now();
     chrome.storage.local.set({ "thankyouTimeId": thankyouTimeId })
-    return `https://useoneline.com/thankyou?time_id=${thankyouTimeId}`
+    return `https://useoneline.com/thankyou?time_id=${thankyouTimeId}&auth_success=true`
 }
 
 /**
- * Handler for unique thank you page in chrome.tabs.onUpdated event listener
- * Updates user in storage & inserts HTML into page when uniqueIDs are matched
+ * Handler for thank you page in chrome.tabs.onUpdated event listener
+ * Updates user in storage if auth was successful & inserts HTML into page when unique time IDs are matched
  * @returns {Promise<void>}
  */
-export async function handleUniqueThankyouVisit(tab) {
-    const timeId = parseInt(tab.url.substring(tab.url.indexOf("=") + 1))
-    // check if the time IDs match => show the reload popup & save user to storage
-    const data = await chrome.storage.local.get("thankyouTimeId")
-    if (data.thankyouTimeId === timeId) {
+export async function handleThankyouVisit(url, tabId) {
+    const params = url.searchParams
+    const timeId = params.get("time_id")
+    const successfulAuth = params.get("auth_success")
+
+    // handle visit straight from install with time_id
+    // load HTML to reload tabs
+    if (timeId !== null) {
+        // check if the time IDs match => show the reload popup & save user to storage
+        const data = await chrome.storage.local.get("thankyouTimeId")
+        if (data.thankyouTimeId === parseInt(timeId)) {
+            chrome.storage.local.set({ "thankyouTimeId": null })
+            await loadHTMLBlob('dist/html/blobs/pageReloadPrompt.html', tabId, "reloadTabs")
+        }
+    }
+
+    // handle visit after successful login to save user and give access to popup
+    if (successfulAuth === "true") {
         // get user & save to storage
         const user = await fetchUser();
-        if (user === null) {
-            // show login popup on thankyou?
-        } else {
+        if (user !== null) {
             // save user & remove sign up blocker in popup
-            chrome.storage.sync.set({ "user": user, "activePage": "defaultPopup.html" })
-            chrome.storage.local.set({ "thankyouTimeId": null })
-            // load html to storage
-            await loadHTMLBlob('dist/html/blobs/pageReloadPrompt.html', tab.id, "reloadTabs")
+            chrome.storage.sync.set({"user": user, "activePage": "defaultPopup.html"})
+        } else {
+            // show login popup on thankyou?
         }
     }
 }

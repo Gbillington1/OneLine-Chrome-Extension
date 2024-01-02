@@ -6,7 +6,7 @@ import {
     loadHTMLBlob,
     setupUniqueThankyouLink,
     handleFetchUser,
-    handleUniqueThankyouVisit
+    handleThankyouVisit
 } from "../utils/sw";
 
 // load default states to storage
@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // open login page when connect button clicked in popup
     if (msg.connectAccBtnClicked) {
         const thankyouURL = setupUniqueThankyouLink()
-        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${thankyouURL}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(thankyouURL)}`, active: true })
     }
 
     // fetch user from flask app, null if not authenticated
@@ -39,6 +39,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (msg.signUp) {
         chrome.tabs.create({url: "https://useoneline.com/newsletter/signup?source=pdf"})
         sendResponse({signUp: true, status: 200})
+    }
+
+    if (msg.logout) {
+        chrome.tabs.create({ url: `${process.env.API_HOST}/logout`})
+        sendResponse({logout: true, status: 200})
+
     }
 
     if (msg.popupEmailList) {
@@ -87,13 +93,14 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
     if (changeInfo.status == "complete" && tab.url) {
+        const url = new URL(tab.url)
 
         // if logout page is hit, clear user from storage
-        if (tab.url.includes(`${process.env.API_HOST}/logout`)) {
+        if (url.href.includes(`${process.env.API_HOST}/logout`)) {
             chrome.storage.sync.set({ "user": null, "activePage": "signUpBlocker.html" })
-        } else if (tab.url.includes("useoneline.com/thankyou?time_id")) {
-            handleUniqueThankyouVisit(tab)
-        } else if (!tab.url.includes(`${process.env.API_HOST}/view_pdf?file=`) && tab.url.endsWith('.pdf')) {
+        } else if (url.href.includes("useoneline.com/thankyou?")) {
+            handleThankyouVisit(url, tab.id)
+        } else if (!url.href.includes(`${process.env.API_HOST}/view_pdf?file=`) && url.href.endsWith('.pdf')) {
             loadHTMLBlob('dist/html/blobs/openPDFInOneLinePopup.html', tab.id, "openPDF")
         }
         // TODO: Handle modern web apps that don't reload the page when new content is loaded (think nextJS & react apps)
