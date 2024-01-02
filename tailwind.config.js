@@ -3,6 +3,12 @@ module.exports = {
   content: ["./src/html/**/*.html", "./src/js/pdf/**/*.js", "./src/js/popup/**/*.js"],
   theme: {
     extend: {
+      colors: {
+        "ol-darkgray": "#485056",
+        "ol-green": "#25C998",
+        "ol-green-dark": "#159972",
+        "ol-offwhite": "#f6f4f7",
+      },
       zIndex: {
         "max": "2147483647",
       },
