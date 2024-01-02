@@ -182,7 +182,7 @@ label:active:after {
   padding-left: 4px;
 }
 
-#navigationConntainer {
+#navigationContainer {
   display: flex;
   flex-direction: column;
 }
@@ -192,11 +192,18 @@ label:active:after {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   -webkit-transition: .2s;
-  transition: background-color .2s; 
+  transition: background-color .2s;
 }
 
+.left-icon {
+  padding-left: 35px;
+}
+
+.right-icon {
+  padding-right: 35px;
+}
 
 .tab:hover {
   cursor: pointer;

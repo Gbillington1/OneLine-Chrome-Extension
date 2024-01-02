@@ -22,6 +22,10 @@ $(document).ready(() => {
     
     })
 
+    $("#logout").click(() => {
+        forwardRequest({ logout: true })
+    })
+
     $('#onOffSwitch').change((e) => {
 
         const stateOfSwitch = e.currentTarget.checked; 
