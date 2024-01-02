@@ -1,5 +1,5 @@
+/** Utility functions for js/background/sw.js */
 import {sendMsgToCS} from "./global";
-
 
 /**
  * Initializes the onOffSwitchState variable in sync storage when the extension is installed
@@ -37,24 +37,46 @@ export function initActiveColor() {
 }
 
 /**
- * Handles the flow for each reason in the onInstall handler in the background script
+ * Handles the flow for each reason in the chrome.runtime.onInstall handler in the background script
  * @param details details object from chrome.runtime.onInstalled
  */
-export function handleReason(details) {
+export async function handleReason(details) {
     if (details === undefined) {
         return
     }
 
-    if (details.reason === "install") {
-        chrome.tabs.create({ url: "https://useoneline.com/thankyou/", active: true }, function (tab) {
-            // save this specific ID so we can detect in in the onUpdated listener
-            // avoids firing the onUpdated listener when the user goes to thank you on their own (ID will be different)
-            chrome.storage.local.set({ "thankyouTabId": tab.id })
-        });
-    }
-    // else if (details.reason == "update") {
-    //     chrome.tabs.create({ url: "https://useoneline.com/updates/v2" })
+        await handleOnInstall()
+    // if (details.reason === "install") {
+    // } else if (details.reason === "update") {
+    //     handleOnUpdate()
     // }
+}
+
+/**
+ * Handler for the install detail in {@link handleReason}
+ * Fetches user and redirects user to thank you or login depending on user state
+ * @returns {Promise<void>} void
+ */
+async function handleOnInstall() {
+    const thankyouURL = setupUniqueThankyouLink()
+    let user = await fetchUser()
+    if (user === null) {
+        // use current time in millis as an identifier to check when user lands on thank you page after login in tabs.onUpdated listener
+        chrome.storage.sync.set({ "activePage": "signUpBlocker.html" })
+        // encode URL with our time ID to define next page where user is sent after login/signup
+        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(thankyouURL)}`, active: true })
+    } else {
+        chrome.storage.sync.set({"activePage": "defaultPopup.html", "user": user})
+        chrome.tabs.create({ url: `${thankyouURL}`, active: true })
+    }
+}
+
+/**
+ * Handler for the update detail in {@link handleReason}
+ * @returns void
+ */
+function handleOnUpdate() {
+    return
 }
 
 /**
@@ -63,7 +85,7 @@ export function handleReason(details) {
  */
 export function fetchUser() {
     return new Promise((resolve, reject) => {
-        fetch('http://127.0.0.1:5000/userinfo').then(res => res.json()).then(data => {
+        fetch(`${process.env.API_HOST}/api/get_user`).then(res => res.json()).then(data => {
             if (data.user) {
                 resolve(data.user)
                 // chrome.storage.sync.set({ "user": data.user })
@@ -74,5 +96,79 @@ export function fetchUser() {
             }
         })
     })
+}
 
+/**
+ * Loads blob HTML into chrome sync storage and inject CSS for blob into tab with tabID
+ * @param blobPath path of HTML blob to be passed into chrome.runtime.getURL()
+ * @param tabID tab ID of tab to insert CSS into
+ * @param htmlPurpose short string ID representing purpose of HTML (e.g. reloadTabs)
+ * @returns {Promise<void>} void
+ */
+export async function loadHTMLBlob(blobPath, tabID, htmlPurpose) {
+    let data = await fetch(chrome.runtime.getURL(blobPath))
+    let html = await data.text()
+
+    // load tailwind CSS
+    chrome.scripting.insertCSS({
+        target: { tabId: tabID },
+        files: ['dist/css/tailwind/out.css']
+    })
+
+    // save HTML to storage to be loaded by content script
+    chrome.storage.sync.set({ "latestHTML": {
+            "content": html,
+            "purpose": htmlPurpose
+        }
+    })
+}
+
+/**
+ * Set up a unique URL for the thank you page using the current date in milliseconds
+ * Saves the millis time to local storage to be used in the future to verify that user has navigated to this page
+ * @returns {string} unique thank you page URL
+ */
+export function setupUniqueThankyouLink() {
+    const thankyouTimeId = Date.now();
+    chrome.storage.local.set({ "thankyouTimeId": thankyouTimeId })
+    return `https://useoneline.com/thankyou?time_id=${thankyouTimeId}`
+}
+
+/**
+ * Handler for unique thank you page in chrome.tabs.onUpdated event listener
+ * Updates user in storage & inserts HTML into page when uniqueIDs are matched
+ * @returns {Promise<void>}
+ */
+export async function handleUniqueThankyouVisit(tab) {
+    const timeId = parseInt(tab.url.substring(tab.url.indexOf("=") + 1))
+    // check if the time IDs match => show the reload popup & save user to storage
+    const data = await chrome.storage.local.get("thankyouTimeId")
+    if (data.thankyouTimeId === timeId) {
+        // get user & save to storage
+        const user = await fetchUser();
+        if (user === null) {
+            // show login popup on thankyou?
+        } else {
+            // save user & remove sign up blocker in popup
+            chrome.storage.sync.set({ "user": user, "activePage": "defaultPopup.html" })
+            chrome.storage.local.set({ "thankyouTimeId": null })
+            // load html to storage
+            await loadHTMLBlob('dist/html/blobs/pageReloadPrompt.html', tab.id, "reloadTabs")
+        }
+    }
+}
+
+/**
+ * Handles the fetch user message in the chrome.runtime.onMessage event listener
+ * Fetches user and sends it back to message sender
+ * @param sendResponse function from chrome.runtime.onMessage to send response back to message sender
+ * @returns {Promise<void>} void
+ */
+export async function handleFetchUser(sendResponse) {
+    let user = await fetchUser();
+    let statusCode = 200;
+    if (user === null) {
+        statusCode = 404;
+    }
+    sendResponse({ "user": user, "status": statusCode })
 }
