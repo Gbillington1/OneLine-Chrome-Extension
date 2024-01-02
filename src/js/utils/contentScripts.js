@@ -1,4 +1,5 @@
-import { getValueFromStorage } from "./global";
+import { getValueFromStorage, forwardRequest } from "./global";
+import $ from "jquery";
 
 /**
  * updates the global css style with the new color
@@ -28,4 +29,62 @@ export async function handleTabChange(onOffSwitchState, activeColor, ol) {
     }
 
     return onOffSwitchState; // return current state of switch
+}
+
+export async function getRefreshedUser() {
+    const user = await getValueFromStorage("user")
+
+    // no user or user expired
+    if ((user === undefined || user === null) || Date.now() > user.expires_at) {
+        // fetch for user & return
+        try {
+            const response = await forwardRequest({ "fetchUser": true })
+            return response.user
+        } catch (err) {
+            console.error(err)
+            return null
+        }
+    }
+}
+
+/**
+ * Inserts reload tabs HTML into page and sets up event listeners
+ * Helper function for {@link loadHTMLFromStorage}
+ * @param html HTML string of the reload tabs popup
+ */
+export function setupReloadPopup(html) {
+    document.body.insertAdjacentHTML('beforeend', html);
+    $('#ol-reload-btn').click(() => forwardRequest({ reload: true }));
+    $('#ol-close-btn').click(() => $('#ol-reload-page-prompt').remove());
+}
+
+/**
+ * Fetches the latest HTML from sync storage & inserts it into the page if it exists
+ * @returns {Promise<void>} void
+ */
+export async function loadHTMLFromStorage() {
+    let latestHTML = await getValueFromStorage("latestHTML")
+    if (latestHTML !== undefined && latestHTML !== null) {
+        if (latestHTML.purpose === "reloadTabs") {
+            setupReloadPopup(latestHTML.content)
+        } else if (latestHTML.purpose === "openPDF") {
+            setupPDFPopup(latestHTML.content)
+        }
+
+        // make sure to clear after inserting
+        chrome.storage.sync.set({"latestHTML": null})
+    }
+}
+
+/**
+ * Inserts PDF popup HTML into page and sets up event listeners
+ * Helper function for {@link loadHTMLFromStorage}
+ * @param html HTML string of the PDF popup
+ */
+function setupPDFPopup(html) {
+    document.body.insertAdjacentHTML('beforeend', html);
+    // forward request to background script to open OneLine PDF Viewer with pdf URL
+    $("#ol-openPDF").click(() => forwardRequest({ pdf: window.location.href }))
+    // close the coming soon modal
+    $("#ol-dismissPDF").click(() => $('#ol-open-pdf-popup').remove())
 }

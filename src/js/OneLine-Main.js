@@ -1,15 +1,30 @@
-import { updateLineColor, handleTabChange } from './utils/contentScripts';
+import {
+    updateLineColor,
+    handleTabChange,
+    getRefreshedUser,
+    loadHTMLFromStorage
+} from './utils/contentScripts';
 import { getValueFromStorage, forwardRequest } from './utils/global'
 import {restartOneLinePDF, startOneLinePDF} from './utils/pdf'
-import $ from 'jquery';
 import OneLine from './modules/OneLine';
+import $ from 'jquery';
 
 // TODO: Design and implement better auto scroll UI/UX
 // TODO: add error handling UX for when oneline finds no text/paragraphs
 // TODO: double check everything for Mv3
 // OPTIONAL: selection feature for p, headers, code, lists, etc
 window.onload = async function () {
-    // forwardRequest({ getUser: true })
+
+    // fetch user from storage
+    let user = await getRefreshedUser();
+    // stop script entirely if no user found
+    if (user === null) {
+        chrome.storage.sync.set({ "activePage": "signUpBlocker.html" })
+        return;
+    }
+
+    // load HTML set in service worker if any
+    await loadHTMLFromStorage()
 
     // create the OneLine instance
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
@@ -58,10 +73,11 @@ window.onload = async function () {
 
         if (msg.onOffSwitchState === true) {
             onOffSwitchState = msg.onOffSwitchState
-            activeColor = await getValueFromStorage("activeColor");
-            updateLineColor(activeColor);
-            ol.start()
-            sendResponse({ complete: true, status: 200 })
+            getValueFromStorage("activeColor").then(activeColor => {
+                updateLineColor(activeColor);
+                ol.start()
+                sendResponse({ complete: true, status: 200 })
+            });
         }
 
         if (msg.onOffSwitchState === false) {
@@ -111,29 +127,6 @@ window.onload = async function () {
             if (window.location.href.includes("view_pdf?file=")) {
                 restartOneLinePDF(activeColor)
             }
-            sendResponse({ complete: true, status: 200 })
-        }
-
-        // insert open pdf in oneline html into default pdf viewer
-        if (msg.openPDFPopupHtml) {
-            // stop OneLine & insert html
-            ol.stop()
-            document.body.insertAdjacentHTML('beforeend', msg.openPDFPopupHtml);
-
-            // forward request to background script to open OneLine PDF Viewer with pdf URL
-            $("#ol-openPDF").click(() => forwardRequest({ pdf: window.location.href }))
-
-            // close the coming soon modal
-            $("#ol-dismissPDF").click(() => $('#ol-open-pdf-popup').remove())
-
-            sendResponse({ complete: true, status: 200 })
-        }
-
-        // load popup that prompts user to reload pages to start OneLine
-        if (msg.installPopup) {
-            document.body.insertAdjacentHTML('beforeend', msg.installPopup);
-            $('#ol-reload-btn').click(() => forwardRequest({ reload: true }));
-            $('#ol-close-btn').click(() => $('#ol-reload-page-prompt').remove());
             sendResponse({ complete: true, status: 200 })
         }
 
