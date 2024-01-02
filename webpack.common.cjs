@@ -8,6 +8,7 @@ module.exports = {
         background: './src/js/background/sw.js',
         defaultPopup: './src/js/popup/defaultPopup.js',
         colorSettingsPopup: './src/js/popup/colorSettings.js',
+        signUpBlocker: './src/js/popup/signUpBlocker.js'
     },
     output: {
         filename: 'js/[name].bundle.js',
@@ -24,6 +25,11 @@ module.exports = {
             template: "./src/html/colorSettings.html",
             filename: "html/colorSettings.html",
             chunks: ['colorSettingsPopup'],  // Specify the associated JS bundle
+        }),
+        new HtmlWebpackPlugin({
+            template: "./src/html/signUpBlocker.html",
+            filename: "html/signUpBlocker.html",
+            chunks: ['signUpBlocker'],  // Specify the associated JS bundle
         }),
         new HtmlWebpackPlugin({
             template: "./src/html/blobs/pageReloadPrompt.html",
