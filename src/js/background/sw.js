@@ -6,6 +6,7 @@ import {
     loadHTMLBlob,
     setupUniqueThankyouLink,
     handleFetchUser,
+    handleTrackEvent,
     handleThankyouVisit
 } from "../utils/sw";
 
@@ -18,10 +19,21 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
-    // open login page when connect button clicked in popup
-    if (msg.connectAccBtnClicked) {
+    // open login or page when buttons are clicked in popup
+    if (msg.loginBtnClicked) {
         const thankyouURL = setupUniqueThankyouLink()
         chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(thankyouURL)}`, active: true })
+        sendResponse({loginBtnClicked: true, status: 200})
+    }
+
+    if (msg.signUpBtnClicked) {
+        const thankyouURL = setupUniqueThankyouLink()
+        chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
+        sendResponse({signUpBtnClicked: true, status: 200})
+    }
+
+    if (msg.trackEvent) {
+        handleTrackEvent(msg.trackEvent, sendResponse)
     }
 
     // fetch user from flask app, null if not authenticated

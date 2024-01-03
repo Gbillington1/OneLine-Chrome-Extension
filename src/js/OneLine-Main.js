@@ -31,6 +31,7 @@ window.onload = async function () {
     let ol = OneLine(onOffSwitchState)
     let abionicSwtichState = await getValueFromStorage("abionicSwitchState");
     let activeColor = await getValueFromStorage("activeColor");
+    let movedLineOnPage = false;
 
     // don't start OneLine on pdf pages
     if (!location.href.endsWith('.pdf')) {
@@ -39,6 +40,13 @@ window.onload = async function () {
         // maybe add a check here to see if the current page is valid for OneLin
 
         if (onOffSwitchState === true) {
+            forwardRequest({ trackEvent: {
+                    "name": "oneline_loaded_with_master_active",
+                    "properties": {
+                        "url": window.location.href
+                    }
+                }
+            })
             updateLineColor(activeColor);
             ol.start();
         }
@@ -73,6 +81,13 @@ window.onload = async function () {
 
         if (msg.onOffSwitchState === true) {
             onOffSwitchState = msg.onOffSwitchState
+            forwardRequest({ trackEvent: {
+                    "name": "oneline_loaded_with_master_active",
+                    "properties": {
+                        "url": window.location.href
+                    }
+                }
+            })
             getValueFromStorage("activeColor").then(activeColor => {
                 updateLineColor(activeColor);
                 ol.start()
@@ -162,14 +177,26 @@ window.onload = async function () {
         // don't move line when user is editing text in <input> or <textarea> 
         if (!$(e.target).is("input, textarea") && onOffSwitchState) {
 
+            // arrow keys pressed and we haven't tracked a line movement on this page
+            if ((e.keyCode === 38 || e.keyCode === 40) && !movedLineOnPage) {
+                forwardRequest({ trackEvent: {
+                        "name": "oneline_moved_on_page",
+                        "properties": {
+                            "url": window.location.href
+                        }
+                    }
+                })
+                movedLineOnPage = true;
+            }
+
             // up arrow pressed
-            if (e.keyCode == 38) {
+            if (e.keyCode === 38) {
 
                 e.preventDefault();
                 ol.moveLine("up");
 
                 // down arrow pressed
-            } else if (e.keyCode == 40) {
+            } else if (e.keyCode === 40) {
 
                 e.preventDefault();
                 ol.moveLine("down");

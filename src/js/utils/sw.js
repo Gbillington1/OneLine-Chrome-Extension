@@ -45,11 +45,11 @@ export async function handleReason(details) {
         return
     }
 
+    if (details.reason === "install") {
         await handleOnInstall()
-    // if (details.reason === "install") {
-    // } else if (details.reason === "update") {
-    //     handleOnUpdate()
-    // }
+    } else if (details.reason === "update") {
+        handleOnUpdate()
+    }
 }
 
 /**
@@ -64,7 +64,7 @@ async function handleOnInstall() {
         // use current time in millis as an identifier to check when user lands on thank you page after login in tabs.onUpdated listener
         chrome.storage.sync.set({ "activePage": "signUpBlocker.html" })
         // encode URL with our time ID to define next page where user is sent after login/signup
-        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(thankyouURL)}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
     } else {
         chrome.storage.sync.set({"activePage": "defaultPopup.html", "user": user})
         chrome.tabs.create({ url: `${thankyouURL}`, active: true })
@@ -181,4 +181,17 @@ export async function handleFetchUser(sendResponse) {
         statusCode = 404;
     }
     sendResponse({ "user": user, "status": statusCode })
+}
+
+export async function handleTrackEvent(event, sendResponse) {
+    const response = await fetch(`${process.env.API_HOST}/api/track`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(event)
+    })
+    const data = await response.json();
+    console.log("send fetch and got data")
+    sendResponse(data)
 }

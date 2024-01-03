@@ -31,6 +31,17 @@ $(document).ready(() => {
         const stateOfSwitch = e.currentTarget.checked; 
         chrome.storage.sync.set({ "onOffSwitchState": stateOfSwitch })
         sendMsgToCS({ onOffSwitchState: stateOfSwitch })
+        chrome.tabs.query({active: true}, function(tabs) {
+            let url = tabs[0].url;
+            forwardRequest({ trackEvent: {
+                    "name": "master_switch_toggled",
+                    "properties": {
+                        "switchState": stateOfSwitch,
+                        "url": url
+                    }
+                }
+            })
+        })
 
     })
 
