@@ -69,6 +69,8 @@ export async function loadHTMLFromStorage() {
             setupReloadPopup(latestHTML.content)
         } else if (latestHTML.purpose === "openPDF") {
             setupPDFPopup(latestHTML.content)
+        } else if (latestHTML.purpose === "unsupportedPage") {
+            setupUnsupportedPageAlert(latestHTML.content)
         }
 
         // make sure to clear after inserting
@@ -88,3 +90,17 @@ function setupPDFPopup(html) {
     // close the coming soon modal
     $("#ol-dismissPDF").click(() => $('#ol-open-pdf-popup').remove())
 }
+
+/**
+ * Inserts unsupported page alert HTML into page and sets up event listeners
+ * Helper function for {@link loadHTMLFromStorage}
+ * @param html HTML string of the PDF popup
+ */
+function setupUnsupportedPageAlert(html) {
+    document.body.insertAdjacentHTML('beforeend', html);
+    let $alert = $("#ol-unsupported-page-alert")
+    $("#ol-thanks-btn").click(() => $alert.remove())
+    $("#ol-close-btn").click(() => $alert.remove())
+    console.log("loaded")
+}
+
