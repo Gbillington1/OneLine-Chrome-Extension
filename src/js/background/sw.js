@@ -48,6 +48,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({openPDF: true, status: 200})
     }
 
+    if (msg.showUnsupportedPageAlert) {
+        loadHTMLBlob("dist/html/blobs/unsupportedPageAlert.html", sender.tab.id, "unsupportedPage").then(() => {
+            sendResponse({showUnsupportedPageAlert: true, status: 200})
+        })
+    }
+
     if (msg.signUp) {
         chrome.tabs.create({url: "https://useoneline.com/newsletter/signup?source=pdf"})
         sendResponse({signUp: true, status: 200})

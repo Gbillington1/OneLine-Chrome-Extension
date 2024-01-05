@@ -31,22 +31,13 @@ module.exports = {
             filename: "html/signUpBlocker.html",
             chunks: ['signUpBlocker'],  // Specify the associated JS bundle
         }),
-        new HtmlWebpackPlugin({
-            template: "./src/html/blobs/pageReloadPrompt.html",
-            filename: "html/blobs/pageReloadPrompt.html",
-            chunks: [""]
-        }),
-        new HtmlWebpackPlugin({
-            template: "./src/html/blobs/openPDFInOneLinePopup.html",
-            filename: "html/blobs/openPDFInOneLinePopup.html",
-            chunks: [""]
-        }),
         // copy css files
         new CopyWebpackPlugin({
             patterns: [
                 { from: "./src/css", to: "css" },
                 { from: "./src/images", to: "images" },
-                { from: "./src/webfonts", to: "webfonts"}
+                { from: "./src/webfonts", to: "webfonts"},
+                { from: "./src/html/blobs", to: "html/blobs" }
             ]
         })
     ],

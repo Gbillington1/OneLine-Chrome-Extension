@@ -1,4 +1,6 @@
 import $ from "jquery";
+import {loadHTMLFromStorage} from "./contentScripts";
+import {forwardRequest} from "./global";
 
 /**
  * Entrypoint for OneLine PDF functionality -- MVP
@@ -7,43 +9,10 @@ import $ from "jquery";
  * Arrow key/Moving line mechanics not yet built
  */
 export function startOneLinePDF(activeColor) {
+    bindMutationObserver()
     let prevTarget = null;
-    $("#viewer").mousemove(function(e) {
-
-        // populate spans map with spans from page that mouse is over (only store 1 page as hacky optimization)
-        let target = e.target
-        let pageNum = getPageNumFrom(target)
-        let lineIdToSpans = buildSpansMap($("div.page[data-page-number=" + pageNum + "] span:visible").not(".markedContent"))
-
-        // check for line id on target
-        let lineId = target.getAttribute('ol-line-id')
-
-        // remove background red from prevTarget
-        // important to do this before returning if no lineId to clear background on all elements
-        if (prevTarget !== null && prevTarget.getAttribute('ol-line-id') !== lineId) {
-            let prevSpans = lineIdToSpans.get(prevTarget.getAttribute('ol-line-id'))
-            if (prevSpans !== undefined) {
-                prevSpans.forEach(span => {
-                    span.style.backgroundColor = ""
-                })
-            }
-        }
-
-        // if line is not target, return
-        if (lineId === null) {
-            return;
-        }
-
-        // use map to get spans from line id
-        let spans = lineIdToSpans.get(lineId)
-
-        // background red
-        spans.forEach(span => {
-            span.style.backgroundColor = activeColor;
-        })
-
-        prevTarget = target
-
+    $("#viewer").mousemove((e) => {
+        highlightLineUnderMouse(e, prevTarget, activeColor)
     })
 }
 
@@ -118,4 +87,81 @@ export function getPageNumFrom(target) {
         currentNode = currentNode.parentNode;
     }
     return null; // Return null if no matching div.page found in the DOM hierarchy
+}
+
+/**
+ * Creates the {@link MutationObserver} object with a callback to call on every DOM mutation that checks if the
+ * PDF has a textLayer that we can highlight and loads an HTML alert if the PDF is not supported
+ */
+function bindMutationObserver() {
+    // if we use this, need to disconnect when tab switches away from pdf viewer
+    // TODO: Disconnect observer when tab switches away from /view_pdf
+    const observer = new MutationObserver((mutations, observer) => {
+        for (const record of mutations) {
+            // doesn't fully work yet because blank pages in PDF that do have textLayers will pass this if statement
+            if (record.type === "childList"
+                && record.target.className === "textLayer"
+                && record.addedNodes.item(0).className === "endOfContent"
+                && record.previousSibling === null
+                && $("div.page span:visible").not(".markedContent").length === 0)
+            {
+                forwardRequest({showUnsupportedPageAlert: true}).then((resp) => {
+                    if (resp.showUnsupportedPageAlert) {
+                        loadHTMLFromStorage()
+                    }
+                })
+            }
+        }
+    })
+    observer.observe(document.getElementById("viewer"), {childList: true, subtree: true })
+}
+
+/**
+ * Event handler for the #viewer mousemove
+ * Selects all the spans on the page that the user is hovering over, builds a map of lines & line IDs
+ * Highlight each line with the active color when the user is hovering over that line
+ * @param e mousemove event
+ * @param prevTarget previous line that was highlighted
+ * @param activeColor active color of line from extension popup
+ */
+function highlightLineUnderMouse(e, prevTarget, activeColor) {
+    // populate spans map with spans from page that mouse is over (only store 1 page as hacky optimization)
+    let target = e.target
+    let pageNum = getPageNumFrom(target)
+    let $spans = $("div.page[data-page-number=" + pageNum + "] span:visible").not(".markedContent")
+    // show unsupported alert when no spans found
+    if ($spans.length === 0) {
+
+    }
+    let lineIdToSpans = buildSpansMap($("div.page[data-page-number=" + pageNum + "] span:visible").not(".markedContent"))
+
+    // check for line id on target
+    let lineId = target.getAttribute('ol-line-id')
+
+    // remove background red from prevTarget
+    // important to do this before returning if no lineId to clear background on all elements
+    if (prevTarget !== null && prevTarget.getAttribute('ol-line-id') !== lineId) {
+        let prevSpans = lineIdToSpans.get(prevTarget.getAttribute('ol-line-id'))
+        if (prevSpans !== undefined) {
+            prevSpans.forEach(span => {
+                span.style.backgroundColor = ""
+            })
+        }
+    }
+
+    // if line is not target, return
+    if (lineId === null) {
+        return;
+    }
+
+    // use map to get spans from line id
+    let spans = lineIdToSpans.get(lineId)
+
+    // background red
+    spans.forEach(span => {
+        span.style.backgroundColor = activeColor;
+    })
+
+    prevTarget = target
+
 }
