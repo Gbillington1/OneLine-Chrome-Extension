@@ -12,6 +12,9 @@ module.exports = {
       zIndex: {
         "max": "2147483647",
       },
+      boxShadow: {
+        'custom': '5px 5px 20px 5px rgba(0,0,0,0.5)',
+      },
     },
   },
   plugins: [],
