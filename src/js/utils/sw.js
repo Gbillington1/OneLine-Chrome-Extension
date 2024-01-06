@@ -192,6 +192,5 @@ export async function handleTrackEvent(event, sendResponse) {
         body: JSON.stringify(event)
     })
     const data = await response.json();
-    console.log("send fetch and got data")
     sendResponse(data)
 }

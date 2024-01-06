@@ -101,6 +101,5 @@ function setupUnsupportedPageAlert(html) {
     let $alert = $("#ol-unsupported-page-alert")
     $("#ol-thanks-btn").click(() => $alert.remove())
     $("#ol-close-btn").click(() => $alert.remove())
-    console.log("loaded")
 }
 

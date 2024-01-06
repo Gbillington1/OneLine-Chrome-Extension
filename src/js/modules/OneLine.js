@@ -5,6 +5,8 @@
 */
 import $ from 'jquery';
 import ParagraphController from './ParagraphController';
+import {loadHTMLFromStorage} from "../utils/contentScripts";
+import { forwardRequest } from "../utils/global"
 
 const OneLine = function OneLine(onOffSwitchState) {
 
@@ -16,17 +18,17 @@ const OneLine = function OneLine(onOffSwitchState) {
         // TODO: Find better way to check if we have started because this doesn't always work (splitting.js.org breaks because it has span.word and whitespace)
         if ($('span.word:not(style *), span.whitespace:not(style *)').length === 0) {
             let result = paragraphController.populateRelevantParagraphArray();
-            
             // if result is -1, then there are no paragraphs on the page
-            // notify user
             if (result === -1) {
-                // ideally show a popup that allows users to input if this is a mistake, or if there is an issue with this page (sort of like a report bug button)
-                // and stop execution of the program
-                // maybe have this check in move line so the popup doesnt come up every time the page loads? Think about when you want the user to be shown the popup
-            };
-            
-            paragraphController.createOneLineParagraph();
-        
+                // tell sw to load blob for page alert
+                forwardRequest({showUnsupportedPageAlert: true}).then(async (resp) => {
+                    if (resp.showUnsupportedPageAlert) {
+                        await loadHTMLFromStorage()
+                    }
+                })
+            } else {
+                paragraphController.createOneLineParagraph();
+            }
         }
 
         paragraphController.beginHighlighting();
