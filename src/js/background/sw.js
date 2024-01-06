@@ -29,6 +29,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({signUpBtnClicked: true, status: 200})
     }
 
+    if (msg.logout) {
+        chrome.tabs.create({ url: `${process.env.API_HOST}/logout`})
+        sendResponse({logout: true, status: 200})
+    }
+
     // send api req to flask to track event with mixpanel
     if (msg.trackEvent) {
         handleTrackEvent(msg.trackEvent, sendResponse)
@@ -69,22 +74,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         loadHTMLBlob('dist/html/blobs/openPDFInOneLinePopup.html', sender.tab.id, "openPDF").then(() => {
             sendResponse({ showOpenPDFInOneLine: true, status: 200 })
         })
-    }
-
-    if (msg.signUp) {
-        chrome.tabs.create({url: "https://useoneline.com/newsletter/signup?source=pdf"})
-        sendResponse({signUp: true, status: 200})
-    }
-
-    if (msg.logout) {
-        chrome.tabs.create({ url: `${process.env.API_HOST}/logout`})
-        sendResponse({logout: true, status: 200})
-
-    }
-
-    if (msg.popupEmailList) {
-        chrome.tabs.create({url: "https://useoneline.com/newsletter/signup?source=popup"})
-        sendResponse({popupEmailList: true, status: 200})
     }
 
     // reload all pages

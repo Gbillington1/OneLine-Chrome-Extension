@@ -54,13 +54,12 @@ window.onload = async function () {
 
     // load HTML set in service worker if any
     await loadHTMLFromStorage()
-
     // create the OneLine instance
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
     let ol = OneLine(onOffSwitchState)
-    let abionicSwtichState = await getValueFromStorage("abionicSwitchState");
     let activeColor = await getValueFromStorage("activeColor");
     let movedLineOnPage = false;
+    // let abionicSwtichState = await getValueFromStorage("abionicSwitchState");
 
     // don't start OneLine on pdf pages
     if (!location.href.endsWith('.pdf')) {
@@ -80,12 +79,12 @@ window.onload = async function () {
             ol.start();
         }
 
-        if (abionicSwtichState === true) {
-            ol.toggleAbionic();
-            if (onOffSwitchState === true) {
-                ol.resize();
-            }
-        }
+        // if (abionicSwtichState === true) {
+        //     ol.toggleAbionic();
+        //     if (onOffSwitchState === true) {
+        //         ol.resize();
+        //     }
+        // }
     } else {
         // if we are on the OneLine PDF viewer page
         if (location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
@@ -93,8 +92,6 @@ window.onload = async function () {
         }
     }
 
-    // listen for changes in the switch state
-    // TODO: make sure all message passing is working with manifest v3
     chrome.runtime.onMessage.addListener(async function (msg, sender, sendResponse) {
 
         if (chrome.runtime.lastError) {
@@ -130,49 +127,52 @@ window.onload = async function () {
             sendResponse({ complete: true, status: 200 })
         }
 
-        if (msg.abionicSwitchState === true) {
-            abionicSwtichState = msg.abionicSwitchState
-            onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-            if (onOffSwitchState === true) {
-                activeColor = await getValueFromStorage("activeColor");
-                updateLineColor(activeColor)
-                ol.clearPage();
-                ol.start()
-                ol.toggleAbionic()
-                ol.resize()
-            } else if (onOffSwitchState === false) {
-                ol.toggleAbionic()
-            }
-            sendResponse({ complete: true, status: 200 })
-        }
-
-        if (msg.abionicSwitchState === false) {
-            abionicSwtichState = msg.abionicSwitchState
-            onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-            if (onOffSwitchState === true) {
-                activeColor = await getValueFromStorage("activeColor");
-                updateLineColor(activeColor)
-                ol.clearPage();
-                ol.toggleAbionic()
-                ol.start()
-                // ol.resize()
-            } else if (onOffSwitchState === false) {
-                ol.toggleAbionic()
-            }
-            sendResponse({ complete: true, status: 200 })
-        }
-
+        // handle active color update for web & pdf
         if (msg.activeColor && msg.activeColor.includes('#')) {
             activeColor = msg.activeColor
             updateLineColor(activeColor);
             if (onOffSwitchState === true) {
-                ol.start()
-            }
-            if (window.location.href.includes("view_pdf?file=")) {
-                restartOneLinePDF(activeColor)
+                if (location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
+                    restartOneLinePDF(activeColor)
+                } else if (!location.href.endsWith('.pdf')) {
+                    ol.start()
+                }
             }
             sendResponse({ complete: true, status: 200 })
         }
+
+        // ABIONIC LISTENERS -- NEEDS REFACTORING
+        // if (msg.abionicSwitchState === true) {
+        //     abionicSwtichState = msg.abionicSwitchState
+        //     onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+        //     if (onOffSwitchState === true) {
+        //         activeColor = await getValueFromStorage("activeColor");
+        //         updateLineColor(activeColor)
+        //         ol.clearPage();
+        //         ol.start()
+        //         ol.toggleAbionic()
+        //         ol.resize()
+        //     } else if (onOffSwitchState === false) {
+        //         ol.toggleAbionic()
+        //     }
+        //     sendResponse({ complete: true, status: 200 })
+        // }
+        //
+        // if (msg.abionicSwitchState === false) {
+        //     abionicSwtichState = msg.abionicSwitchState
+        //     onOffSwitchState = await getValueFromStorage("onOffSwitchState");
+        //     if (onOffSwitchState === true) {
+        //         activeColor = await getValueFromStorage("activeColor");
+        //         updateLineColor(activeColor)
+        //         ol.clearPage();
+        //         ol.toggleAbionic()
+        //         ol.start()
+        //         ol.resize()
+        //     } else if (onOffSwitchState === false) {
+        //         ol.toggleAbionic()
+        //     }
+        //     sendResponse({ complete: true, status: 200 })
+        // }
 
         /* 
         TODO: Think about if I should use OneLine to control TTS, or if I should use and TTS controller and instanciate it here

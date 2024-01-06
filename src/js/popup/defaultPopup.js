@@ -7,18 +7,12 @@ loadActivePage();
 $(document).ready(() => {
 
     loadOnOffSwitch();
-    loadAbionicSwitch();
+    // loadAbionicSwitch();
 
     $('#colorSettings').click(() => {
 
         chrome.storage.sync.set({ "activePage": "colorSettings.html" })
         window.location.href = "colorSettings.html"
-    
-    })
-
-    $('#emailList').click(() => {
-    
-        forwardRequest({ popupEmailList: true })
     
     })
 
@@ -45,12 +39,12 @@ $(document).ready(() => {
 
     })
 
-    $('#abionicSwitch').change((e) => {
-
-        const stateOfSwitch = e.currentTarget.checked; 
-        chrome.storage.sync.set({ "abionicSwitchState": stateOfSwitch })
-        sendMsgToCS({ abionicSwitchState: stateOfSwitch })
-
-    })
+    // $('#abionicSwitch').change((e) => {
+    //
+    //     const stateOfSwitch = e.currentTarget.checked;
+    //     chrome.storage.sync.set({ "abionicSwitchState": stateOfSwitch })
+    //     sendMsgToCS({ abionicSwitchState: stateOfSwitch })
+    //
+    // })
 
 })
