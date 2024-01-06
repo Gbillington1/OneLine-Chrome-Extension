@@ -1,4 +1,4 @@
-import { getValueFromStorage, forwardRequest } from "./global";
+import {getValueFromStorage, forwardRequest, getValueFromLocalStorage} from "./global";
 import $ from "jquery";
 
 /**
@@ -19,32 +19,38 @@ export function updateLineColor(color) {
 export async function handleTabChange(onOffSwitchState, activeColor, ol) {
 // returns the current state of the switch so it can be set in the message event listener
     onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-
-    if (onOffSwitchState === true && !location.href.endsWith('.pdf')) {
+    let user = await getRefreshedUser();
+    if ((user !== null && user.authenticated === true) && onOffSwitchState === true && !location.href.endsWith('.pdf')) {
         activeColor = await getValueFromStorage("activeColor");
         updateLineColor(activeColor);
         ol.start();
-    } else if (onOffSwitchState === false) {
+    } else if (onOffSwitchState === false || user === null) {
         ol.stop();
     }
 
     return onOffSwitchState; // return current state of switch
 }
 
+/**
+ * Look for user in storage, get it from service worker (who will hit the API) to get the user
+ * When service worker hits API endpoint, the users access token is refreshed
+ * @returns {Promise<*>} user obj or null
+ */
 export async function getRefreshedUser() {
-    const user = await getValueFromStorage("user")
+    let user = await getValueFromLocalStorage("user")
 
     // no user or user expired
     if ((user === undefined || user === null) || Date.now() > user.expires_at) {
         // fetch for user & return
         try {
             const response = await forwardRequest({ "fetchUser": true })
-            return response.user
+            user = response.user
         } catch (err) {
             console.error(err)
             return null
         }
     }
+    return user;
 }
 
 /**
@@ -71,6 +77,8 @@ export async function loadHTMLFromStorage() {
             setupPDFPopup(latestHTML.content)
         } else if (latestHTML.purpose === "unsupportedPage") {
             setupUnsupportedPageAlert(latestHTML.content)
+        } else if (latestHTML.purpose === "signUpFor") {
+            setupSignUpForPDFPopup(latestHTML.content)
         }
 
         // make sure to clear after inserting
@@ -84,6 +92,11 @@ export async function loadHTMLFromStorage() {
  * @param html HTML string of the PDF popup
  */
 function setupPDFPopup(html) {
+    // avoid adding more than once
+    if ($("#ol-open-pdf-popup").length > 0) {
+        return
+    }
+
     document.body.insertAdjacentHTML('beforeend', html);
     // forward request to background script to open OneLine PDF Viewer with pdf URL
     $("#ol-openPDF").click(() => forwardRequest({ pdf: window.location.href }))
@@ -97,9 +110,37 @@ function setupPDFPopup(html) {
  * @param html HTML string of the PDF popup
  */
 function setupUnsupportedPageAlert(html) {
+    // avoid adding more than once
+    if ($("#ol-unsupported-page-alert").length > 0) {
+        return
+    }
+
     document.body.insertAdjacentHTML('beforeend', html);
     let $alert = $("#ol-unsupported-page-alert")
     $("#ol-thanks-btn").click(() => $alert.remove())
     $("#ol-close-btn").click(() => $alert.remove())
+}
+
+function setupSignUpForPDFPopup(html) {
+    // avoid adding more than once
+    if ($("#ol-sign-up-for").length > 0) {
+        return
+    }
+
+    // determine next page url
+    let nextPage = window.location.href
+    if (nextPage.endsWith('.pdf')) {
+        nextPage = `${process.env.API_HOST}/view_pdf?file=${encodeURIComponent(window.location.href)}`
+    }
+
+    // insert into html and bind listeners
+    document.body.insertAdjacentHTML('beforeend', html);
+    $("#ol-close-btn").click(() => $("#ol-sign-up-for").remove())
+    $("#ol-signUp").click(() => {
+        forwardRequest({ "signUpBtnClicked": true, "next": nextPage})
+    })
+    $("#ol-login").click(() => {
+        forwardRequest({ "loginBtnClicked": true, "next": nextPage })
+    })
 }
 
