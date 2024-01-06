@@ -4,7 +4,6 @@ import {
     initOnOffSwitchState,
     handleReason,
     loadHTMLBlob,
-    setupUniqueThankyouLink,
     handleFetchUser,
     handleTrackEvent,
     handleThankyouVisit
@@ -21,17 +20,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // open login or page when buttons are clicked in popup
     if (msg.loginBtnClicked) {
-        const thankyouURL = setupUniqueThankyouLink()
-        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(thankyouURL)}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(msg.next)}`, active: true })
         sendResponse({loginBtnClicked: true, status: 200})
     }
 
     if (msg.signUpBtnClicked) {
-        const thankyouURL = setupUniqueThankyouLink()
-        chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(msg.next)}`, active: true })
         sendResponse({signUpBtnClicked: true, status: 200})
     }
 
+    // send api req to flask to track event with mixpanel
     if (msg.trackEvent) {
         handleTrackEvent(msg.trackEvent, sendResponse)
     }
@@ -43,14 +41,33 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // load pdf reader
     if (msg.pdf) {
-        // TODO: Update to prod URL
         chrome.tabs.create({url: `${process.env.API_HOST}/view_pdf?file=${encodeURIComponent(msg.pdf)}`})
         sendResponse({openPDF: true, status: 200})
     }
 
+    // messages to load HTML into the pages (popups)
+    // TODO: Find more general abstraction to replace this current method (lots of duplicated code)
     if (msg.showUnsupportedPageAlert) {
         loadHTMLBlob("dist/html/blobs/unsupportedPageAlert.html", sender.tab.id, "unsupportedPage").then(() => {
             sendResponse({showUnsupportedPageAlert: true, status: 200})
+        })
+    }
+
+    if (msg.showSignUpForPDF) {
+        loadHTMLBlob("dist/html/blobs/signUpForPDF.html", sender.tab.id, "signUpFor").then(() => {
+            sendResponse({ showSignUpForPDF: true, status: 200 })
+        })
+    }
+
+    if (msg.showSignUpForWeb) {
+        loadHTMLBlob("dist/html/blobs/signUpForWeb.html", sender.tab.id, "signUpFor").then(() => {
+            sendResponse({ showSignUpForWeb: true, status: 200 })
+        })
+    }
+
+    if (msg.showOpenPDFInOneLine) {
+        loadHTMLBlob('dist/html/blobs/openPDFInOneLinePopup.html', sender.tab.id, "openPDF").then(() => {
+            sendResponse({ showOpenPDFInOneLine: true, status: 200 })
         })
     }
 
@@ -82,35 +99,32 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({reload: true, status: 200})
     }
 
+    // send tab change event when page loads initially
+    if (msg.pageLoaded === true) {
+        sendResponse({ pageLoaded: true, status: 200 })
+        sendMsgToCS({ tabChanged: true }).catch(err => {
+            console.error(err)
+        })
+    }
+
     // allow async calls
     return true
 })
 
-// Tab change: Fire when tab changes, make sure to wait for content script to load before sending message
-// TODO: Update this method of waiting for page to load, having two chrome.runtime.onMessage listeners seems like a very bad idea
-chrome.tabs.onActivated.addListener(async (activeInfo) => {
-    let tab = await chrome.tabs.get(activeInfo.tabId)
-    // this fires when the user goes to a tab that was already loaded
-    if (tab.url) {
-        sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => console.error(err))
-        // this fires when the user goes to a tab that hasn't been loaded yet (no URL set on tab)
-    } else {
-        // wait for content script to send loaded message
-        chrome.runtime.onMessage.addListener(async (msg, sender, sendResponse) => {
-            if (msg.pageLoaded === true) {
-                sendMsgToCS({ tabChanged: true }, activeInfo.tabId).catch(err => {
-                    console.error(err)
-                })
-                sendResponse({ pageLoaded: true, status: 200 })
-            }
-        })
-    }
+// Fires when tab changes
+// sends tab change update to content script if page has been loaded
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    chrome.tabs.get(activeInfo.tabId).then(tab => {
+        // this fires when the user goes to a tab that was already loaded
+        if (tab.url) {
+            sendMsgToCS({ tabChanged: true }).catch(err => console.error(err))
+        }
+    })
     return true
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-
-    if (changeInfo.status == "complete" && tab.url) {
+    if (changeInfo.status === "complete" && tab.url) {
         const url = new URL(tab.url)
 
         // if logout page is hit, clear user from storage
@@ -118,8 +132,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
             chrome.storage.sync.set({ "user": null, "activePage": "signUpBlocker.html" })
         } else if (url.href.includes("useoneline.com/thankyou?")) {
             handleThankyouVisit(url, tab.id)
-        } else if (!url.href.includes(`${process.env.API_HOST}/view_pdf?file=`) && url.href.endsWith('.pdf')) {
-            loadHTMLBlob('dist/html/blobs/openPDFInOneLinePopup.html', tab.id, "openPDF")
         }
         // TODO: Handle modern web apps that don't reload the page when new content is loaded (think nextJS & react apps)
         // The issue is that the highlighted content gets lost when new content is loaded, and the line needs to be refreshed to highlight the start of the new content (issue stems from the fact that most code runs when page loads, but new webapps seldom reload page)

@@ -1,5 +1,5 @@
 /** Utility functions for js/background/sw.js */
-import {sendMsgToCS} from "./global";
+import {forwardRequest, getValueFromStorage, sendMsgToCS} from "./global";
 
 /**
  * Initializes the onOffSwitchState variable in sync storage when the extension is installed
@@ -66,7 +66,8 @@ async function handleOnInstall() {
         // encode URL with our time ID to define next page where user is sent after login/signup
         chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
     } else {
-        chrome.storage.sync.set({"activePage": "defaultPopup.html", "user": user})
+        chrome.storage.sync.set({"activePage": "defaultPopup.html"})
+        chrome.storage.local.set({"user": user})
         chrome.tabs.create({ url: `${thankyouURL}`, active: true })
     }
 }
@@ -176,11 +177,35 @@ export async function handleThankyouVisit(url, tabId) {
  */
 export async function handleFetchUser(sendResponse) {
     let user = await fetchUser();
+    chrome.storage.local.set({ "user": user })
     let statusCode = 200;
     if (user === null) {
         statusCode = 404;
     }
     sendResponse({ "user": user, "status": statusCode })
+}
+
+/**
+ * Fetches a user account, refreshing its access token if necessary
+ * First looks in sync storage to get user, if it is not set get user from API endpoint
+ * If still no user, return null
+ * else return the user
+ * @returns {Promise<unknown>} null or user
+ */
+export async function getRefreshedUser() {
+    let user = await getValueFromStorage("user")
+
+    // no user or user expired
+    if ((user === undefined || user === null) || Date.now() > user.expires_at) {
+        // fetch for user & return
+        try {
+            user = await fetchUser();
+        } catch (err) {
+            console.error(err)
+            return null
+        }
+    }
+    return user
 }
 
 export async function handleTrackEvent(event, sendResponse) {
