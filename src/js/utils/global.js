@@ -26,11 +26,11 @@ export async function sendMsgToCS(message, id = undefined) {
  */
 function getCurrentTab() {
     return new Promise((resolve, reject) => {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.query({ active: true, lastFocusedWindow: true }, function ([tab]) {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else {
-                resolve(tabs[0]);
+                resolve(tab);
             }
         });
     });
@@ -58,13 +58,30 @@ export function forwardRequest(message) {
  * @param key the key to get from storage
  * @returns {Promise<unknown>} the value of the key in storage or error message
  */
-export async function getValueFromStorage(key) {
+export function getValueFromStorage(key) {
     return new Promise((resolve, reject) => {
         chrome.storage.sync.get([key], (data) => {
             if (chrome.runtime.lastError) {
                 reject(chrome.runtime.lastError);
             } else {
                 resolve(data[key]);
+            }
+        })
+    })
+}
+
+/**
+ * General getter for chrome.storage.local
+ * @param key key to get value for
+ * @returns {Promimse} error or the value of the key in local storage
+ */
+export function getValueFromLocalStorage(key) {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get([key], (result) => {
+            if (chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+            } else {
+                resolve(result[key]);
             }
         })
     })
