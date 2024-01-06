@@ -2,6 +2,8 @@ import $ from "jquery";
 import {loadHTMLFromStorage} from "./contentScripts";
 import {forwardRequest} from "./global";
 
+let prevTarget;
+
 /**
  * Entrypoint for OneLine PDF functionality -- MVP
  * Builds lines on the fly per page when the user hovers over the page
@@ -10,9 +12,9 @@ import {forwardRequest} from "./global";
  */
 export function startOneLinePDF(activeColor) {
     bindMutationObserver()
-    let prevTarget = null;
+    prevTarget = null;
     $("#viewer").mousemove((e) => {
-        highlightLineUnderMouse(e, prevTarget, activeColor)
+        highlightLineUnderMouse(e, activeColor)
     })
 }
 
@@ -121,10 +123,9 @@ function bindMutationObserver() {
  * Selects all the spans on the page that the user is hovering over, builds a map of lines & line IDs
  * Highlight each line with the active color when the user is hovering over that line
  * @param e mousemove event
- * @param prevTarget previous line that was highlighted
  * @param activeColor active color of line from extension popup
  */
-function highlightLineUnderMouse(e, prevTarget, activeColor) {
+function highlightLineUnderMouse(e, activeColor) {
     // populate spans map with spans from page that mouse is over (only store 1 page as hacky optimization)
     let target = e.target
     let pageNum = getPageNumFrom(target)
