@@ -57,8 +57,12 @@ const OneLine = function OneLine(onOffSwitchState) {
     const moveLine = (direction) => {
         
         if ($("span.word:not(style *), span.whitespace:not(style *)").length === 0) {
-            // cleaner alert to user (html popup/injection)
-            alert("There is no text to move.");
+            // tell sw to load blob for page alert
+            forwardRequest({showUnsupportedPageAlert: true}).then(async (resp) => {
+                if (resp.showUnsupportedPageAlert) {
+                    await loadHTMLFromStorage()
+                }
+            })
         } else {
             switch (direction) {
                 case "up":
