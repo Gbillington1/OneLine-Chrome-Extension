@@ -91,6 +91,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 // Fires when tab changes
 // sends tab change update to content script if page has been loaded
+// TODO: This sendMsgToCS function fires when there is no receiving end, needs to be fixed
 chrome.tabs.onActivated.addListener((activeInfo) => {
     chrome.tabs.get(activeInfo.tabId).then(tab => {
         // this fires when the user goes to a tab that was already loaded
