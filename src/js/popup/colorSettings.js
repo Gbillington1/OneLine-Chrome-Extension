@@ -12,9 +12,8 @@ import $ from 'jquery';
 $(document).ready(async () => {
 
     $("#backContainer").click(() => {
-
-        goToDefaultPage();
-
+        chrome.action.setPopup({ "popup": "dist/html/defaultPopup.html" });
+        window.location.href = "defaultPopup.html";
     })
 
     // load active color from storage

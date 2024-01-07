@@ -2,6 +2,7 @@ import {
     updateLineColor,
     handleTabChange,
     getRefreshedUser,
+    buildInitMsgOptions,
     loadHTMLFromStorage
 } from './utils/contentScripts';
 import { getValueFromStorage, forwardRequest } from './utils/global'
@@ -16,41 +17,17 @@ import $ from 'jquery';
 window.onload = async function () {
     // fetch user from storage
     let user = await getRefreshedUser();
-    // USER IS NOT AUTHENTICATED
     if (user === null) {
-        chrome.storage.sync.set({ "activePage": "signUpBlocker.html" })
-
-        // show sign up/login popups on PDF and web
-        if (location.href.endsWith('.pdf') && !location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
-            forwardRequest({showSignUpForPDF: true}).then(async (resp) => {
-                if (resp.showSignUpForPDF) {
-                    await loadHTMLFromStorage()
-                }
-            })
-        } else {
-            // TODO: Should I add a filter here so that it does show up on EVERY page when not logged in?
-            forwardRequest({showSignUpForWeb: true}).then(async (resp) => {
-                if (resp.showSignUpForWeb) {
-                    await loadHTMLFromStorage()
-                }
-            })
-        }
-        // exit the program for this page (is there a better way?)
-        return;
-
-    // USER IS AUTHENTICATED
-    } else {
-        chrome.storage.sync.set({ "activePage": "defaultPopup.html" })
-
-        // show the popup to open the PDF in oneline
-        if (location.href.endsWith('.pdf') && !location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
-            forwardRequest({showOpenPDFInOneLine: true}).then(async (resp) => {
-                if (resp.showOpenPDFInOneLine) {
-                    await loadHTMLFromStorage();
-                }
-            })
-        }
+        chrome.storage.sync.set({"onOffSwitchState": false})
     }
+    let msgOptions = buildInitMsgOptions(user);
+
+    // send initial msg (loads html blobs & sets popup html)
+    forwardRequest(msgOptions).then(async resp => {
+        if (resp.injectHTMLBlob) {
+            await loadHTMLFromStorage()
+        }
+    })
 
     // load HTML set in service worker if any
     await loadHTMLFromStorage()

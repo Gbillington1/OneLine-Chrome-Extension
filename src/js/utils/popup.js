@@ -18,14 +18,6 @@ export const loadActivePage = async () => {
 }
 
 /**
- * Set the active page to defaultPopup.html and redirects window
- */
-export const goToDefaultPage = () => {
-    chrome.storage.sync.set({ "activePage": "deafultPopup.html" });
-    window.location.href = "defaultPopup.html";
-}
-
-/**
  * Loads the state of the on/off switch into the switch element
  * @returns {Promise<void>}
  */

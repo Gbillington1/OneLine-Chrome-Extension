@@ -54,6 +54,34 @@ export async function getRefreshedUser() {
 }
 
 /**
+ * Based on the state of the user (null, or not null -> logged in), build an object to be sent to the backgrounds onMessage event listener
+ * Add attributes to set the HTML of the popup, and to load HTML blobs to be injected into the page
+ * @param user user obj from storage or flask server, or null
+ */
+export function buildInitMsgOptions(user) {
+    let msgOptions = {}
+    if (user === null) {
+        msgOptions.setPopup = "dist/html/signUpBlocker.html"
+        msgOptions.injectHTMLBlob = { htmlPurpose: "signUpFor" }
+        if (location.href.endsWith('.pdf') && !location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
+            msgOptions.injectHTMLBlob.htmlPath = "dist/html/blobs/signUpForPDF.html"
+        } else {
+            msgOptions.injectHTMLBlob.htmlPath = "dist/html/blobs/signUpForWeb.html"
+        }
+    } else {
+        msgOptions.setPopup = "dist/html/defaultPopup.html"
+        if (location.href.endsWith('.pdf') && !location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
+            msgOptions.showOpenPDFInOneLine = true
+            msgOptions.injectHTMLBlob = {
+                htmlPath: "dist/html/blobs/openPDFInOneLinePopup.html",
+                htmlPurpose: "openPDF"
+            }
+        }
+    }
+    return msgOptions
+}
+
+/**
  * Inserts reload tabs HTML into page and sets up event listeners
  * Helper function for {@link loadHTMLFromStorage}
  * @param html HTML string of the reload tabs popup

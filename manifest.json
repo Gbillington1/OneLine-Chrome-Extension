@@ -21,7 +21,6 @@
     },
     "action": {
         "default_title": "OneLine",
-        "default_popup": "./dist/html/defaultPopup.html",
         "default_icon": {
             "48": "./dist/images/icon48.png",
             "128": "./dist/images/icon128.png"

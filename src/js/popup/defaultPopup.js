@@ -11,7 +11,7 @@ $(document).ready(() => {
 
     $('#colorSettings').click(() => {
 
-        chrome.storage.sync.set({ "activePage": "colorSettings.html" })
+        chrome.action.setPopup({"popup": "dist/html/colorSettings.html" })
         window.location.href = "colorSettings.html"
     
     })

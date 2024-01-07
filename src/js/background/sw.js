@@ -1,4 +1,4 @@
-import { sendMsgToCS } from "../utils/global";
+import {getValueFromLocalStorage, getValueFromStorage, sendMsgToCS} from "../utils/global";
 import {
     initActiveColor,
     initOnOffSwitchState,
@@ -44,36 +44,25 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         handleFetchUser(sendResponse)
     }
 
+    // sets the action popup to whatever html page is passed in as the value
+    if (msg.setPopup) {
+        chrome.action.setPopup({"popup": msg.setPopup})
+        sendResponse({setPopup: true, status: 200})
+    }
+
+    // loads HTML into storage to be fetched with loadHTMLFromStorage, loads CSS into page
+    // expects injectHTMLBlob = { htmlPath: "dist/html/blob/index.js", htmlPurpose: "test"
+    // htmlPurpose is used in loadHTMLFromStorage
+    if (msg.injectHTMLBlob) {
+        loadHTMLBlob(msg.injectHTMLBlob.htmlPath, sender.tab.id, msg.injectHTMLBlob.htmlPurpose).then(() => {
+            sendResponse({injectHTMLBlob: true, status: 200})
+        })
+    }
+
     // load pdf reader
     if (msg.pdf) {
         chrome.tabs.create({url: `${process.env.API_HOST}/view_pdf?file=${encodeURIComponent(msg.pdf)}`})
         sendResponse({openPDF: true, status: 200})
-    }
-
-    // messages to load HTML into the pages (popups)
-    // TODO: Find more general abstraction to replace this current method (lots of duplicated code)
-    if (msg.showUnsupportedPageAlert) {
-        loadHTMLBlob("dist/html/blobs/unsupportedPageAlert.html", sender.tab.id, "unsupportedPage").then(() => {
-            sendResponse({showUnsupportedPageAlert: true, status: 200})
-        })
-    }
-
-    if (msg.showSignUpForPDF) {
-        loadHTMLBlob("dist/html/blobs/signUpForPDF.html", sender.tab.id, "signUpFor").then(() => {
-            sendResponse({ showSignUpForPDF: true, status: 200 })
-        })
-    }
-
-    if (msg.showSignUpForWeb) {
-        loadHTMLBlob("dist/html/blobs/signUpForWeb.html", sender.tab.id, "signUpFor").then(() => {
-            sendResponse({ showSignUpForWeb: true, status: 200 })
-        })
-    }
-
-    if (msg.showOpenPDFInOneLine) {
-        loadHTMLBlob('dist/html/blobs/openPDFInOneLinePopup.html', sender.tab.id, "openPDF").then(() => {
-            sendResponse({ showOpenPDFInOneLine: true, status: 200 })
-        })
     }
 
     // reload all pages
@@ -118,7 +107,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
         // if logout page is hit, clear user from storage
         if (url.href.includes(`${process.env.API_HOST}/logout`)) {
-            chrome.storage.sync.set({ "user": null, "activePage": "signUpBlocker.html" })
+            chrome.storage.local.set({ "user": null })
+            chrome.action.setPopup({ "popup": "dist/html/signUpBlocker.html" })
         } else if (url.href.includes("useoneline.com/thankyou?")) {
             handleThankyouVisit(url, tab.id)
         }

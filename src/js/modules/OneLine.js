@@ -21,8 +21,12 @@ const OneLine = function OneLine(onOffSwitchState) {
             // if result is -1, then there are no paragraphs on the page
             if (result === -1) {
                 // tell sw to load blob for page alert
-                forwardRequest({showUnsupportedPageAlert: true}).then(async (resp) => {
-                    if (resp.showUnsupportedPageAlert) {
+                forwardRequest({injectHTMLBlob: {
+                        htmlPath: "dist/html/blobs/unsupportedPageAlert.html",
+                        htmlPurpose: "unsupportedPage"
+                    }
+                }).then(async (resp) => {
+                    if (resp.injectHTMLBlob) {
                         await loadHTMLFromStorage()
                     }
                 })
@@ -58,8 +62,12 @@ const OneLine = function OneLine(onOffSwitchState) {
         
         if ($("span.word:not(style *), span.whitespace:not(style *)").length === 0) {
             // tell sw to load blob for page alert
-            forwardRequest({showUnsupportedPageAlert: true}).then(async (resp) => {
-                if (resp.showUnsupportedPageAlert) {
+            forwardRequest({injectHTMLBlob: {
+                    htmlPath: "dist/html/blobs/unsupportedPageAlert.html",
+                    htmlPurpose: "unsupportedPage"
+                }
+            }).then(async (resp) => {
+                if (resp.injectHTMLBlob) {
                     await loadHTMLFromStorage()
                 }
             })

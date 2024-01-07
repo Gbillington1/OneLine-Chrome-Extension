@@ -1,5 +1,5 @@
 /** Utility functions for js/background/sw.js */
-import {forwardRequest, getValueFromStorage, sendMsgToCS} from "./global";
+import {forwardRequest, getValueFromLocalStorage, getValueFromStorage, sendMsgToCS} from "./global";
 
 /**
  * Initializes the onOffSwitchState variable in sync storage when the extension is installed
@@ -45,11 +45,17 @@ export async function handleReason(details) {
         return
     }
 
-    if (details.reason === "install") {
-        await handleOnInstall()
-    } else if (details.reason === "update") {
-        handleOnUpdate()
-    }
+    // get user and handle different extension refresh states based on the user status (logged in or not)
+    getRefreshedUser().then(user => {
+        setupPopup(user)
+        if (details.reason === "install") {
+            openThankYouPage(user)
+        } else if (details.reason === "update") {
+            handleOnUpdate()
+        } else {
+            //other
+        }
+    })
 }
 
 /**
@@ -57,17 +63,31 @@ export async function handleReason(details) {
  * Fetches user and redirects user to thank you or login depending on user state
  * @returns {Promise<void>} void
  */
-async function handleOnInstall() {
-    const thankyouURL = setupUniqueThankyouLink()
-    let user = await fetchUser()
+
+/**
+ * Sets the action popup for the extension based on the user. This sets which page to open when the extension icon is clicked
+ * If the user is null, set the popup to the sign up blocker, if the user is logged in, set to default
+ * @param user user obj from local storage, or flask server, or null if not logged in
+ */
+function setupPopup(user) {
     if (user === null) {
-        // use current time in millis as an identifier to check when user lands on thank you page after login in tabs.onUpdated listener
-        chrome.storage.sync.set({ "activePage": "signUpBlocker.html" })
-        // encode URL with our time ID to define next page where user is sent after login/signup
+        chrome.action.setPopup({ "popup": "dist/html/signUpBlocker.html" })
+    } else {
+        chrome.action.setPopup({ "popup": "dist/html/defaultPopup.html" })
+        chrome.storage.local.set({"user": user})
+    }
+}
+
+/**
+ * Opens the thank you page in a users browser when they install the extension
+ * If the user is null, they are redirected to the sign up page, then the thank you page
+ * @param user
+ */
+function openThankYouPage(user) {
+    const thankyouURL = setupUniqueThankyouLink()
+    if (user === null) {
         chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
     } else {
-        chrome.storage.sync.set({"activePage": "defaultPopup.html"})
-        chrome.storage.local.set({"user": user})
         chrome.tabs.create({ url: `${thankyouURL}`, active: true })
     }
 }
@@ -89,11 +109,8 @@ export function fetchUser() {
         fetch(`${process.env.API_HOST}/api/get_user`).then(res => res.json()).then(data => {
             if (data.user) {
                 resolve(data.user)
-                // chrome.storage.sync.set({ "user": data.user })
             } else {
                 resolve(null)
-                // chrome.storage.sync.set({ "user": null })
-                // user needs to log in to use app
             }
         })
     })
@@ -162,7 +179,9 @@ export async function handleThankyouVisit(url, tabId) {
         const user = await fetchUser();
         if (user !== null) {
             // save user & remove sign up blocker in popup
-            chrome.storage.sync.set({"user": user, "activePage": "defaultPopup.html"})
+            chrome.storage.local.set({"user": user })
+            chrome.storage.sync.set({"onOffSwitchState": true})
+            chrome.action.setPopup({ "popup": "dist/html/defaultPopup.html" });
         } else {
             // show login popup on thankyou?
         }
@@ -193,7 +212,7 @@ export async function handleFetchUser(sendResponse) {
  * @returns {Promise<unknown>} null or user
  */
 export async function getRefreshedUser() {
-    let user = await getValueFromStorage("user")
+    let user = await getValueFromLocalStorage("user")
 
     // no user or user expired
     if ((user === undefined || user === null) || Date.now() > user.expires_at) {
