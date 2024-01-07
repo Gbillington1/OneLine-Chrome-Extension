@@ -1,5 +1,4 @@
 import {
-    goToDefaultPage,
     loadFavoritesFromStorage,
     saveFavoritesToStorage,
     calculateWordColorWithYIQ,

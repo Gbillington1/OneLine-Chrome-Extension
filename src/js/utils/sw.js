@@ -1,5 +1,5 @@
 /** Utility functions for js/background/sw.js */
-import {forwardRequest, getValueFromLocalStorage, getValueFromStorage, sendMsgToCS} from "./global";
+import { getValueFromLocalStorage, sendMsgToCS} from "./global";
 
 /**
  * Initializes the onOffSwitchState variable in sync storage when the extension is installed
@@ -227,6 +227,13 @@ export async function getRefreshedUser() {
     return user
 }
 
+/**
+ * Handles the track event message in sw.js
+ * Sends a POST to our flask server, where the event is logged into mixpanel
+ * @param event object containing event information
+ * @param sendResponse function from onMessage listener to send response back to message sender
+ * @returns {Promise<void>}
+ */
 export async function handleTrackEvent(event, sendResponse) {
     const response = await fetch(`${process.env.API_HOST}/api/track`, {
         method: "POST",

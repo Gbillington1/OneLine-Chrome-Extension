@@ -1,8 +1,6 @@
-import { loadActivePage, loadOnOffSwitch, loadAbionicSwitch } from '../utils/popup';
+import { loadOnOffSwitch, loadAbionicSwitch } from '../utils/popup';
 import { sendMsgToCS, forwardRequest } from '../utils/global';
 import $ from 'jquery';
-
-loadActivePage();
 
 $(document).ready(() => {
 

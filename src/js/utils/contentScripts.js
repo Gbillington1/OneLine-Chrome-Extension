@@ -149,6 +149,11 @@ function setupUnsupportedPageAlert(html) {
     $("#ol-close-btn").click(() => $alert.remove())
 }
 
+/**
+ * Inserts sign up page alert HTML for PDFs into page and sets up event listeners
+ * Helper function for {@link loadHTMLFromStorage}
+ * @param html HTML string of the PDF popup
+ */
 function setupSignUpForPDFPopup(html) {
     // avoid adding more than once
     if ($("#ol-sign-up-for").length > 0) {

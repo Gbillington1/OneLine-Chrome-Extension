@@ -18,7 +18,7 @@ chrome.runtime.onInstalled.addListener(function (details) {
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
-    // open login or page when buttons are clicked in popup
+    // open login, sign up, or logout page when buttons are clicked in popup
     if (msg.loginBtnClicked) {
         chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(msg.next)}`, active: true })
         sendResponse({loginBtnClicked: true, status: 200})

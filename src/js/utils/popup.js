@@ -2,22 +2,6 @@ import $ from 'jquery';
 import { getValueFromStorage } from "./global";
 
 /**
- * Loads the active page to display in the popup from storage and redirects to that page
- * @returns {Promise<void>} void, redirects user to page
- */
-export const loadActivePage = async () => {
-    getValueFromStorage("activePage").then((activePage) => {
-        if (activePage == "colorSettings.html") {
-            window.location.href = "colorSettings.html";
-        } else if (activePage == "textToSpeech.html") {
-            window.location.href = "textToSpeech.html";
-        } else if (activePage == "signUpBlocker.html") {
-            window.location.href = "signUpBlocker.html"
-        }
-    });
-}
-
-/**
  * Loads the state of the on/off switch into the switch element
  * @returns {Promise<void>}
  */
