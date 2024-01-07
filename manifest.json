@@ -36,7 +36,9 @@
         ],
         "exclude_globs": [
             "*://*.google.com/search?*",
-            "*://*.google.com/scholar?*"
+            "*://*.google.com/scholar?*",
+            "*://accounts.google.com/o/oauth2*",
+            "*://*.auth0.com/u/login?*"
         ]
     }]
 }
