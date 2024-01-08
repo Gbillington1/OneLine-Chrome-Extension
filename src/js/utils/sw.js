@@ -47,6 +47,7 @@ export async function handleReason(details) {
 
     // get user and handle different extension refresh states based on the user status (logged in or not)
     getRefreshedUser().then(user => {
+        chrome.storage.local.set({"user": user})
         setupPopup(user)
         if (details.reason === "install") {
             openThankYouPage(user)
@@ -86,7 +87,7 @@ function setupPopup(user) {
 function openThankYouPage(user) {
     const thankyouURL = setupUniqueThankyouLink()
     if (user === null) {
-        chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/auth/signup?next=${encodeURIComponent(thankyouURL)}`, active: true })
     } else {
         chrome.tabs.create({ url: `${thankyouURL}`, active: true })
     }

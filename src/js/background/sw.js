@@ -20,17 +20,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // open login, sign up, or logout page when buttons are clicked in popup
     if (msg.loginBtnClicked) {
-        chrome.tabs.create({ url: `${process.env.API_HOST}/login?next=${encodeURIComponent(msg.next)}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/auth/login?next=${encodeURIComponent(msg.next)}`, active: true })
         sendResponse({loginBtnClicked: true, status: 200})
     }
 
     if (msg.signUpBtnClicked) {
-        chrome.tabs.create({ url: `${process.env.API_HOST}/signup?next=${encodeURIComponent(msg.next)}`, active: true })
+        chrome.tabs.create({ url: `${process.env.API_HOST}/auth/signup?next=${encodeURIComponent(msg.next)}`, active: true })
         sendResponse({signUpBtnClicked: true, status: 200})
     }
 
     if (msg.logout) {
-        chrome.tabs.create({ url: `${process.env.API_HOST}/logout`})
+        chrome.tabs.create({ url: `${process.env.API_HOST}/auth/logout`})
         sendResponse({logout: true, status: 200})
     }
 
@@ -107,7 +107,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         const url = new URL(tab.url)
 
         // if logout page is hit, clear user from storage
-        if (url.href.includes(`${process.env.API_HOST}/logout`)) {
+        if (url.href.includes(`${process.env.API_HOST}/auth/logout`)) {
             chrome.storage.local.set({ "user": null })
             chrome.action.setPopup({ "popup": "dist/html/signUpBlocker.html" })
         } else if (url.href.includes("useoneline.com/thankyou?")) {
