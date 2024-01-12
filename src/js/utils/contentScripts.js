@@ -108,7 +108,7 @@ export async function getBlobOptions(user) {
 export async function getOptionsForThankyouVisit(url) {
     const params = url.searchParams
     const timeId = params.get("time_id")
-    let injectHTMLBlob = {}
+    let injectHTMLBlob = null;
 
     if (timeId !== null) {
         const data = await chrome.storage.local.get("thankyouTimeId")
@@ -140,10 +140,8 @@ export function setupReloadPopup(html) {
  */
 export async function loadHTMLFromStorage() {
     let latestHTML = await getValueFromStorage("latestHTML")
-    console.log(latestHTML)
     if (latestHTML !== undefined && latestHTML !== null) {
         if (latestHTML.purpose === "reloadTabs") {
-            console.log("WE MADE IT")
             setupReloadPopup(latestHTML.content)
         } else if (latestHTML.purpose === "openPDF") {
             setupPDFPopup(latestHTML.content)

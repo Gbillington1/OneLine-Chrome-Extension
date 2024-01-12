@@ -29,11 +29,13 @@ window.onload = async function () {
 
     // then send msg to load html blob into page, then load it
     let htmlBlobOptions = await getBlobOptions(user)
-    forwardRequest(htmlBlobOptions).then(async (resp) => {
-        if (resp.injectHTMLBlob) {
-            await loadHTMLFromStorage()
-        }
-    })
+    if (htmlBlobOptions.injectHTMLBlob !== null) {
+        forwardRequest(htmlBlobOptions).then(async (resp) => {
+            if (resp.injectHTMLBlob) {
+                await loadHTMLFromStorage()
+            }
+        })
+    }
 
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
     let activeColor = await getValueFromStorage("activeColor");
