@@ -56,6 +56,7 @@ export async function handleReason(details) {
         } else {
             //other
         }
+        chrome.runtime.setUninstallURL(`${process.env.API_HOST}/uninstall`)
     })
 }
 
@@ -97,7 +98,7 @@ function openThankYouPage(user) {
  * @returns void
  */
 function handleOnUpdate() {
-    return
+    chrome.tabs.create({ url: `${process.env.API_HOST}/updates/v2-0-1` })
 }
 
 /**
