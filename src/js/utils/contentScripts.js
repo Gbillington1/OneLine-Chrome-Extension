@@ -39,8 +39,12 @@ export async function handleTabChange(onOffSwitchState, activeColor, ol) {
 export async function getRefreshedUser() {
     let user = await getValueFromLocalStorage("user")
 
+    if (user === undefined) {
+        user = null
+    }
+
     // no user or user expired
-    if ((user === undefined || user === null) || Date.now() > user.expires_at) {
+    if (user === null || Date.now() > user.expires_at) {
         // fetch for user & return
         try {
             const response = await forwardRequest({ "fetchUser": true })
@@ -54,31 +58,69 @@ export async function getRefreshedUser() {
 }
 
 /**
- * Based on the state of the user (null, or not null -> logged in), build an object to be sent to the backgrounds onMessage event listener
- * Add attributes to set the HTML of the popup, and to load HTML blobs to be injected into the page
+ * Based on the state of the user (null, or not null), set the popup html page to be loaded into the extension popup
  * @param user user obj from storage or flask server, or null
+ * @returns {object}
  */
-export function buildInitMsgOptions(user) {
-    let msgOptions = {}
+export function buildPopupOptions(user) {
+    let options = {}
     if (user === null) {
-        msgOptions.setPopup = "dist/html/signUpBlocker.html"
-        msgOptions.injectHTMLBlob = { htmlPurpose: "signUpFor" }
+        options.setPopup = "dist/html/signUpBlocker.html"
+    } else {
+        options.setPopup = "dist/html/defaultPopup.html"
+    }
+    return options
+}
+
+/**
+ * Depending on the state of the user, and what page the user is on,
+ * create the injectHTMLBlob object with the path and purpose to the html file to load
+ * @param user
+ * @returns {object} options for {@link forwardRequest}
+ */
+export async function getBlobOptions(user) {
+    let options = {}
+    if (user === null) {
+        options.injectHTMLBlob = { htmlPurpose: "signUpFor" }
         if (location.href.endsWith('.pdf') && !location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
-            msgOptions.injectHTMLBlob.htmlPath = "dist/html/blobs/signUpForPDF.html"
+            options.injectHTMLBlob.htmlPath = "dist/html/blobs/signUpForPDF.html"
         } else {
-            msgOptions.injectHTMLBlob.htmlPath = "dist/html/blobs/signUpForWeb.html"
+            options.injectHTMLBlob.htmlPath = "dist/html/blobs/signUpForWeb.html"
         }
     } else {
-        msgOptions.setPopup = "dist/html/defaultPopup.html"
         if (location.href.endsWith('.pdf') && !location.href.includes(`${process.env.API_HOST}/view_pdf?file`)) {
-            msgOptions.showOpenPDFInOneLine = true
-            msgOptions.injectHTMLBlob = {
+            options.injectHTMLBlob = {
                 htmlPath: "dist/html/blobs/openPDFInOneLinePopup.html",
                 htmlPurpose: "openPDF"
             }
+        } else if (location.href.includes(`${process.env.API_HOST}/thankyou?`)) {
+            options.injectHTMLBlob = await getOptionsForThankyouVisit(new URL(location.href))
         }
     }
-    return msgOptions
+    return options;
+}
+
+/**
+ * Builds the injectHTMLBlob option for the page reload prompt if the
+ * time ID query param matches the time ID in storage (set on install)
+ * @returns Object
+ */
+export async function getOptionsForThankyouVisit(url) {
+    const params = url.searchParams
+    const timeId = params.get("time_id")
+    let injectHTMLBlob = {}
+
+    if (timeId !== null) {
+        const data = await chrome.storage.local.get("thankyouTimeId")
+        if (data.thankyouTimeId === parseInt(timeId)) {
+            chrome.storage.local.set({ "thankyouTimeId": null })
+            injectHTMLBlob = {
+                htmlPath: "dist/html/blobs/pageReloadPrompt.html",
+                htmlPurpose: "reloadTabs"
+            }
+        }
+    }
+    return injectHTMLBlob
 }
 
 /**
@@ -98,8 +140,10 @@ export function setupReloadPopup(html) {
  */
 export async function loadHTMLFromStorage() {
     let latestHTML = await getValueFromStorage("latestHTML")
+    console.log(latestHTML)
     if (latestHTML !== undefined && latestHTML !== null) {
         if (latestHTML.purpose === "reloadTabs") {
+            console.log("WE MADE IT")
             setupReloadPopup(latestHTML.content)
         } else if (latestHTML.purpose === "openPDF") {
             setupPDFPopup(latestHTML.content)

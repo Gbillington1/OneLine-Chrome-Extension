@@ -2,13 +2,15 @@ import {
     updateLineColor,
     handleTabChange,
     getRefreshedUser,
-    buildInitMsgOptions,
+    getBlobOptions,
+    buildPopupOptions,
     loadHTMLFromStorage
 } from './utils/contentScripts';
 import { getValueFromStorage, forwardRequest } from './utils/global'
 import {restartOneLinePDF, startOneLinePDF} from './utils/pdf'
 import OneLine from './modules/OneLine';
 import $ from 'jquery';
+import {loadHTMLBlob} from "./utils/sw";
 
 // TODO: Design and implement better auto scroll UI/UX
 // TODO: add error handling UX for when oneline finds no text/paragraphs
@@ -20,21 +22,22 @@ window.onload = async function () {
     if (user === null) {
         chrome.storage.sync.set({"onOffSwitchState": false})
     }
-    let msgOptions = buildInitMsgOptions(user);
 
-    // send initial msg (loads html blobs & sets popup html)
-    forwardRequest(msgOptions).then(async resp => {
+    // // send msg to set the popup based on user state
+    let popupOptions = buildPopupOptions(user);
+     await forwardRequest(popupOptions)
+
+    // then send msg to load html blob into page, then load it
+    let htmlBlobOptions = await getBlobOptions(user)
+    forwardRequest(htmlBlobOptions).then(async (resp) => {
         if (resp.injectHTMLBlob) {
             await loadHTMLFromStorage()
         }
     })
 
-    // load HTML set in service worker if any
-    await loadHTMLFromStorage()
-    // create the OneLine instance
     let onOffSwitchState = await getValueFromStorage("onOffSwitchState");
-    let ol = OneLine(onOffSwitchState)
     let activeColor = await getValueFromStorage("activeColor");
+    let ol = OneLine(onOffSwitchState)
     let movedLineOnPage = false;
     // let abionicSwtichState = await getValueFromStorage("abionicSwitchState");
 

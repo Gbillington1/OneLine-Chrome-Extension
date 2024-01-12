@@ -75,7 +75,6 @@ function setupPopup(user) {
         chrome.action.setPopup({ "popup": "dist/html/signUpBlocker.html" })
     } else {
         chrome.action.setPopup({ "popup": "dist/html/defaultPopup.html" })
-        chrome.storage.local.set({"user": user})
     }
 }
 
@@ -150,44 +149,14 @@ export async function loadHTMLBlob(blobPath, tabID, htmlPurpose) {
 export function setupUniqueThankyouLink() {
     const thankyouTimeId = Date.now();
     chrome.storage.local.set({ "thankyouTimeId": thankyouTimeId })
-    return `https://useoneline.com/thankyou?time_id=${thankyouTimeId}&auth_success=true`
+    return `${setupThankyouLink()}&time_id=${thankyouTimeId}`
 }
 
-/**
- * Handler for thank you page in chrome.tabs.onUpdated event listener
- * Updates user in storage if auth was successful & inserts HTML into page when unique time IDs are matched
- * @returns {Promise<void>}
- */
-export async function handleThankyouVisit(url, tabId) {
-    const params = url.searchParams
-    const timeId = params.get("time_id")
-    const successfulAuth = params.get("auth_success")
-
-    // handle visit straight from install with time_id
-    // load HTML to reload tabs
-    if (timeId !== null) {
-        // check if the time IDs match => show the reload popup & save user to storage
-        const data = await chrome.storage.local.get("thankyouTimeId")
-        if (data.thankyouTimeId === parseInt(timeId)) {
-            chrome.storage.local.set({ "thankyouTimeId": null })
-            await loadHTMLBlob('dist/html/blobs/pageReloadPrompt.html', tabId, "reloadTabs")
-        }
-    }
-
-    // handle visit after successful login to save user and give access to popup
-    if (successfulAuth === "true") {
-        // get user & save to storage
-        const user = await fetchUser();
-        if (user !== null) {
-            // save user & remove sign up blocker in popup
-            chrome.storage.local.set({"user": user })
-            chrome.storage.sync.set({"onOffSwitchState": true})
-            chrome.action.setPopup({ "popup": "dist/html/defaultPopup.html" });
-        } else {
-            // show login popup on thankyou?
-        }
-    }
+export function setupThankyouLink() {
+    return `${process.env.API_HOST}/thankyou?auth_success=true`
 }
+
+
 
 /**
  * Handles the fetch user message in the chrome.runtime.onMessage event listener
@@ -197,12 +166,11 @@ export async function handleThankyouVisit(url, tabId) {
  */
 export async function handleFetchUser(sendResponse) {
     let user = await fetchUser();
-    chrome.storage.local.set({ "user": user })
-    let statusCode = 200;
-    if (user === null) {
-        statusCode = 404;
+    if (user === undefined) {
+        user = null
     }
-    sendResponse({ "user": user, "status": statusCode })
+    chrome.storage.local.set({ "user": user })
+    sendResponse({ "user": user })
 }
 
 /**
@@ -215,8 +183,12 @@ export async function handleFetchUser(sendResponse) {
 export async function getRefreshedUser() {
     let user = await getValueFromLocalStorage("user")
 
+    if (user === undefined) {
+        user = null
+    }
+
     // no user or user expired
-    if ((user === undefined || user === null) || Date.now() > user.expires_at) {
+    if (user === null || Date.now() > user.expires_at) {
         // fetch for user & return
         try {
             user = await fetchUser();
