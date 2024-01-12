@@ -1,5 +1,5 @@
 import { forwardRequest } from "../utils/global";
-import { setupUniqueThankyouLink } from "../utils/sw";
+import {setupThankyouLink, setupUniqueThankyouLink} from "../utils/sw";
 import $ from 'jquery';
 
 $(document).ready(() => {
@@ -8,11 +8,11 @@ $(document).ready(() => {
     })
 
     $("#signUpBtn").click(() => {
-        const thankyouLink = setupUniqueThankyouLink()
+        const thankyouLink = setupThankyouLink()
         forwardRequest({ "signUpBtnClicked": true, "next": thankyouLink })
     })
     $("#loginBtn").click(() => {
-        const thankyouLink = setupUniqueThankyouLink()
+        const thankyouLink = setupThankyouLink()
         forwardRequest({ "loginBtnClicked": true, "next": thankyouLink })
     })
 })
