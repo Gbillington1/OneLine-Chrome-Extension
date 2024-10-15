@@ -37,6 +37,14 @@ $(document).ready(() => {
 
     })
 
+    $("#openInPDF").click((e) => {
+        chrome.tabs.query({ active: true }, function(tabs) {
+            let url = tabs[0].url
+            forwardRequest({ pdf: url })
+        })
+
+    })
+
     // $('#abionicSwitch').change((e) => {
     //
     //     const stateOfSwitch = e.currentTarget.checked;
