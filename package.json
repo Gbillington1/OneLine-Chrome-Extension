@@ -6,8 +6,8 @@
   "scripts": {
     "build": "npx webpack --config webpack.prod.cjs",
     "watch": "npx webpack --config webpack.dev.cjs --watch",
-    "tailwind-dev": "npx tailwindcss -i ./src/css/tailwind/in.css -o ./src/css/tailwind/out.css --watch",
-    "tailwind-build": "npx tailwindcss -o ./src/css/tailwind/out.css",
+    "tailwind-dev": "npx tailwindcss -i ./src/css/tailwind/in.css -o ./src/css/tailwind/ole-out.css --watch",
+    "tailwind-build": "npx tailwindcss -o ./src/css/tailwind/ole-out.css",
     "zip": "sh ./zip.sh"
   },
   "author": "Graham Billington",
