@@ -7,7 +7,7 @@
         "activeTab",
         "storage",
         "scripting",
-        "cookies"
+        "webRequest"
     ],
     "host_permissions": [
         "*://*/*"
@@ -38,8 +38,8 @@
             "*://*.google.com/search?*",
             "*://*.google.com/scholar?*",
             "*://accounts.google.com/*",
-            "*://*.auth0.com/u/login?*",
-            "*://*.auth0.com/u/signup?*"
+            "*://*/u/login?*",
+            "*://*/u/signup?*"
         ]
     }]
 }
