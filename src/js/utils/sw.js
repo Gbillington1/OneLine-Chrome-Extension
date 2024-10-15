@@ -107,12 +107,20 @@ function handleOnUpdate() {
  */
 export function fetchUser() {
     return new Promise((resolve, reject) => {
-        fetch(`${process.env.API_HOST}/api/get_user`).then(res => res.json()).then(data => {
+        fetch(`${process.env.API_HOST}/api/get_user`).then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP Error: ${res.status}   ${res.statusText}`)
+            }
+            return res.json()
+        }).then(data => {
             if (data.user) {
                 resolve(data.user)
             } else {
                 resolve(null)
             }
+        }).catch(err => {
+            console.log(`Error fetching user: ${err}`)
+            resolve(null)
         })
     })
 }
@@ -131,7 +139,7 @@ export async function loadHTMLBlob(blobPath, tabID, htmlPurpose) {
     // load tailwind CSS
     chrome.scripting.insertCSS({
         target: { tabId: tabID },
-        files: ['dist/css/tailwind/out.css']
+        files: ['dist/css/tailwind/ole-out.css']
     })
 
     // save HTML to storage to be loaded by content script
